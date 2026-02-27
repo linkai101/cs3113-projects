@@ -31,6 +31,7 @@
     "string": "cpp",
     "string_view": "cpp",
     "typeinfo": "cpp",
-    "numbers": "cpp"
+    "numbers": "cpp",
+    "iostream": "cpp"
   }
 }
