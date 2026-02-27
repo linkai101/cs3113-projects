@@ -1,7 +1,7 @@
 # Source and target
-# Automatically include all .cpp files under src/
-SRCS = $(wildcard src/*.cpp)
-TARGET = game
+# Automatically include all .cpp files under src/ and one-level subdirectories
+SRCS = $(wildcard src/*.cpp src/*/*.cpp)
+TARGET = raylib_app
 
 # OS detection (macOS = Darwin, Windows via MinGW = MINGW*)
 UNAME_S := $(shell uname -s)
