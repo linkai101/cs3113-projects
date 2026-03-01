@@ -11,7 +11,7 @@
 #include "game.h"
 
 int main(void) {
-  Game game(1200, 675, "Gravity Pong");
+  Game game(1200, 675, "Volley Pong");
   game.run();
   return 0;
 }

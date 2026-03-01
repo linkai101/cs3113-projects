@@ -172,10 +172,10 @@ void Game::render() {
   switch (gameState) {
     case MENU: {
       // Title
-      const char* title = "Gravity Pong";
-      const int titleWidth = MeasureText("Gravity Pong", HEADING_FONT_SIZE);
+      const char* title = "Volley Pong";
+      const int titleWidth = MeasureText(title, HEADING_FONT_SIZE);
       DrawText(
-        "Gravity Pong",
+        title,
         width/2 - titleWidth/2,
         height/2 - HEADING_FONT_SIZE - 90,
         HEADING_FONT_SIZE,
