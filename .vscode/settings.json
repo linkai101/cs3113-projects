@@ -32,6 +32,17 @@
     "string_view": "cpp",
     "typeinfo": "cpp",
     "numbers": "cpp",
-    "iostream": "cpp"
+    "iostream": "cpp",
+    "__hash_table": "cpp",
+    "__split_buffer": "cpp",
+    "array": "cpp",
+    "deque": "cpp",
+    "queue": "cpp",
+    "stack": "cpp",
+    "unordered_map": "cpp",
+    "vector": "cpp",
+    "__bit_reference": "cpp",
+    "cctype": "cpp",
+    "clocale": "cpp"
   }
 }
