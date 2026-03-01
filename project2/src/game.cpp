@@ -1,4 +1,5 @@
 #include "game.h"
+#include "ai_player.h"
 #include "util/log.h"
 #include "util/color.h"
 #include <string>
@@ -89,6 +90,25 @@ void Game::processInput() {
         gameState = PLAYING;
         player1Score = 0;
         player2Score = 0;
+
+        // Recreate player2 based on the selected game mode
+        delete player2;
+        if (gameMode == ONE_PLAYER) {
+          player2 = new AIPlayer(
+            { width / 4.0f, height - 40.0f },
+            40.0f,
+            width / 2.0f - 40.0f,
+            width / 2.0f,  // sideMaxX: the screen center
+            balls,
+            (int)ballCount
+          );
+        } else {
+          player2 = new Player(
+            { width / 4.0f, height - 40.0f },
+            40.0f,
+            width / 2.0f - 40.0f
+          );
+        }
 
         for (int i = 0; i < 3; i++) {
           delete balls[i];
