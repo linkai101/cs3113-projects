@@ -2,13 +2,15 @@
 # Automatically include all .cpp files under src/ and one-level subdirectories
 SRCS = $(wildcard src/*.cpp src/*/*.cpp)
 TARGET = raylib_app
+OBJS = $(SRCS:src/%.cpp=build/%.o)
+DEPS = $(OBJS:.o=.d)
 
 # OS detection (macOS = Darwin, Windows via MinGW = MINGW*)
 UNAME_S := $(shell uname -s)
 
 # Default values
 CXX = g++
-CXXFLAGS = -std=c++11 -Iinclude
+CXXFLAGS = -std=c++17 -Iinclude -MMD -MP
 
 # Raylib configuration using pkg-config
 RAYLIB_CFLAGS = $(shell pkg-config --cflags raylib)
@@ -32,12 +34,24 @@ else
 	EXEC = ./$(TARGET)
 endif
 
-# Build rule
-$(TARGET): $(SRCS)
-	$(CXX) $(CXXFLAGS) -o $(TARGET) $(SRCS) $(LIBS)
+# Default target: link the executable
+$(TARGET): $(OBJS)
+	$(CXX) $(CXXFLAGS) -o $(TARGET) $(OBJS) $(LIBS)
+
+# Include dependency files so header changes trigger recompile
+-include $(DEPS)
+
+# Ensure build dirs exist (order-only for .o rule)
+build:
+	@mkdir -p build build/util
+
+# Compile .cpp to .o; generate .d with header deps
+build/%.o: src/%.cpp | build
+	$(CXX) $(CXXFLAGS) -c -o $@ $<
 
 # Clean rule
 clean:
+	@rm -rf build
 	@if [ -f "$(TARGET)" ]; then rm -f $(TARGET); fi
 	@if [ -f "$(TARGET).exe" ]; then rm -f $(TARGET).exe; fi
 
