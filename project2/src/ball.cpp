@@ -6,7 +6,7 @@ velocityX(0.0f),
 velocityY(0.0f),
 Entity(
   position,
-  { 24.0f, 24.0f }, // size
+  { 48.0f, 48.0f }, // size
   0.0f, // rotation
   WHITE, // tint
   "assets/textures/ball.png" // texture filepath
