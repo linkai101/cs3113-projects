@@ -2,6 +2,7 @@
 #include "util/log.h"
 #include "util/color.h"
 #include <string>
+#include <cassert>
 
 Game::Game(
   int width,
@@ -12,15 +13,21 @@ Game::Game(
   height(height),
   title(title),
   isRunning(true)
-{
-  init();
-}
+{}
 
 Game::~Game() {
   shutdown();
 }
 
+void Game::init() {
+  InitWindow(width, height, title);
+  SetTargetFPS(60);
+}
+
 void Game::run() {
+  // Assert that game has been initialized
+  assert(IsWindowReady());
+
   while (isRunning) {
     processInput();
 
@@ -29,11 +36,6 @@ void Game::run() {
 
     render();
   }
-}
-
-void Game::init() {
-  InitWindow(width, height, title);
-  SetTargetFPS(60);
 }
 
 void Game::processInput() {

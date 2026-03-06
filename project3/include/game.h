@@ -11,6 +11,11 @@ public:
   ~Game();
 
   /**
+   * Initializes the game.
+   */
+  void init();
+
+  /**
    * Runs the game loop
    */
   void run();
@@ -20,8 +25,6 @@ private:
   int height;
   const char* title;
   bool isRunning;
-
-  void init();
 
   void processInput();
 
