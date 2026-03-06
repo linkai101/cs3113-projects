@@ -1,4 +1,5 @@
 #include "entity.h"
+#include <cassert>
 
 Entity::Entity(
   Vector2 position,
@@ -14,9 +15,7 @@ Entity::Entity(
   size(size),
   rotation(rotation),
   tint(tint)
-{
-  init();
-}
+{}
 
 Entity::~Entity() {
   UnloadTexture(texture);
@@ -29,6 +28,9 @@ void Entity::init() {
 void Entity::update(float deltaTime) {}
 
 void Entity::render() {
+  // Assert that texture has been loaded
+  assert(texture.id != 0);
+
   Rectangle destinationArea = { position.x, position.y, size.x, size.y };
   Vector2 origin = { size.x / 2.0f, size.y / 2.0f };
 
