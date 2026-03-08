@@ -27,8 +27,6 @@ public:
 
   ~Entity();
 
-  virtual void init();
-
   virtual void update(float deltaTime);
 
   virtual void render();

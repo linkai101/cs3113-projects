@@ -21,8 +21,6 @@ public:
 
   ~AnimatedEntity();
 
-  virtual void init() override;
-
   virtual void update(float deltaTime) override;
 
   virtual void render() override;

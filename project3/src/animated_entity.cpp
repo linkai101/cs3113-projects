@@ -33,10 +33,6 @@ AnimatedEntity::AnimatedEntity(
 
 AnimatedEntity::~AnimatedEntity() {}
 
-void AnimatedEntity::init() {
-  Entity::init();
-}
-
 void AnimatedEntity::update(float deltaTime) {
   Entity::update(deltaTime);
 

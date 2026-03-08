@@ -15,14 +15,12 @@ Entity::Entity(
   size(size),
   rotation(rotation),
   tint(tint)
-{}
+{
+  texture = LoadTexture(textureFilePath);
+}
 
 Entity::~Entity() {
   UnloadTexture(texture);
-}
-
-void Entity::init() {
-  texture = LoadTexture(textureFilePath);
 }
 
 void Entity::update(float deltaTime) {}
