@@ -8,7 +8,7 @@
 class Entity {
 public:
   /**
-   * Constructor for Entity.
+   * Constructor for Entity, specifying a specific texture area.
    * @param position The position of the entity.
    * @param size The size of the entity.
    * @param rotation The rotation of the entity.
@@ -25,6 +25,28 @@ public:
     std::optional<Rectangle> textureArea = std::nullopt
   );
 
+  /**
+   * Constructor for Entity, specifying a specific sprite from a spritesheet.
+   * @param position The position of the entity.
+   * @param size The size of the entity.
+   * @param rotation The rotation of the entity.
+   * @param tint The tint of the entity. Use WHITE for no tint.
+   * @param textureFilePath The path to the texture file.
+   * @param textureSpriteSize The size of the sprite in the spritesheet.
+   * @param textureSpriteColumns The number of columns in the spritesheet.
+   * @param textureSpriteIndex The index of the sprite in the spritesheet.
+   */
+  Entity(
+    Vector2 position,
+    Vector2 size,
+    float rotation,
+    Color tint,
+    const char* textureFilePath,
+    Vector2 textureSpriteSize,
+    int textureSpriteColumns,
+    int textureSpriteIndex
+  );
+
   ~Entity();
 
   virtual void update(float deltaTime);
@@ -37,6 +59,15 @@ protected:
   float rotation;
   Color tint;
   std::optional<Rectangle> textureArea;
+
+  /**
+   * Calculates the texture area of a sprite from a spritesheet.
+   * @param spriteSize The size of the sprite.
+   * @param spriteColumns The number of columns in the spritesheet.
+   * @param spriteIndex The index of the sprite in the spritesheet.
+   * @return The texture area of the sprite.
+   */
+  static Rectangle getSpritesheetSpriteTextureArea(Vector2 spriteSize, int spriteColumns, int spriteIndex);
 
 private:
   const char* textureFilePath;

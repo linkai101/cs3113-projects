@@ -19,6 +19,26 @@ Entity::Entity(
   texture = LoadTexture(textureFilePath);
 }
 
+Entity::Entity(
+  Vector2 position,
+  Vector2 size,
+  float rotation,
+  Color tint,
+  const char* textureFilePath,
+  Vector2 textureSpriteSize,
+  int textureSpriteColumns,
+  int textureSpriteIndex
+) :
+  Entity(
+    position,
+    size,
+    rotation,
+    tint,
+    textureFilePath,
+    getSpritesheetSpriteTextureArea(textureSpriteSize, textureSpriteColumns, textureSpriteIndex)
+  )
+{}
+
 Entity::~Entity() {
   UnloadTexture(texture);
 }
@@ -40,4 +60,13 @@ void Entity::render() {
     rotation,
     tint
   );
+}
+
+Rectangle Entity::getSpritesheetSpriteTextureArea(Vector2 spriteSize, int spriteColumns, int spriteIndex) {
+  return {
+    (spriteIndex % spriteColumns) * spriteSize.x,
+    (spriteIndex / spriteColumns) * spriteSize.y,
+    spriteSize.x,
+    spriteSize.y
+  };
 }

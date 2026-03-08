@@ -12,8 +12,8 @@ public:
     float rotation,
     Color tint,
     const char* textureFilePath,
-    Vector2 textureFrameSize,
-    int textureFrameColumns,
+    Vector2 textureSpriteSize,
+    int textureSpriteColumns,
     std::map<int, std::vector<int>> animationAtlas,
     int animationFPS,
     int idleAnimation
@@ -35,15 +35,13 @@ public:
   void playAnimation(int animation, bool loop = true);
 
 private:
-  Vector2 textureFrameSize;
-  int textureFrameColumns;
-  std::map<int, std::vector<int>> animationAtlas; // animation -> animation frames
+  Vector2 textureSpriteSize;
+  int textureSpriteColumns;
+  std::map<int, std::vector<int>> animationAtlas; // animation -> spritesheet sprite indices
   int animationFPS;
   int idleAnimation;
   int currentAnimation;
-  int currentAnimationFrameIndex;
+  int currentAnimationFrameIndex; // index within animationAtlas[currentAnimation]
   float timeSinceLastFrameUpdate;
   bool animationIsLooping;
-
-  static Rectangle getAnimationFrameTextureArea(Vector2 frameSize, int frameColumns, int frame);
 };

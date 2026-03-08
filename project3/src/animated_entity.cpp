@@ -6,8 +6,8 @@ AnimatedEntity::AnimatedEntity(
   float rotation,
   Color tint,
   const char* textureFilePath,
-  Vector2 textureFrameSize,
-  int textureFrameColumns,
+  Vector2 textureSpriteSize,
+  int textureSpriteColumns,
   std::map<int, std::vector<int>> animationAtlas,
   int animationFPS,
   int idleAnimation
@@ -18,10 +18,12 @@ AnimatedEntity::AnimatedEntity(
     rotation,
     tint,
     textureFilePath,
-    getAnimationFrameTextureArea(textureFrameSize, textureFrameColumns, animationAtlas[idleAnimation][0]) // idle animation's first frame
+    textureSpriteSize,
+    textureSpriteColumns,
+    animationAtlas[idleAnimation][0] // textureSpriteIndex, use idle animation's first frame
   ),
-  textureFrameSize(textureFrameSize),
-  textureFrameColumns(textureFrameColumns),
+  textureSpriteSize(textureSpriteSize),
+  textureSpriteColumns(textureSpriteColumns),
   animationAtlas(animationAtlas),
   animationFPS(animationFPS),
   idleAnimation(idleAnimation),
@@ -61,7 +63,7 @@ void AnimatedEntity::update(float deltaTime) {
 void AnimatedEntity::render() {
   // Update textureArea for current animation frame
   int currentAnimationFrame = animationAtlas.at(currentAnimation).at(currentAnimationFrameIndex);
-  textureArea = getAnimationFrameTextureArea(textureFrameSize, textureFrameColumns, currentAnimationFrame);
+  textureArea = getSpritesheetSpriteTextureArea(textureSpriteSize, textureSpriteColumns, currentAnimationFrame);
 
   Entity::render();
 }
@@ -87,13 +89,4 @@ void AnimatedEntity::playAnimation(int animation, bool loop) {
   animationIsLooping = loop;
   currentAnimationFrameIndex = 0;
   timeSinceLastFrameUpdate = 0.0f;
-}
-
-Rectangle AnimatedEntity::getAnimationFrameTextureArea(Vector2 frameSize, int frameColumns, int frame) {
-  return {
-    (frame % frameColumns) * frameSize.x,
-    (frame / frameColumns) * frameSize.y,
-    frameSize.x,
-    frameSize.y
-  };
 }
