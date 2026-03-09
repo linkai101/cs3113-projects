@@ -53,6 +53,8 @@ public:
 
   virtual void render() const;
 
+  void setFlipX(bool flipX) { this->flipX = flipX; }
+
 protected:
   // void setPosition(Vector2 position) { this->position = position; }
 
@@ -85,4 +87,5 @@ private:
   float rotation = 0.0f;
   Color tint = WHITE;
   std::optional<Rectangle> textureArea;
+  bool flipX = false;
 };

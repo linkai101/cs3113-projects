@@ -41,14 +41,19 @@ Entity::~Entity() {
 void Entity::update(float deltaTime) {}
 
 void Entity::render() const {
-  Rectangle sourceArea = textureArea.value_or(Rectangle{ 0, 0, static_cast<float>(texture.width), static_cast<float>(texture.height) });
+  // Use custom texture area if provided, otherwise use the entire texture
+  Rectangle textureAreaActual = textureArea.value_or(Rectangle{ 0, 0, static_cast<float>(texture.width), static_cast<float>(texture.height) });
+  if (flipX) textureAreaActual.width = -textureAreaActual.width; // Apply flipX to texture area
+
   Rectangle destinationArea = { position.x, position.y, size.x, size.y };
+
+  Vector2 originActual = flipX ? Vector2{ size.x - origin.x, origin.y } : origin; // Apply flipX to origin
 
   DrawTexturePro(
     texture,
-    sourceArea,
+    textureAreaActual,
     destinationArea,
-    origin,
+    originActual,
     rotation,
     tint
   );
