@@ -1,15 +1,13 @@
 #pragma once
 #include "raylib.h"
-#include "entity.h"
-#include "player.h"
+#include "entities/entity.h"
+#include "entities/player.h"
 #include <memory>
+#include <vector>
 
 class Level {
 public:
-  Level(
-    int screenWidth,
-    int screenHeight
-  );
+  Level(int screenWidth, int screenHeight);
 
   ~Level();
 
@@ -22,6 +20,15 @@ public:
 private:
   int screenWidth;
   int screenHeight;
+
+  Texture2D skyTexture;
+  Texture2D mountains1Texture;
+  Texture2D mountains2Texture;
+  Texture2D tilesTexture;
+  Spritesheet tilesSheet;
+  Texture2D playerTexture;
+  Spritesheet playerSheet;
+
   std::vector<std::unique_ptr<Entity>> environment;
   std::unique_ptr<Player> player;
 
@@ -30,7 +37,7 @@ private:
    * @param tileCoordinates The tile coordinates. Origin is the bottom-left corner, one unit is TILE_SIZE.
    * @param textureSpriteIndex The index of the texture sprite to use.
    */
-  void createTile(Vector2 tileCoordinates, int textureSpriteIndex);
+  void createTile(Vector2 tileCoordinates, int frameIndex);
   
   // TODO: methods for creating grass and water entities
 

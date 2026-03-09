@@ -1,17 +1,14 @@
 #pragma once
 #include "raylib.h"
-#include "player.h"
-#include "level.h"
+#include "entities/player.h"
+#include "core/level.h"
 #include <memory>
 #include <vector>
 
 class Game {
 public:
-  Game(
-    int width,
-    int height,
-    const char* title
-  );
+  Game(int width, int height, const char* title);
+  
   ~Game();
 
   void init();

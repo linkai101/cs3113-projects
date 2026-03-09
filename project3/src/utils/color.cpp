@@ -1,4 +1,4 @@
-#include "util/color.h"
+#include "utils/color.h"
 #include <stdio.h>
 
 Color ColorFromHex(const char* hex)

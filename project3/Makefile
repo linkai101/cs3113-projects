@@ -41,12 +41,13 @@ $(TARGET): $(OBJS)
 # Include dependency files so header changes trigger recompile
 -include $(DEPS)
 
-# Ensure build dirs exist (order-only for .o rule)
+# Ensure base build dir exists
 build:
-	@mkdir -p build build/util
+	@mkdir -p build
 
 # Compile .cpp to .o; generate .d with header deps
-build/%.o: src/%.cpp | build
+build/%.o: src/%.cpp
+	@mkdir -p $(dir $@)
 	$(CXX) $(CXXFLAGS) -c -o $@ $<
 
 # Clean rule

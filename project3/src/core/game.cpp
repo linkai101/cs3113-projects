@@ -1,7 +1,7 @@
 #include "game.h"
 #include <memory>
-#include "util/log.h"
-#include "util/color.h"
+#include "utils/log.h"
+#include "utils/color.h"
 
 Game::Game(
   int width,

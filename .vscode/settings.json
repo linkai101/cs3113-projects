@@ -43,6 +43,7 @@
     "vector": "cpp",
     "__bit_reference": "cpp",
     "cctype": "cpp",
-    "clocale": "cpp"
+    "clocale": "cpp",
+    "optional": "cpp"
   }
 }

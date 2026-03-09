@@ -8,7 +8,7 @@
 * Academic Misconduct.
 **/
 
-#include "game.h"
+#include "core/game.h"
 
 int main(void) {
   Game game(1200, 675, "Dustrider");
