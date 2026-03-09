@@ -1,8 +1,7 @@
 #include "game.h"
+#include <memory>
 #include "util/log.h"
 #include "util/color.h"
-#include <string>
-#include <cassert>
 
 Game::Game(
   int width,
@@ -16,7 +15,8 @@ Game::Game(
 {}
 
 Game::~Game() {
-  shutdown();
+  levels.clear();
+  CloseWindow();
 }
 
 void Game::init() {
@@ -24,14 +24,11 @@ void Game::init() {
   SetTargetFPS(60);
 
   // Create levels
-  levels.push_back(new Level(width, height));
+  levels.push_back(std::make_unique<Level>(width, height));
   currentLevelIndex = 0;
 }
 
 void Game::run() {
-  // Assert that game has been initialized
-  assert(IsWindowReady());
-
   while (isRunning) {
     processInput();
 
@@ -64,11 +61,3 @@ void Game::render() {
   EndDrawing();
 }
 
-void Game::shutdown() {
-  for (Level* level : levels) {
-    delete level;
-  }
-  levels.clear();
-
-  CloseWindow();
-}

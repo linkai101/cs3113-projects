@@ -16,14 +16,14 @@ public:
   };
 
   Player(
-    Vector2 position
+    Vector2 initialPosition
   );
 
   ~Player();
 
   void update(float deltaTime) override;
 
-  void render() override;
+  void render() const override;
 
 private:
   static const std::map<int, std::vector<int>> ANIMATION_ATLAS;

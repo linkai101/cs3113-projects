@@ -10,8 +10,6 @@ public:
     Vector2 position,
     Vector2 size,
     Vector2 origin,
-    float rotation,
-    Color tint,
     const char* textureFilePath,
     Vector2 textureSpriteSize,
     int textureSpriteColumns,
@@ -24,8 +22,12 @@ public:
 
   virtual void update(float deltaTime) override;
 
-  virtual void render() override;
+  virtual void render() const override;
 
+  /**
+   * Sets the idle animation to play when no other animation is playing.
+   * @param animation The animation to set as idle. If the previous idle animation is already playing, the new idle animation will begin to play.
+   */
   void setIdleAnimation(int animation);
 
   /**

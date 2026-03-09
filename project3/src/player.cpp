@@ -12,17 +12,15 @@ const std::map<int, std::vector<int>> Player::ANIMATION_ATLAS = {
 };
 
 Player::Player(
-  Vector2 position
+  Vector2 initialPosition
 ) :
   AnimatedEntity(
-    position,
-    { 150.0f, 130.0f }, // size
-    { 90.0f, 115.0f }, // origin
-    0.0f, // rotation
-    WHITE, // tint
+    initialPosition,
+    Vector2{ 150, 130 }, // size
+    Vector2{ 90, 115 }, // origin
     "assets/textures/jetpackman.png", // textureFilePath
-    { 692.0f, 599.0f }, // textureFrameSize
-    5, // textureFrameColumns
+    Vector2{ 692, 599 }, // textureSpriteSize
+    5, // textureSpriteColumns
     ANIMATION_ATLAS, // animationAtlas
     20, // animationFPS
     STANDING_IDLE // idleAnimation
@@ -35,6 +33,6 @@ void Player::update(float deltaTime) {
   AnimatedEntity::update(deltaTime);
 }
 
-void Player::render() {
+void Player::render() const {
   AnimatedEntity::render();
 }

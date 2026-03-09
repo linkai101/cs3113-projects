@@ -2,6 +2,7 @@
 #include "raylib.h"
 #include "entity.h"
 #include "player.h"
+#include <memory>
 
 class Level {
 public:
@@ -16,13 +17,13 @@ public:
 
   virtual void update(float deltaTime);
 
-  virtual void render();
+  virtual void render() const;
 
 private:
   int screenWidth;
   int screenHeight;
-  std::vector<Entity*> environment;
-  Player* player;
+  std::vector<std::unique_ptr<Entity>> environment;
+  std::unique_ptr<Player> player;
 
   /**
    * Creates a tile entity and adds it to the environment vector.
@@ -34,6 +35,30 @@ private:
   // TODO: methods for creating grass and water entities
 
   static constexpr int TILE_SIZE = 48;
+  
+  enum TileType {
+    BLOCK = 0,
+    INNER = 1,
+    INNER_FOSSIL = 2,
+    TOP_ALT = 3,
+    TOP = 4,
+    BOTTOM = 5,
+    LEFT = 6,
+    RIGHT = 7,
+    TOP_LEFT = 8,
+    TOP_RIGHT = 9,
+    BOTTOM_LEFT = 10,
+    BOTTOM_RIGHT = 11,
+    CORNER_TOP_LEFT = 12,
+    CORNER_TOP_RIGHT = 13,
+    CORNER_BOTTOM_LEFT = 14,
+    CORNER_BOTTOM_RIGHT = 15,
+    SLOPE_TOP_LEFT = 16,
+    SLOPE_TOP_RIGHT = 17,
+    BRIDGE_LEFT = 18,
+    BRIDGE_RIGHT = 19,
+    BRIDGE_MIDDLE = 20
+  };
 
   /**
    * Calculates the position of a tile from its tile coordinates. Origin is the bottom-left corner.

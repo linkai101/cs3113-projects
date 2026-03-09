@@ -4,8 +4,6 @@ AnimatedEntity::AnimatedEntity(
   Vector2 position,
   Vector2 size,
   Vector2 origin,
-  float rotation,
-  Color tint,
   const char* textureFilePath,
   Vector2 textureSpriteSize,
   int textureSpriteColumns,
@@ -17,8 +15,8 @@ AnimatedEntity::AnimatedEntity(
     position,
     size,
     origin,
-    rotation,
-    tint,
+    0.0f, // rotation
+    WHITE, // tint
     textureFilePath,
     textureSpriteSize,
     textureSpriteColumns,
@@ -26,7 +24,7 @@ AnimatedEntity::AnimatedEntity(
   ),
   textureSpriteSize(textureSpriteSize),
   textureSpriteColumns(textureSpriteColumns),
-  animationAtlas(animationAtlas),
+  animationAtlas(std::move(animationAtlas)),
   animationFPS(animationFPS),
   idleAnimation(idleAnimation),
   currentAnimation(idleAnimation),
@@ -60,13 +58,13 @@ void AnimatedEntity::update(float deltaTime) {
 
     timeSinceLastFrameUpdate = 0.0f;
   }
+
+  // Update textureArea for next animation frame
+  int currentAnimationFrame = animationAtlas.at(currentAnimation).at(currentAnimationFrameIndex);
+  setTextureArea(getSpritesheetSpriteTextureArea(textureSpriteSize, textureSpriteColumns, currentAnimationFrame));
 }
 
-void AnimatedEntity::render() {
-  // Update textureArea for current animation frame
-  int currentAnimationFrame = animationAtlas.at(currentAnimation).at(currentAnimationFrameIndex);
-  textureArea = getSpritesheetSpriteTextureArea(textureSpriteSize, textureSpriteColumns, currentAnimationFrame);
-
+void AnimatedEntity::render() const {
   Entity::render();
 }
 

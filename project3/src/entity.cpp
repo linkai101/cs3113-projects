@@ -1,5 +1,4 @@
 #include "entity.h"
-#include <cassert>
 
 Entity::Entity(
   Vector2 position,
@@ -49,15 +48,13 @@ Entity::~Entity() {
 
 void Entity::update(float deltaTime) {}
 
-void Entity::render() {
-  // Assert that texture has been loaded
-  assert(texture.id != 0);
-
+void Entity::render() const {
+  Rectangle sourceArea = textureArea.value_or(Rectangle{ 0, 0, static_cast<float>(texture.width), static_cast<float>(texture.height) });
   Rectangle destinationArea = { position.x, position.y, size.x, size.y };
 
   DrawTexturePro(
     texture,
-    textureArea.value_or(Rectangle{ 0, 0, static_cast<float>(texture.width), static_cast<float>(texture.height) }),
+    sourceArea,
     destinationArea,
     origin,
     rotation,

@@ -53,17 +53,26 @@ public:
 
   ~Entity();
 
+  // Prevent copying and assignment
+  Entity(const Entity&) = delete;
+  Entity& operator=(const Entity&) = delete;
+
   virtual void update(float deltaTime);
 
-  virtual void render();
+  virtual void render() const;
 
 protected:
-  Vector2 position;
-  Vector2 size;
-  Vector2 origin;
-  float rotation;
-  Color tint;
-  std::optional<Rectangle> textureArea;
+  // void setPosition(Vector2 position) { this->position = position; }
+
+  // void setSize(Vector2 size) { this->size = size; }
+
+  // void setOrigin(Vector2 origin) { this->origin = origin; }
+
+  // void setRotation(float rotation) { this->rotation = rotation; }
+
+  // void setTint(Color tint) { this->tint = tint; }
+
+  void setTextureArea(std::optional<Rectangle> textureArea) { this->textureArea = textureArea; }
 
   /**
    * Calculates the texture area of a sprite from a spritesheet.
@@ -77,4 +86,11 @@ protected:
 private:
   const char* textureFilePath;
   Texture2D texture;
+
+  Vector2 position;
+  Vector2 size;
+  Vector2 origin;
+  float rotation;
+  Color tint;
+  std::optional<Rectangle> textureArea;
 };

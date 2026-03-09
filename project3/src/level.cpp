@@ -10,14 +10,14 @@ Vector2 Level::getPositionFromTileCoordinates(Vector2 tileCoordinates, int scree
 void Level::createTile(Vector2 tileCoordinates, int textureSpriteIndex) {
   Vector2 position = getPositionFromTileCoordinates(tileCoordinates, screenWidth, screenHeight);
 
-  environment.push_back(new Entity(
+  environment.push_back(std::make_unique<Entity>(
     position,
-    { TILE_SIZE, TILE_SIZE }, // size
-    { 0, 0 }, // origin
+    Vector2{ TILE_SIZE, TILE_SIZE }, // size
+    Vector2{ 0, 0 }, // origin
     0.0f, // rotation
     WHITE, // tint
     "assets/textures/tiles.png", // textureFilePath
-    { 16, 16 }, // textureSpriteSize
+    Vector2{ 16, 16 }, // textureSpriteSize
     4, // textureSpriteColumns
     textureSpriteIndex
   ));
@@ -29,79 +29,68 @@ Level::Level(
 ) :
   screenWidth(screenWidth),
   screenHeight(screenHeight),
-  player(nullptr)
+  player()
 {
   // Background
-  environment.push_back(new Entity(
-    { 0, 0 }, // position
-    { static_cast<float>(screenWidth), static_cast<float>(screenHeight) }, // size
-    { 0, 0 }, // origin
+  environment.push_back(std::make_unique<Entity>(
+    Vector2{ 0, 0 }, // position
+    Vector2{ static_cast<float>(screenWidth), static_cast<float>(screenHeight) }, // size
+    Vector2{ 0, 0 }, // origin
     0.0f, // rotation
     WHITE, // tint
     "assets/textures/sky.png"
   ));
-  environment.push_back(new Entity(
-    { 0, 0 }, // position
-    { static_cast<float>(screenWidth), static_cast<float>(screenHeight) }, // size
-    { 0, 0 }, // origin
+  environment.push_back(std::make_unique<Entity>(
+    Vector2{ 0, 0 }, // position
+    Vector2{ static_cast<float>(screenWidth), static_cast<float>(screenHeight) }, // size
+    Vector2{ 0, 0 }, // origin
     0.0f, // rotation
     WHITE, // tint
     "assets/textures/mountains_1.png"
   ));
-  environment.push_back(new Entity(
-    { 0, 0 }, // position
-    { static_cast<float>(screenWidth), static_cast<float>(screenHeight) }, // size
-    { 0, 0 }, // origin
+  environment.push_back(std::make_unique<Entity>(
+    Vector2{ 0, 0 }, // position
+    Vector2{ static_cast<float>(screenWidth), static_cast<float>(screenHeight) }, // size
+    Vector2{ 0, 0 }, // origin
     0.0f, // rotation
     WHITE, // tint
     "assets/textures/mountains_2.png"
   ));
 
   // Create environment entities
-  createTile({ 0, 0 }, 7);
-  createTile({ 0, 1 }, 7);
-  createTile({ 0, 2 }, 15);
-  createTile({ 1, 2 }, 5);
-  createTile({ 2, 2 }, 5);
-  createTile({ 3, 2 }, 5);
-  createTile({ 4, 2 }, 11);
-  createTile({ 0, 3 }, 4);
-  createTile({ 1, 3 }, 4);
-  createTile({ 2, 3 }, 3);
-  createTile({ 3, 3 }, 4);
-  createTile({ 4, 3 }, 9);
-  createTile({ 1, 1 }, 16); // slope
+  createTile({ 0, 0 }, TileType::RIGHT);
+  createTile({ 0, 1 }, TileType::RIGHT);
+  createTile({ 0, 2 }, TileType::CORNER_BOTTOM_RIGHT);
+  createTile({ 1, 2 }, TileType::BOTTOM);
+  createTile({ 2, 2 }, TileType::BOTTOM);
+  createTile({ 3, 2 }, TileType::BOTTOM);
+  createTile({ 4, 2 }, TileType::BOTTOM_RIGHT);
+  createTile({ 0, 3 }, TileType::TOP);
+  createTile({ 1, 3 }, TileType::TOP);
+  createTile({ 2, 3 }, TileType::TOP_ALT);
+  createTile({ 3, 3 }, TileType::TOP);
+  createTile({ 4, 3 }, TileType::TOP_RIGHT);
+  createTile({ 1, 1 }, TileType::SLOPE_TOP_LEFT);
 
-
-  player = new Player(
+  player = std::make_unique<Player>(
     getPositionFromTileCoordinates({ 2, 3 }, screenWidth, screenHeight)
   );
 }
 
-Level::~Level() {
-  if (player) {
-    delete player;
-    player = nullptr;
-  }
-
-  for (Entity* entity : environment) {
-    delete entity;
-  }
-  environment.clear();
-}
+Level::~Level() {}
 
 void Level::processInput() {}
 
 void Level::update(float deltaTime) {
-  for (Entity* entity : environment) {
+  for (auto& entity : environment) {
     entity->update(deltaTime);
   }
 
   player->update(deltaTime);
 }
 
-void Level::render() {
-  for (Entity* entity : environment) {
+void Level::render() const {
+  for (auto& entity : environment) {
     entity->render();
   }
 

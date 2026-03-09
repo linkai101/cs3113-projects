@@ -2,6 +2,8 @@
 #include "raylib.h"
 #include "player.h"
 #include "level.h"
+#include <memory>
+#include <vector>
 
 class Game {
 public:
@@ -12,14 +14,8 @@ public:
   );
   ~Game();
 
-  /**
-   * Initializes the game.
-   */
   void init();
 
-  /**
-   * Runs the game loop
-   */
   void run();
 
 private:
@@ -28,7 +24,7 @@ private:
   const char* title;
   bool isRunning;
 
-  std::vector<Level*> levels;
+  std::vector<std::unique_ptr<Level>> levels;
   int currentLevelIndex;
 
   void processInput();
@@ -36,6 +32,4 @@ private:
   void update(float deltaTime);
 
   void render();
-  
-  void shutdown();
 };
