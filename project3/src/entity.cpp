@@ -4,8 +4,6 @@ Entity::Entity(
   Vector2 position,
   Vector2 size,
   Vector2 origin,
-  float rotation,
-  Color tint,
   const char* textureFilePath,
   std::optional<Rectangle> textureArea
 ) :
@@ -13,9 +11,7 @@ Entity::Entity(
   textureArea(textureArea),
   position(position),
   size(size),
-  origin(origin),
-  rotation(rotation),
-  tint(tint)
+  origin(origin)
 {
   texture = LoadTexture(textureFilePath);
 }
@@ -24,8 +20,6 @@ Entity::Entity(
   Vector2 position,
   Vector2 size,
   Vector2 origin,
-  float rotation,
-  Color tint,
   const char* textureFilePath,
   Vector2 textureSpriteSize,
   int textureSpriteColumns,
@@ -35,8 +29,6 @@ Entity::Entity(
     position,
     size,
     origin,
-    rotation,
-    tint,
     textureFilePath,
     getSpritesheetSpriteTextureArea(textureSpriteSize, textureSpriteColumns, textureSpriteIndex)
   )

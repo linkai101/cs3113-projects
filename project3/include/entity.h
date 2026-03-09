@@ -12,8 +12,6 @@ public:
    * @param position The position of the entity.
    * @param size The size of the entity.
    * @param origin The origin of the entity.
-   * @param rotation The rotation of the entity.
-   * @param tint The tint of the entity. Use WHITE for no tint.
    * @param textureFilePath The path to the texture file.
    * @param textureArea The area of the texture to render. If not provided, the entire texture will be used.
    */
@@ -21,8 +19,6 @@ public:
     Vector2 position,
     Vector2 size,
     Vector2 origin,
-    float rotation,
-    Color tint,
     const char* textureFilePath,
     std::optional<Rectangle> textureArea = std::nullopt
   );
@@ -32,8 +28,6 @@ public:
    * @param position The position of the entity.
    * @param size The size of the entity.
    * @param origin The origin of the entity.
-   * @param rotation The rotation of the entity.
-   * @param tint The tint of the entity. Use WHITE for no tint.
    * @param textureFilePath The path to the texture file.
    * @param textureSpriteSize The size of the sprite in the spritesheet.
    * @param textureSpriteColumns The number of columns in the spritesheet.
@@ -43,8 +37,6 @@ public:
     Vector2 position,
     Vector2 size,
     Vector2 origin,
-    float rotation,
-    Color tint,
     const char* textureFilePath,
     Vector2 textureSpriteSize,
     int textureSpriteColumns,
@@ -90,7 +82,7 @@ private:
   Vector2 position;
   Vector2 size;
   Vector2 origin;
-  float rotation;
-  Color tint;
+  float rotation = 0.0f;
+  Color tint = WHITE;
   std::optional<Rectangle> textureArea;
 };

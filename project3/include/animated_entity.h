@@ -44,7 +44,7 @@ private:
   int animationFPS;
   int idleAnimation;
   int currentAnimation;
-  int currentAnimationFrameIndex; // index within animationAtlas[currentAnimation]
-  float timeSinceLastFrameUpdate;
-  bool animationIsLooping;
+  int currentAnimationFrameIndex = 0; // index within animationAtlas[currentAnimation]
+  float timeSinceLastFrameUpdate = 0.0f;
+  bool animationIsLooping = true;
 };

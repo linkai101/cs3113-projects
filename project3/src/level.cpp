@@ -14,8 +14,6 @@ void Level::createTile(Vector2 tileCoordinates, int textureSpriteIndex) {
     position,
     Vector2{ TILE_SIZE, TILE_SIZE }, // size
     Vector2{ 0, 0 }, // origin
-    0.0f, // rotation
-    WHITE, // tint
     "assets/textures/tiles.png", // textureFilePath
     Vector2{ 16, 16 }, // textureSpriteSize
     4, // textureSpriteColumns
@@ -36,24 +34,18 @@ Level::Level(
     Vector2{ 0, 0 }, // position
     Vector2{ static_cast<float>(screenWidth), static_cast<float>(screenHeight) }, // size
     Vector2{ 0, 0 }, // origin
-    0.0f, // rotation
-    WHITE, // tint
     "assets/textures/sky.png"
   ));
   environment.push_back(std::make_unique<Entity>(
     Vector2{ 0, 0 }, // position
     Vector2{ static_cast<float>(screenWidth), static_cast<float>(screenHeight) }, // size
     Vector2{ 0, 0 }, // origin
-    0.0f, // rotation
-    WHITE, // tint
     "assets/textures/mountains_1.png"
   ));
   environment.push_back(std::make_unique<Entity>(
     Vector2{ 0, 0 }, // position
     Vector2{ static_cast<float>(screenWidth), static_cast<float>(screenHeight) }, // size
     Vector2{ 0, 0 }, // origin
-    0.0f, // rotation
-    WHITE, // tint
     "assets/textures/mountains_2.png"
   ));
 

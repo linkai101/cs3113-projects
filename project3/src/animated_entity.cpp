@@ -15,8 +15,6 @@ AnimatedEntity::AnimatedEntity(
     position,
     size,
     origin,
-    0.0f, // rotation
-    WHITE, // tint
     textureFilePath,
     textureSpriteSize,
     textureSpriteColumns,
@@ -27,10 +25,7 @@ AnimatedEntity::AnimatedEntity(
   animationAtlas(std::move(animationAtlas)),
   animationFPS(animationFPS),
   idleAnimation(idleAnimation),
-  currentAnimation(idleAnimation),
-  currentAnimationFrameIndex(0),
-  timeSinceLastFrameUpdate(0.0f),
-  animationIsLooping(true)
+  currentAnimation(idleAnimation)
 {}
 
 AnimatedEntity::~AnimatedEntity() {}
