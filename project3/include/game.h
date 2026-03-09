@@ -1,6 +1,7 @@
 #pragma once
 #include "raylib.h"
 #include "player.h"
+#include "level.h"
 
 class Game {
 public:
@@ -27,8 +28,8 @@ private:
   const char* title;
   bool isRunning;
 
-  std::vector<Entity*> tiles;
-  Player* player;
+  std::vector<Level*> levels;
+  int currentLevelIndex;
 
   void processInput();
 

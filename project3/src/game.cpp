@@ -12,8 +12,7 @@ Game::Game(
   width(width),
   height(height),
   title(title),
-  isRunning(true),
-  player(nullptr)
+  isRunning(true)
 {}
 
 Game::~Game() {
@@ -24,31 +23,9 @@ void Game::init() {
   InitWindow(width, height, title);
   SetTargetFPS(60);
 
-  tiles.push_back(new Entity(
-    { 24, height - 24.0f }, // position
-    { 48, 48 }, // size
-    0.0f, // rotation
-    WHITE, // tint
-    "assets/textures/tiles.png", // textureFilePath
-    { 16, 16 }, // textureSpriteSize
-    4, // textureSpriteColumns
-    3 // textureSpriteIndex
-  ));
-
-  tiles.push_back(new Entity(
-    { 72, height - 24.0f }, // position
-    { 48, 48 }, // size
-    0.0f, // rotation
-    WHITE, // tint
-    "assets/textures/tiles.png", // textureFilePath
-    { 16, 16 }, // textureSpriteSize
-    4, // textureSpriteColumns
-    4 // textureSpriteIndex
-  ));
-
-  player = new Player(
-    { width / 2.0f, height / 2.0f }
-  );
+  // Create levels
+  levels.push_back(new Level(width, height));
+  currentLevelIndex = 0;
 }
 
 void Game::run() {
@@ -69,40 +46,29 @@ void Game::processInput() {
   if (WindowShouldClose()) {
     isRunning = false;
   }
+
+  levels[currentLevelIndex]->processInput();
 }
 
 void Game::update(float deltaTime) {
-  for (Entity* tile : tiles) {
-    tile->update(deltaTime);
-  }
-
-  player->update(deltaTime);
+  levels[currentLevelIndex]->update(deltaTime);
 }
 
 void Game::render() {
   BeginDrawing();
 
   ClearBackground(ColorFromHex("#000000"));
-  
-  for (Entity* tile : tiles) {
-    tile->render();
-  }
 
-  player->render();
+  levels[currentLevelIndex]->render();
 
   EndDrawing();
 }
 
 void Game::shutdown() {
-  if (player) {
-    delete player;
-    player = nullptr;
+  for (Level* level : levels) {
+    delete level;
   }
-
-  for (Entity* tile : tiles) {
-    delete tile;
-  }
-  tiles.clear();
+  levels.clear();
 
   CloseWindow();
 }
