@@ -10,7 +10,7 @@ UNAME_S := $(shell uname -s)
 
 # Default values
 CXX = g++
-CXXFLAGS = -std=c++17 -Iinclude -MMD -MP
+CXXFLAGS = -std=c++17 -Isrc -MMD -MP
 
 # Raylib configuration using pkg-config
 RAYLIB_CFLAGS = $(shell pkg-config --cflags raylib)
