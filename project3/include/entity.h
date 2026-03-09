@@ -3,7 +3,7 @@
 #include <optional>
 
 /**
- * Abstract class for all textured renderable entities in the game.
+ * Class for all textured renderable entities in the game.
  */
 class Entity {
 public:
@@ -11,6 +11,7 @@ public:
    * Constructor for Entity, specifying a specific texture area.
    * @param position The position of the entity.
    * @param size The size of the entity.
+   * @param origin The origin of the entity.
    * @param rotation The rotation of the entity.
    * @param tint The tint of the entity. Use WHITE for no tint.
    * @param textureFilePath The path to the texture file.
@@ -19,6 +20,7 @@ public:
   Entity(
     Vector2 position,
     Vector2 size,
+    Vector2 origin,
     float rotation,
     Color tint,
     const char* textureFilePath,
@@ -29,6 +31,7 @@ public:
    * Constructor for Entity, specifying a specific sprite from a spritesheet.
    * @param position The position of the entity.
    * @param size The size of the entity.
+   * @param origin The origin of the entity.
    * @param rotation The rotation of the entity.
    * @param tint The tint of the entity. Use WHITE for no tint.
    * @param textureFilePath The path to the texture file.
@@ -39,6 +42,7 @@ public:
   Entity(
     Vector2 position,
     Vector2 size,
+    Vector2 origin,
     float rotation,
     Color tint,
     const char* textureFilePath,
@@ -56,6 +60,7 @@ public:
 protected:
   Vector2 position;
   Vector2 size;
+  Vector2 origin;
   float rotation;
   Color tint;
   std::optional<Rectangle> textureArea;

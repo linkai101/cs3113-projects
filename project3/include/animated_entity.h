@@ -9,6 +9,7 @@ public:
   AnimatedEntity(
     Vector2 position,
     Vector2 size,
+    Vector2 origin,
     float rotation,
     Color tint,
     const char* textureFilePath,

@@ -4,6 +4,7 @@
 Entity::Entity(
   Vector2 position,
   Vector2 size,
+  Vector2 origin,
   float rotation,
   Color tint,
   const char* textureFilePath,
@@ -13,6 +14,7 @@ Entity::Entity(
   textureArea(textureArea),
   position(position),
   size(size),
+  origin(origin),
   rotation(rotation),
   tint(tint)
 {
@@ -22,6 +24,7 @@ Entity::Entity(
 Entity::Entity(
   Vector2 position,
   Vector2 size,
+  Vector2 origin,
   float rotation,
   Color tint,
   const char* textureFilePath,
@@ -32,6 +35,7 @@ Entity::Entity(
   Entity(
     position,
     size,
+    origin,
     rotation,
     tint,
     textureFilePath,
@@ -50,7 +54,6 @@ void Entity::render() {
   assert(texture.id != 0);
 
   Rectangle destinationArea = { position.x, position.y, size.x, size.y };
-  Vector2 origin = { size.x / 2.0f, size.y / 2.0f };
 
   DrawTexturePro(
     texture,
@@ -60,6 +63,12 @@ void Entity::render() {
     rotation,
     tint
   );
+
+  // Debug: origin
+  DrawCircle(position.x, position.y, 2, RED);
+
+  // Debug: rendered bounds
+  DrawRectangleLines(position.x - origin.x, position.y - origin.y, size.x, size.y, RED);
 }
 
 Rectangle Entity::getSpritesheetSpriteTextureArea(Vector2 spriteSize, int spriteColumns, int spriteIndex) {

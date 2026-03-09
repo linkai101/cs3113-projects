@@ -17,6 +17,7 @@ Player::Player(
   AnimatedEntity(
     position,
     { 150.0f, 130.0f }, // size
+    { 90.0f, 115.0f }, // origin
     0.0f, // rotation
     WHITE, // tint
     "assets/textures/jetpackman.png", // textureFilePath

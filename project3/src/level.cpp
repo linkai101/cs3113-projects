@@ -3,7 +3,7 @@
 Vector2 Level::getPositionFromTileCoordinates(Vector2 tileCoordinates, int screenWidth, int screenHeight) {
   return {
     static_cast<float>(tileCoordinates.x * TILE_SIZE),
-    static_cast<float>(screenHeight - (tileCoordinates.y * TILE_SIZE))
+    static_cast<float>(screenHeight - ((tileCoordinates.y + 1) * TILE_SIZE))
   };
 }
 
@@ -13,6 +13,7 @@ void Level::createTile(Vector2 tileCoordinates, int textureSpriteIndex) {
   environment.push_back(new Entity(
     position,
     { TILE_SIZE, TILE_SIZE }, // size
+    { 0, 0 }, // origin
     0.0f, // rotation
     WHITE, // tint
     "assets/textures/tiles.png", // textureFilePath
@@ -32,24 +33,27 @@ Level::Level(
 {
   // Background
   environment.push_back(new Entity(
-    { static_cast<float>(screenWidth) / 2.0f, static_cast<float>(screenHeight) / 2.0f },
-    { static_cast<float>(screenWidth), static_cast<float>(screenHeight) },
-    0.0f,
-    WHITE,
+    { 0, 0 }, // position
+    { static_cast<float>(screenWidth), static_cast<float>(screenHeight) }, // size
+    { 0, 0 }, // origin
+    0.0f, // rotation
+    WHITE, // tint
     "assets/textures/sky.png"
   ));
   environment.push_back(new Entity(
-    { static_cast<float>(screenWidth) / 2.0f, static_cast<float>(screenHeight) / 2.0f },
-    { static_cast<float>(screenWidth), static_cast<float>(screenHeight) },
-    0.0f,
-    WHITE,
+    { 0, 0 }, // position
+    { static_cast<float>(screenWidth), static_cast<float>(screenHeight) }, // size
+    { 0, 0 }, // origin
+    0.0f, // rotation
+    WHITE, // tint
     "assets/textures/mountains_1.png"
   ));
   environment.push_back(new Entity(
-    { static_cast<float>(screenWidth) / 2.0f, static_cast<float>(screenHeight) / 2.0f },
-    { static_cast<float>(screenWidth), static_cast<float>(screenHeight) },
-    0.0f,
-    WHITE,
+    { 0, 0 }, // position
+    { static_cast<float>(screenWidth), static_cast<float>(screenHeight) }, // size
+    { 0, 0 }, // origin
+    0.0f, // rotation
+    WHITE, // tint
     "assets/textures/mountains_2.png"
   ));
 
@@ -70,7 +74,7 @@ Level::Level(
 
 
   player = new Player(
-    getPositionFromTileCoordinates({ 2, 5 }, screenWidth, screenHeight)
+    getPositionFromTileCoordinates({ 2, 3 }, screenWidth, screenHeight)
   );
 }
 
