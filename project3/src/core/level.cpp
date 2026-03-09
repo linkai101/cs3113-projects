@@ -13,49 +13,18 @@ Level::Level(
   skyTexture = LoadTexture("assets/textures/sky.png");
   mountains1Texture = LoadTexture("assets/textures/mountains_1.png");
   mountains2Texture = LoadTexture("assets/textures/mountains_2.png");
+
   tilesTexture = LoadTexture("assets/textures/tiles.png");
-  tilesSheet = Spritesheet{
-    tilesTexture,
-    Vector2{ 16, 16 }, // frame size
-    4 // columns
-  };
+  tilesSheet = Spritesheet{tilesTexture, Vector2{ 16, 16 }, 4};
+
   playerTexture = LoadTexture("assets/textures/jetpackman.png");
-  playerSheet = Spritesheet{
-    playerTexture,
-    Vector2{ 692, 599 }, // frame size
-    5 // columns
-  };
+  playerSheet = Spritesheet{playerTexture, Vector2{ 692, 599 }, 5};
 
-  // Background
-  environment.push_back(std::make_unique<Entity>(
-    Vector2{ 0, 0 }, // position
-    Sprite(
-      skyTexture,
-      Rectangle{ 0, 0, static_cast<float>(skyTexture.width), static_cast<float>(skyTexture.height) }, // texture area
-      Vector2{ static_cast<float>(screenWidth), static_cast<float>(screenHeight) }, // size
-      Vector2{ 0, 0 } // origin
-    )
-  ));
-  environment.push_back(std::make_unique<Entity>(
-    Vector2{ 0, 0 }, // position
-    Sprite(
-      mountains1Texture,
-      Rectangle{ 0, 0, static_cast<float>(mountains1Texture.width), static_cast<float>(mountains1Texture.height) }, // texture area
-      Vector2{ static_cast<float>(screenWidth), static_cast<float>(screenHeight) }, // size
-      Vector2{ 0, 0 } // origin
-    )
-  ));
-  environment.push_back(std::make_unique<Entity>(
-    Vector2{ 0, 0 }, // position
-    Sprite(
-      mountains2Texture,
-      Rectangle{ 0, 0, static_cast<float>(mountains2Texture.width), static_cast<float>(mountains2Texture.height) }, // texture area
-      Vector2{ static_cast<float>(screenWidth), static_cast<float>(screenHeight) }, // size
-      Vector2{ 0, 0 } // origin
-    )
-  ));
+  createBackgroundLayer(skyTexture);
+  createBackgroundLayer(mountains1Texture);
+  createBackgroundLayer(mountains2Texture);
 
-  // Create environment entities
+  // Create tiles
   createTile({ 0, 0 }, TileType::RIGHT);
   createTile({ 0, 1 }, TileType::RIGHT);
   createTile({ 0, 2 }, TileType::CORNER_BOTTOM_RIGHT);
@@ -71,16 +40,6 @@ Level::Level(
   createTile({ 1, 1 }, TileType::SLOPE_TOP_LEFT);
 
   // Create player
-  // const std::map<int, std::vector<int>> Player::ANIMATION_ATLAS = {
-  //   {STANDING_IDLE, { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14 }},
-  //   {STANDING_WALK, { 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29 }},
-  //   {STANDING_RUN, { 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44 }},
-  //   {STANDING_JUMP, { 45, 46, 47, 48, 49, 50, 51, 52, 53, 54 }},
-  //   {STANDING_DIE, { 55, 56, 57, 58, 59 }},
-  //   {FLYING, { 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74 }},
-  //   {FLYING_NO_MOVEMENT, { 75, 76, 77, 78, 79, 80, 81, 82, 83, 84 }},
-  //   {FLYING_DIE, { 85, 86, 87, 88, 89 }}
-  // };
   Animator playerAnimator = Animator(
     &playerSheet,
     Vector2{ 150, 130 }, // size
@@ -100,7 +59,7 @@ Level::Level(
     getPositionFromTileCoordinates({ 2, 3 }, screenWidth, screenHeight),
     playerAnimator
   );
-  player->playAnimation("standing_run");
+  player->playAnimation("standing_idle");
 }
 
 Level::~Level() {}
@@ -130,6 +89,22 @@ Vector2 Level::getPositionFromTileCoordinates(Vector2 tileCoordinates, int scree
   };
 }
 
+void Level::createBackgroundLayer(Texture2D texture) {
+  float aspect = static_cast<float>(texture.width) / static_cast<float>(texture.height);
+  float destHeight = static_cast<float>(screenHeight);
+  float destWidth = destHeight * aspect;
+  float x = (static_cast<float>(screenWidth) - destWidth) / 2.0f;
+
+  environment.push_back(std::make_unique<Entity>(
+    Vector2{ x, 0 }, // top-left of layer
+    Sprite(
+      texture,
+      Rectangle{ 0, 0, static_cast<float>(texture.width), static_cast<float>(texture.height) },
+      Vector2{ destWidth, destHeight },
+      Vector2{ 0, 0 }
+    )
+  ));
+}
 void Level::createTile(Vector2 tileCoordinates, int frameIndex) {
   Vector2 position = getPositionFromTileCoordinates(tileCoordinates, screenWidth, screenHeight);
 

@@ -32,11 +32,8 @@ private:
   std::vector<std::unique_ptr<Entity>> environment;
   std::unique_ptr<Player> player;
 
-  /**
-   * Creates a tile entity and adds it to the environment vector.
-   * @param tileCoordinates The tile coordinates. Origin is the bottom-left corner, one unit is TILE_SIZE.
-   * @param textureSpriteIndex The index of the texture sprite to use.
-   */
+  void createBackgroundLayer(Texture2D texture);
+  
   void createTile(Vector2 tileCoordinates, int frameIndex);
   
   // TODO: methods for creating grass and water entities
