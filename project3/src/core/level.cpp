@@ -192,8 +192,9 @@ void Level::resolveCollisions() {
     player->setCanBoost(false);
   }
 
-  // Check collisions with collidable entities
+  // Check collisions with collidable entities — two passes to separate axes.
   pb.isGrounded = false;
+  // Resolve horizontal collisions
   for (auto& entity : collidableEntities) {
     if (!entity->physicsBody) continue;
 
@@ -205,18 +206,32 @@ void Level::resolveCollisions() {
     float overlapX = std::min(playerBox.x + playerBox.width,  entityBox.x + entityBox.width) - std::max(playerBox.x, entityBox.x);
     float overlapY = std::min(playerBox.y + playerBox.height, entityBox.y + entityBox.height) - std::max(playerBox.y, entityBox.y);
 
-    if (overlapX < overlapY) { // Resolve horizontally
+    if (overlapX < overlapY) {
       if (playerBox.x < entityBox.x) {
         player->position.x -= overlapX;
       } else {
         player->position.x += overlapX;
       }
       pb.velocity.x = 0;
-    } else { // Resolve vertically
+    }
+  }
+  // Resolve vertical collisions
+  for (auto& entity : collidableEntities) {
+    if (!entity->physicsBody) continue;
+
+    Rectangle playerBox = pb.getCollider(player->position);
+    Rectangle entityBox = entity->physicsBody->getCollider(entity->position);
+
+    if (!CheckCollisionRecs(playerBox, entityBox)) continue;
+
+    float overlapX = std::min(playerBox.x + playerBox.width,  entityBox.x + entityBox.width) - std::max(playerBox.x, entityBox.x);
+    float overlapY = std::min(playerBox.y + playerBox.height, entityBox.y + entityBox.height) - std::max(playerBox.y, entityBox.y);
+
+    if (overlapY <= overlapX) {
       if (playerBox.y < entityBox.y) { // Player landed on top
         player->position.y -= overlapY;
-        pb.velocity.y = 0;
         pb.isGrounded = true;
+        pb.velocity.y = 0;
       } else { // Player hit ceiling
         player->position.y += overlapY;
         pb.velocity.y = 0;
