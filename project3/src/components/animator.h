@@ -32,6 +32,11 @@ public:
 
   void update(float deltaTime);
 
+  void setFlipX(bool flipX) { this->flipX = flipX; }
+  bool getFlipX() const { return flipX; }
+
+  std::string getCurrentAnimation() const { return currentAnimation; }
+
   void render(Vector2 position) const;
 
 private:

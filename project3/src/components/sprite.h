@@ -21,6 +21,7 @@ public:
   );
 
   void render(Vector2 position) const;
+  bool getFlipX() const { return flipX; }
   
 private:
   Texture2D texture;

@@ -29,12 +29,17 @@ private:
   Texture2D playerTexture;
   Spritesheet playerSheet;
 
-  std::vector<std::unique_ptr<Entity>> environment;
+  std::vector<std::unique_ptr<Entity>> staticEntities;
+  std::vector<std::unique_ptr<Entity>> collidableEntities;
   std::unique_ptr<Player> player;
 
   void createBackgroundLayer(Texture2D texture);
-  
-  void createTile(Vector2 tileCoordinates, int frameIndex);
+
+  void createTile(Vector2 tileCoordinates, int frameIndex, bool enablePhysics = true);
+
+  void resolveCollisions();
+
+  static constexpr float GRAVITY = 1200.0f;
   
   // TODO: methods for creating grass and water entities
 
