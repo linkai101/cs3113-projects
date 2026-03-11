@@ -14,8 +14,13 @@ Player::Player(
 {}
 
 void Player::update(float deltaTime) {
+  if (!physicsBody) return;
+
   std::string currentAnimation = animator->getCurrentAnimation();
   PhysicsBody& pb = *physicsBody;
+
+  // Apply gravity/boost acceleration
+  pb.acceleration.y = boosting ? -BOOST_Y_ACCELERATION : GRAVITY_ACCELERATION;
 
   if (pb.isGrounded) { // Grounded logic
     jumping = false;
@@ -76,12 +81,12 @@ void Player::update(float deltaTime) {
 
       // Jetpack mid-air horizontal movement
       if (movingLeft && !movingRight) { // LEFT
-        pb.acceleration.x = -300;
-        pb.velocity.x = std::max(pb.velocity.x, -250.0f); // cap velocity
+        pb.acceleration.x = -BOOST_X_ACCELERATION;
+        pb.velocity.x = std::max(pb.velocity.x, -BOOST_X_MAX_VELOCITY); // cap velocity
         animator->setFlipX(true);
       } else if (movingRight && !movingLeft) { // RIGHT
-        pb.acceleration.x = 300;
-        pb.velocity.x = std::min(pb.velocity.x, 250.0f); // cap velocity
+        pb.acceleration.x = BOOST_X_ACCELERATION;
+        pb.velocity.x = std::min(pb.velocity.x, BOOST_X_MAX_VELOCITY); // cap velocity
         animator->setFlipX(false);
       } else { // NO HORIZONTAL MOVEMENT
         pb.acceleration.x = 0;
@@ -99,12 +104,12 @@ void Player::update(float deltaTime) {
       // Non-jetpack mid-air horizontal movement
       if (movingLeft && !movingRight) {
         if (jumping) pb.velocity.x = -GROUND_VELOCITY;
-        else pb.acceleration.x = -150;
+        else pb.acceleration.x = -GLIDE_X_ACCELERATION;
 
         animator->setFlipX(true); // change direction
       } else if (movingRight && !movingLeft) {
         if (jumping) pb.velocity.x = GROUND_VELOCITY;
-        else pb.acceleration.x = 150;
+        else pb.acceleration.x = GLIDE_X_ACCELERATION;
 
         animator->setFlipX(false); // change direction
       } else {

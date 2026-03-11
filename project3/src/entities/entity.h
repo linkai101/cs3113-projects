@@ -22,11 +22,15 @@ public:
 
   bool getFlipX() const;
 
+  Vector2& getPosition() { return position; }
+  const Vector2& getPosition() const { return position; }
+
+  std::optional<PhysicsBody>& getPhysicsBody() { return physicsBody; }
+  const std::optional<PhysicsBody>& getPhysicsBody() const { return physicsBody; }
+
   virtual void update(float deltaTime);
 
   virtual void render() const;
-
-  friend class Game; // for collision and physics logic
 
 protected:
   Vector2 position;
