@@ -50,14 +50,14 @@ void Animator::update(float deltaTime) {
 }
 
 void Animator::render(Vector2 position) const {
-  Rectangle sourceArea = sheet->getFrame(animations.at(currentAnimation).frames[currentFrame]);
-  if (flipX) sourceArea.width = -sourceArea.width; // Apply flipX to source area
-
-  Rectangle destinationArea = { position.x, position.y, size.x, size.y };
-
-  Vector2 originActual = flipX ? Vector2{ size.x - origin.x, origin.y } : origin; // Apply flipX to origin
-
   if (!currentAnimation.empty()) {
+    Rectangle sourceArea = sheet->getFrame(animations.at(currentAnimation).frames[currentFrame]);
+    if (flipX) sourceArea.width = -sourceArea.width; // Apply flipX to source area
+
+    Rectangle destinationArea = { position.x, position.y, size.x, size.y };
+
+    Vector2 originActual = flipX ? Vector2{ size.x - origin.x, origin.y } : origin; // Apply flipX to origin
+
     DrawTexturePro(
       sheet->texture,
       sourceArea,
