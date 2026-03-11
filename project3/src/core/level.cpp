@@ -187,6 +187,67 @@ void Level::render() const {
     entity->render();
   }
 
+  DrawText(TextFormat("FPS: %d", GetFPS()), 5, 5, 15, WHITE);
+
+  DrawText(
+    "<- [A]        [D] ->",
+    TILE_SIZE * 2.0f - MeasureText("<- [A]        [D] ->", 15) / 2.0f,
+    screenHeight - TILE_SIZE * 7,
+    15,
+    WHITE
+  );
+
+  DrawText(
+    "/\\",
+    TILE_SIZE * 8.0f - MeasureText("/\\", 15) / 2.0f,
+    screenHeight - TILE_SIZE * 6 - 30,
+    15,
+    WHITE
+  );
+  DrawText(
+    "|",
+    TILE_SIZE * 8.0f - MeasureText("|", 15) / 2.0f,
+    screenHeight - TILE_SIZE * 6 - 25,
+    15,
+    WHITE
+  );
+  DrawText(
+    "[W / Space]",
+    TILE_SIZE * 8.0f - MeasureText("[W / Space]", 15) / 2.0f,
+    screenHeight - TILE_SIZE * 6,
+    15,
+    WHITE
+  );
+
+  DrawText(
+    "/\\",
+    TILE_SIZE * 11.5f - MeasureText("/\\", 15) / 2.0f,
+    screenHeight - TILE_SIZE * 6 - 30,
+    15,
+    WHITE
+  );
+  DrawText(
+    "|",
+    TILE_SIZE * 11.5f - MeasureText("|", 15) / 2.0f,
+    screenHeight - TILE_SIZE * 6 - 25,
+    15,
+    WHITE
+  );
+  DrawText(
+    "/\\",
+    TILE_SIZE * 11.5f - MeasureText("/\\", 15) / 2.0f,
+    screenHeight - TILE_SIZE * 6 - 5,
+    15,
+    WHITE
+  );
+  DrawText(
+    "|",
+    TILE_SIZE * 11.5f - MeasureText("|", 15) / 2.0f,
+    screenHeight - TILE_SIZE * 6,
+    15,
+    WHITE
+  );
+
   if (player) player->render();
 }
 
