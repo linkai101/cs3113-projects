@@ -10,7 +10,8 @@ Player::Player(
   Entity(
     spawnPosition,
     animator
-  )
+  ),
+  fuel(FUEL_MAX)
 {}
 
 void Player::update(float deltaTime) {
@@ -96,6 +97,13 @@ void Player::update(float deltaTime) {
       if (!movingUp) {
         boosting = false;
       }
+
+      // Consume fuel
+      fuel -= FUEL_CONSUMPTION_PER_SECOND * deltaTime;
+      if (fuel < 0) {
+        fuel = 0;
+        boosting = false;
+      }
     } else { // Not boosting
       if (currentAnimation != "flying_die" && currentAnimation != "standing_jump") {
         playAnimation("flying_die");
@@ -119,7 +127,7 @@ void Player::update(float deltaTime) {
 
       // Activate jetpack if movingUp is pressed
       if (movingUp) {
-        if (canBoost) {
+        if (canBoost && fuel > 0) {
           boosting = true;
           jumping = false;
         }

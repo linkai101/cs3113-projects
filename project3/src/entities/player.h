@@ -15,7 +15,7 @@ public:
 
   void move(bool left, bool right, bool up);
 
-  void jump();
+  float getFuel() const { return fuel; }
 
   void setJumping(bool jumping) { this->jumping = jumping; }
   
@@ -25,7 +25,11 @@ public:
 
   bool isBoosting() const { return boosting; }
 
+  static constexpr float FUEL_MAX = 15.0f;
+
 private:
+  float fuel;
+
   bool movingLeft = false;
   bool movingRight = false;
   bool movingUp = false;
@@ -34,6 +38,8 @@ private:
   bool jumping = false;
   bool canBoost = false; // can activate jetpack
   bool boosting = false; // using jetpack
+
+  static constexpr float FUEL_CONSUMPTION_PER_SECOND = 1.0f;
 
   static constexpr float GRAVITY_ACCELERATION = 1200.0f;
   static constexpr float GROUND_VELOCITY = 250.0f;

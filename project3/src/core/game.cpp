@@ -146,5 +146,19 @@ void Game::render() const {
   // Render player
   if (player) player->render();
 
+  // Render fuel indicator
+  float fuel = player->getFuel();
+  float fuelMax = Player::FUEL_MAX;
+  float fuelPercentage = fuel / fuelMax;
+  DrawRectangle(width - 10 - 100, 10, 100, 12, ColorFromHex("#000000"));
+  DrawRectangle(width - 10 - 100, 10, 100 * fuelPercentage, 12, ColorFromHex("#FFFFFF"));
+  DrawText(
+    "FUEL",
+    width - 20 - 100 - MeasureText("FUEL", 15),
+    10,
+    15,
+    ColorFromHex("#FFFFFF")
+  );
+
   EndDrawing();
 }
