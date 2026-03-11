@@ -152,8 +152,6 @@ Level::Level(
   );
 }
 
-Level::~Level() {}
-
 void Level::processInput() {
   bool left = IsKeyDown(KEY_A);
   bool right = IsKeyDown(KEY_D);

@@ -9,7 +9,7 @@ class Level {
 public:
   Level(int screenWidth, int screenHeight);
 
-  ~Level();
+  virtual ~Level() = default;
 
   virtual void processInput();
 
