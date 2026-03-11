@@ -26,6 +26,10 @@ private:
   Texture2D mountains2Texture;
   Texture2D tilesTexture;
   Spritesheet tilesSheet;
+  Texture2D grassTexture;
+  Spritesheet grassSheet;
+  Texture2D waterTexture;
+  Spritesheet waterSheet;
   Texture2D playerTexture;
   Spritesheet playerSheet;
 
@@ -37,11 +41,13 @@ private:
 
   void createTile(Vector2 tileCoordinates, int frameIndex, bool enablePhysics = true);
 
+  void createGrass(Vector2 tileCoordinates, int frameIndex, bool hanging = false);
+
+  void createWater(Vector2 tileCoordinates, bool surface = false);
+
   void resolveCollisions();
 
   static constexpr float GRAVITY = 1200.0f;
-  
-  // TODO: methods for creating grass and water entities
 
   static constexpr int TILE_SIZE = 48;
   
@@ -67,6 +73,18 @@ private:
     BRIDGE_LEFT = 18,
     BRIDGE_RIGHT = 19,
     BRIDGE_MIDDLE = 20
+  };
+
+  enum GrassType {
+    GRASS_1 = 0,
+    GRASS_2 = 1,
+    GRASS_DOUBLE = 2,
+    GRASS_ARCH = 3,
+    GRASS_SPIRAL_LEFT = 4,
+    GRASS_SPIRAL_RIGHT = 5,
+    GRASS_BOTTOM_LEFT = 6,
+    GRASS_HANGING = 7,
+    GRASS_HANGING_DOUBLE = 8,
   };
 
   /**

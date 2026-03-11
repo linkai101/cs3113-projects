@@ -18,6 +18,12 @@ Level::Level(
   tilesTexture = LoadTexture("assets/textures/tiles.png");
   tilesSheet = Spritesheet{tilesTexture, Vector2{ 16, 16 }, 4};
 
+  grassTexture = LoadTexture("assets/textures/grass.png");
+  grassSheet = Spritesheet{grassTexture, Vector2{ 16, 20 }, 9};
+
+  waterTexture = LoadTexture("assets/textures/water.png");
+  waterSheet = Spritesheet{waterTexture, Vector2{ 16, 16 }, 6};
+
   playerTexture = LoadTexture("assets/textures/jetpackman.png");
   playerSheet = Spritesheet{playerTexture, Vector2{ 692, 599 }, 5};
 
@@ -69,36 +75,54 @@ Level::Level(
   createTile({ 15, 3 }, TileType::INNER);
   createTile({ 15, 4 }, TileType::INNER);
   createTile({ 15, 5 }, TileType::TOP);
-  createTile({ 15, 0 }, TileType::INNER);
+  createTile({ 16, 0 }, TileType::INNER);
   createTile({ 16, 1 }, TileType::INNER);
   createTile({ 16, 2 }, TileType::CORNER_TOP_RIGHT);
   createTile({ 16, 3 }, TileType::RIGHT);
   createTile({ 16, 4 }, TileType::RIGHT);
   createTile({ 16, 5 }, TileType::TOP_RIGHT);
   createTile({ 17, 0 }, TileType::INNER);
-  createTile({ 17, 1 }, TileType::INNER);
+  createTile({ 17, 1 }, TileType::INNER_FOSSIL);
   createTile({ 17, 2 }, TileType::TOP);
   createTile({ 18, 0 }, TileType::INNER);
   createTile({ 18, 1 }, TileType::INNER);
   createTile({ 18, 2 }, TileType::TOP);
-  createTile({ 19, 0 }, TileType::INNER);
-  createTile({ 19, 1 }, TileType::INNER);
-  createTile({ 19, 2 }, TileType::TOP);
-  createTile({ 20, 0 }, TileType::INNER);
-  createTile({ 20, 1 }, TileType::INNER);
-  createTile({ 20, 2 }, TileType::TOP);
-  createTile({ 21, 0 }, TileType::INNER);
-  createTile({ 21, 1 }, TileType::INNER);
-  createTile({ 21, 2 }, TileType::TOP);
-  createTile({ 21, 0 }, TileType::INNER);
-  createTile({ 22, 1 }, TileType::INNER);
-  createTile({ 22, 2 }, TileType::TOP);
-  createTile({ 23, 0 }, TileType::INNER);
-  createTile({ 23, 1 }, TileType::INNER);
-  createTile({ 23, 2 }, TileType::TOP);
-  createTile({ 24, 0 }, TileType::INNER);
-  createTile({ 24, 1 }, TileType::INNER);
-  createTile({ 24, 2 }, TileType::TOP);
+  createTile({ 19, 0 }, TileType::RIGHT);
+  createTile({ 19, 1 }, TileType::RIGHT);
+  createTile({ 19, 2 }, TileType::TOP_RIGHT);
+  createTile({ 20, 2 }, TileType::BRIDGE_LEFT);
+  createTile({ 21, 2 }, TileType::BRIDGE_MIDDLE);
+  createTile({ 22, 2 }, TileType::BRIDGE_MIDDLE);
+  createTile({ 23, 2 }, TileType::BRIDGE_MIDDLE);
+  createTile({ 23, 2 }, TileType::BRIDGE_MIDDLE);
+  createTile({ 24, 2 }, TileType::BRIDGE_MIDDLE);
+  createTile({ 25, 2 }, TileType::BRIDGE_RIGHT);
+
+  // Create grass
+  createGrass({ 0, 4 }, GrassType::GRASS_ARCH);
+  createGrass({ 2, 4 }, GrassType::GRASS_2);
+  createGrass({ 3, 1 }, GrassType::GRASS_HANGING, true);
+  createGrass({ 4, 1 }, GrassType::GRASS_HANGING_DOUBLE, true);
+  createGrass({ 4, 4 }, GrassType::GRASS_1);
+  createGrass({ 13, 6 }, GrassType::GRASS_ARCH);
+  createGrass({ 15, 6 }, GrassType::GRASS_SPIRAL_LEFT);
+  createGrass({ 16, 6 }, GrassType::GRASS_SPIRAL_RIGHT);
+  createGrass({ 17, 3 }, GrassType::GRASS_BOTTOM_LEFT);
+  createGrass({ 19, 3 }, GrassType::GRASS_DOUBLE);
+
+  // Create water
+  createWater({ 20, 0 });
+  createWater({ 20, 1 }, true);
+  createWater({ 21, 0 });
+  createWater({ 21, 1 }, true);
+  createWater({ 22, 0 });
+  createWater({ 22, 1 }, true);
+  createWater({ 23, 0 });
+  createWater({ 23, 1 }, true);
+  createWater({ 24, 0 });
+  createWater({ 24, 1 }, true);
+  createWater({ 25, 0 });
+  createWater({ 25, 1 }, true);
 
   // Create player
   Animator playerAnimator = Animator(
@@ -148,6 +172,10 @@ void Level::update(float deltaTime) {
     entity->update(deltaTime);
   }
 
+  for (auto& entity : staticEntities) {
+    entity->update(deltaTime);
+  }
+
   if (player) player->update(deltaTime);
 
   resolveCollisions();
@@ -162,13 +190,6 @@ void Level::render() const {
   }
 
   if (player) player->render();
-}
-
-Vector2 Level::getPositionFromTileCoordinates(Vector2 tileCoordinates, int screenWidth, int screenHeight) {
-  return {
-    static_cast<float>(tileCoordinates.x * TILE_SIZE),
-    static_cast<float>(screenHeight - ((tileCoordinates.y + 1) * TILE_SIZE))
-  };
 }
 
 void Level::resolveCollisions() {
@@ -256,6 +277,7 @@ void Level::createBackgroundLayer(Texture2D texture) {
     )
   ));
 }
+
 void Level::createTile(Vector2 tileCoordinates, int frameIndex, bool enablePhysics) {
   Vector2 position = getPositionFromTileCoordinates(tileCoordinates, screenWidth, screenHeight);
 
@@ -273,4 +295,55 @@ void Level::createTile(Vector2 tileCoordinates, int frameIndex, bool enablePhysi
   }
 
   collidableEntities.push_back(std::make_unique<Entity>(tile));
+}
+
+void Level::createGrass(Vector2 tileCoordinates, int frameIndex, bool hanging) {
+  Vector2 position = getPositionFromTileCoordinates(tileCoordinates, screenWidth, screenHeight);
+  if (!hanging) position.y -= TILE_SIZE / 16 * (20 - 16);
+
+  staticEntities.push_back(std::make_unique<Entity>(
+    position,
+    Sprite(
+      &grassSheet,
+      frameIndex,
+      Vector2{ TILE_SIZE, TILE_SIZE / 16 * 20 }, // size
+      Vector2{ 0, 0 } // origin
+    )
+  ));
+}
+
+void Level::createWater(Vector2 tileCoordinates, bool surface) {
+  Vector2 position = getPositionFromTileCoordinates(tileCoordinates, screenWidth, screenHeight);
+
+  if (surface) {
+    Animator animator = Animator(
+      &waterSheet,
+      Vector2{ TILE_SIZE, TILE_SIZE }, // size
+      Vector2{ 0, 0 } // origin
+    );
+    animator.addAnimation("surface", Animator::Animation{"surface", { 1, 2, 3, 4, 5 }, 10, true});
+    animator.play("surface");
+
+    staticEntities.push_back(std::make_unique<Entity>(
+      position,
+      animator
+    ));
+  } else {
+    staticEntities.push_back(std::make_unique<Entity>(
+      position,
+      Sprite(
+        &waterSheet,
+        0,
+        Vector2{ TILE_SIZE, TILE_SIZE }, // size
+        Vector2{ 0, 0 } // origin
+      )
+    ));
+  }
+}
+
+Vector2 Level::getPositionFromTileCoordinates(Vector2 tileCoordinates, int screenWidth, int screenHeight) {
+  return {
+    static_cast<float>(tileCoordinates.x * TILE_SIZE),
+    static_cast<float>(screenHeight - ((tileCoordinates.y + 1) * TILE_SIZE))
+  };
 }
