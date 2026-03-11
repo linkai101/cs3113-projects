@@ -11,7 +11,6 @@ public:
 
   void render() const override;
 
-  // temp method for playing animations
   void playAnimation(const std::string& animationName);
 
   void move(bool left, bool right, bool up);

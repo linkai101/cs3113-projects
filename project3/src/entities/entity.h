@@ -26,7 +26,7 @@ public:
 
   virtual void render() const;
 
-  friend class Level;
+  friend class Game; // for collision and physics logic
 
 protected:
   Vector2 position;
