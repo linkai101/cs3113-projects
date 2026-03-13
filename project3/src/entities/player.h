@@ -5,6 +5,8 @@
 
 class Player : public Entity {
 public:
+  enum PlayerGameState { PLAYING, DEAD, WON };
+
   Player(Vector2 spawnPosition, Animator animator);
 
   void update(float deltaTime) override;
@@ -15,6 +17,10 @@ public:
 
   void move(bool left, bool right, bool up);
 
+  PlayerGameState getGameState() const { return gameState; }
+
+  void setGameState(PlayerGameState gameState) { this->gameState = gameState; }
+  
   float getFuel() const { return fuel; }
 
   void setJumping(bool jumping) { this->jumping = jumping; }
@@ -28,6 +34,7 @@ public:
   static constexpr float FUEL_MAX = 15.0f;
 
 private:
+  PlayerGameState gameState = PlayerGameState::PLAYING;
   float fuel;
 
   bool movingLeft = false;

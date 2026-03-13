@@ -7,4 +7,4 @@
  * @param hex The hex color string to convert.
  * @return The converted Color.
  */
-Color ColorFromHex(const char* hex);
+Color ColorFromHex(const char* hex, float alpha = 1.0f);

@@ -18,7 +18,7 @@ public:
 
   void unload();
 
-  void update(float deltaTime);
+  void update(float deltaTime, Player* player);
 
   virtual void resolveCollisions(Player* player);
 

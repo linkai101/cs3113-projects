@@ -105,24 +105,29 @@ void Game::processInput() {
   if (WindowShouldClose()) {
     isRunning = false;
   }
+  
+  if (player->getGameState() == Player::PlayerGameState::PLAYING) {
+    bool left = IsKeyDown(KEY_A);
+    bool right = IsKeyDown(KEY_D);
+    bool up = IsKeyDown(KEY_W) || IsKeyDown(KEY_SPACE);
 
-  bool left = IsKeyDown(KEY_A);
-  bool right = IsKeyDown(KEY_D);
-  bool up = IsKeyDown(KEY_W) || IsKeyDown(KEY_SPACE);
+    player->move(left, right, up);
+  } else {
+    if (IsKeyPressed(KEY_SPACE)) {
+      // TODO: reset game
 
-  player->move(left, right, up);
+      player->setGameState(Player::PlayerGameState::PLAYING);
+    }
+  }
+
 }
 
 void Game::update(float deltaTime) {
-  // Update active chunk
-  if (activeChunk) activeChunk->update(deltaTime);
+  if (!player) return;
 
-  // Update player
-  if (player) {
-    player->update(deltaTime);
-  }
+  if (player->getGameState() == Player::PlayerGameState::PLAYING && activeChunk) {
+    activeChunk->update(deltaTime, player.get());
 
-  if (activeChunk && player) {
     // Resolve active chunk collisions
     activeChunk->resolveCollisions(player.get());
 
@@ -156,6 +161,16 @@ void Game::render() const {
     15,
     ColorFromHex("#FFFFFF")
   );
+
+  if (player->getGameState() == Player::PlayerGameState::DEAD) {
+    DrawRectangle(0, 0, width, height, ColorFromHex("#000000", 0.8f));
+    DrawText("GAME OVER", width / 2 - MeasureText("GAME OVER", 30) / 2, height / 2 - 30, 30, ColorFromHex("#FFFFFF"));
+    DrawText("Press SPACE to restart", width / 2 - MeasureText("Press SPACE to restart", 15) / 2, height / 2 + 30, 15, ColorFromHex("#FFFFFF"));
+  } else if (player->getGameState() == Player::PlayerGameState::WON) {
+    DrawRectangle(0, 0, width, height, ColorFromHex("#000000", 0.8f));
+    DrawText("YOU WON", width / 2 - MeasureText("YOU WON", 30) / 2, height / 2 - 30, 30, ColorFromHex("#FFFFFF"));
+    DrawText("Press SPACE to restart", width / 2 - MeasureText("Press SPACE to restart", 15) / 2, height / 2 + 30, 15, ColorFromHex("#FFFFFF"));
+  }
 
   EndDrawing();
 }

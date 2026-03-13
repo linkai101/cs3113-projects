@@ -29,7 +29,7 @@ void Chunk::unload() {
   loaded = false;
 }
 
-void Chunk::update(float deltaTime) {
+void Chunk::update(float deltaTime, Player* player) {
   if (!loaded) return;
 
   for (auto& entity : bgCollidableEntities) {
@@ -39,6 +39,8 @@ void Chunk::update(float deltaTime) {
   for (auto& entity : bgStaticEntities) {
     entity->update(deltaTime);
   }
+
+  player->update(deltaTime);
 
   for (auto& entity : fgStaticEntities) {
     entity->update(deltaTime);

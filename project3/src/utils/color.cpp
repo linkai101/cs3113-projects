@@ -1,7 +1,7 @@
 #include "utils/color.h"
 #include <stdio.h>
 
-Color ColorFromHex(const char* hex)
+Color ColorFromHex(const char* hex, float alpha)
 {
     // Skip leading '#', if present
     if (hex[0] == '#') hex++;
@@ -10,7 +10,7 @@ Color ColorFromHex(const char* hex)
     unsigned int r = 0,
                  g = 0,
                  b = 0,
-                 a = 255;
+                 a = static_cast<unsigned char>(alpha * 255);
 
     // 6‑digit form: RRGGBB
     if (sscanf(hex, "%02x%02x%02x", &r, &g, &b) == 3) {
