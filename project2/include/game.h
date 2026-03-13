@@ -23,6 +23,8 @@ private:
   enum GameMode { ONE_PLAYER, TWO_PLAYER };
   enum BallCount { ONE_BALL = 1, TWO_BALLS = 2, THREE_BALLS = 3 };
 
+  float gPreviousTicks; // for calculating delta time
+
   int width;
   int height;
   const char* title;

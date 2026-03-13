@@ -30,7 +30,9 @@ void Game::run() {
   while (isRunning) {
     processInput();
 
-    float deltaTime = GetFrameTime();
+    float ticks = (float) GetTime();
+    float deltaTime = ticks - gPreviousTicks;
+    gPreviousTicks = ticks;
     update(deltaTime);
 
     render();
