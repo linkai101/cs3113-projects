@@ -61,3 +61,15 @@ void Entity::render() const {
     // );
   }
 }
+
+bool Entity::isColliding(Entity* a, Entity* b) {
+  Rectangle aRect = a->physicsBody->getCollider(a->position);
+  Rectangle bRect = b->physicsBody->getCollider(b->position);
+
+  return (
+    aRect.x < bRect.x + bRect.width &&
+    aRect.x + aRect.width > bRect.x &&
+    aRect.y < bRect.y + bRect.height &&
+    aRect.y + aRect.height > bRect.y
+  );
+}

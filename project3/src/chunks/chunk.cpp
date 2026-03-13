@@ -60,7 +60,7 @@ void Chunk::resolveCollisions(Player* player) {
     Rectangle playerBox = pb.getCollider(player->getPosition());
     Rectangle entityBox = entity->getPhysicsBody()->getCollider(entity->getPosition());
 
-    if (!CheckCollisionRecs(playerBox, entityBox)) continue;
+    if (!Entity::isColliding(player, entity.get())) continue;
 
     float overlapX = std::min(playerBox.x + playerBox.width,  entityBox.x + entityBox.width) - std::max(playerBox.x, entityBox.x);
     float overlapY = std::min(playerBox.y + playerBox.height, entityBox.y + entityBox.height) - std::max(playerBox.y, entityBox.y);
@@ -81,7 +81,7 @@ void Chunk::resolveCollisions(Player* player) {
     Rectangle playerBox = pb.getCollider(player->getPosition());
     Rectangle entityBox = entity->getPhysicsBody()->getCollider(entity->getPosition());
 
-    if (!CheckCollisionRecs(playerBox, entityBox)) continue;
+    if (!Entity::isColliding(player, entity.get())) continue;
 
     float overlapX = std::min(playerBox.x + playerBox.width,  entityBox.x + entityBox.width) - std::max(playerBox.x, entityBox.x);
     float overlapY = std::min(playerBox.y + playerBox.height, entityBox.y + entityBox.height) - std::max(playerBox.y, entityBox.y);
@@ -105,7 +105,7 @@ void Chunk::resolveCollisions(Player* player) {
     Rectangle playerBox = pb.getCollider(player->getPosition());
     Rectangle entityBox = entity->getPhysicsBody()->getCollider(entity->getPosition());
 
-    if (CheckCollisionRecs(playerBox, entityBox)) {
+    if (Entity::isColliding(player, entity.get())) {
       player->setGameState(Player::PlayerGameState::DEAD);
     }
   }

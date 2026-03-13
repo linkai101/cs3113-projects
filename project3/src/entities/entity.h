@@ -32,6 +32,8 @@ public:
 
   virtual void render() const;
 
+  static bool isColliding(Entity* a, Entity* b);
+
 protected:
   Vector2 position;
   std::optional<PhysicsBody> physicsBody = std::nullopt;
