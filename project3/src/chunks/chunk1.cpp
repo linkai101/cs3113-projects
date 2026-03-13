@@ -16,14 +16,9 @@ void Chunk1::resolveCollisions(Player* player) {
   if (!player->getPhysicsBody()) return;
   PhysicsBody& pb = *player->getPhysicsBody();
 
-  // Respawn player if they fall off the screen
+  // Check player falling off screen
   if (player->getPosition().y - pb.getCollider(player->getPosition()).height > static_cast<float>(screenHeight) + 500) {
-    player->getPosition() = getPositionFromTileCoordinates({ 2, 5 }, screenWidth, screenHeight);
-    pb.velocity = { 0, 0 };
-    pb.acceleration = { 0, 0 };
-    player->setJumping(false);
-    player->setBoosting(false);
-    player->setCanBoost(false);
+    player->setGameState(Player::PlayerGameState::DEAD);
   }
 
   Chunk::resolveCollisions(player);

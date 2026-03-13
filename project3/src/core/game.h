@@ -43,4 +43,6 @@ private:
   void update(float deltaTime);
 
   void render() const;
+
+  void resetGame();
 };

@@ -23,20 +23,19 @@ void TutorialChunk::resolveCollisions(Player* player) {
     pb.velocity.x = 0;
   }
 
-  // Invisible top wall collision
-  if (playerBox.y < 0) {
-    player->getPosition().y -= playerBox.y;
-    pb.velocity.y = 0;
-  }
-
-  // Respawn player if they fall off the screen
+  // Check player falling off screen
   if (player->getPosition().y - pb.getCollider(player->getPosition()).height > static_cast<float>(screenHeight) + 500) {
-    player->getPosition() = getPositionFromTileCoordinates({ 2, 5 }, screenWidth, screenHeight);
-    pb.velocity = { 0, 0 };
-    pb.acceleration = { 0, 0 };
-    player->setJumping(false);
-    player->setBoosting(false);
-    player->setCanBoost(false);
+    player->setGameState(Player::PlayerGameState::DEAD);
+
+    // Respawn player if they fall off the screen
+    // if (player->getPosition().y - pb.getCollider(player->getPosition()).height > static_cast<float>(screenHeight) + 500) {
+    //   player->getPosition() = getPositionFromTileCoordinates({ 2, 5 }, screenWidth, screenHeight);
+    //   pb.velocity = { 0, 0 };
+    //   pb.acceleration = { 0, 0 };
+    //   player->setJumping(false);
+    //   player->setBoosting(false);
+    //   player->setCanBoost(false);
+    // }
   }
 
   Chunk::resolveCollisions(player);
