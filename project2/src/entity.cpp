@@ -49,3 +49,15 @@ void Entity::render() {
     tint
   );
 }
+
+bool Entity::isColliding(Entity* a, Entity* b) {
+  Rectangle aRect = a->getRect();
+  Rectangle bRect = b->getRect();
+
+  return (
+    aRect.x < bRect.x + bRect.width
+    && aRect.x + aRect.width > bRect.x
+    && aRect.y < bRect.y + bRect.height
+    && aRect.y + aRect.height > bRect.y
+  );
+}

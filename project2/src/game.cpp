@@ -389,7 +389,7 @@ void Game::checkCollisions() {
 
     // Center wall collisions
     Rectangle wallRect = wall->getRect();
-    if (CheckCollisionRecs(ballRect, wallRect)) {
+    if (Entity::isColliding(ball, wall)) {
       float ballCenterX = ballRect.x + ballRect.width / 2.0f;
       float ballCenterY = ballRect.y + ballRect.height / 2.0f;
       float wallCenterX = wallRect.x + wallRect.width / 2.0f;
@@ -405,11 +405,11 @@ void Game::checkCollisions() {
     }
 
     // Paddle collisions — amplify upward bounce, capped to avoid excessive height
-    if (CheckCollisionRecs(ballRect, player1->getRect())) {
+    if (Entity::isColliding(ball, player1)) {
       float angle = player1->getRotation() * DEG2RAD;
       ball->reflect({ sinf(angle), -cosf(angle) }, 1.5f, 800.0f);
     }
-    if (CheckCollisionRecs(ballRect, player2->getRect())) {
+    if (Entity::isColliding(ball, player2)) {
       float angle = player2->getRotation() * DEG2RAD;
       ball->reflect({ sinf(angle), -cosf(angle) }, 1.5f, 800.0f);
     }
