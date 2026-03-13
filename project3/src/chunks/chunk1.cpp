@@ -51,4 +51,8 @@ void Chunk1::loadMap() {
   createWater({ 1, 1 }, true);
   createWater({ 2, 0 });
   createWater({ 2, 1 }, true);
+  for (int x = 6; x <= 25; x++) {
+    createWater({ static_cast<float>(x), 0 });
+    createWater({ static_cast<float>(x), 1 }, true);
+  }
 }

@@ -1,4 +1,5 @@
 #include "tutorial_chunk.h"
+#include "utils/color.h"
 
 TutorialChunk::TutorialChunk(
   int screenWidth, int screenHeight,
@@ -46,7 +47,7 @@ void TutorialChunk::render(Player* player) const {
 
   DrawText(
     "<- [A]        [D] ->",
-    TILE_SIZE * 2.0f - MeasureText("<- [A]        [D] ->", 15) / 2.0f,
+    TILE_SIZE * 2 - MeasureText("<- [A]        [D] ->", 15) / 2.0f,
     screenHeight - TILE_SIZE * 7,
     15,
     WHITE
@@ -99,6 +100,14 @@ void TutorialChunk::render(Player* player) const {
     "|",
     TILE_SIZE * 11.5f - MeasureText("|", 15) / 2.0f,
     screenHeight - TILE_SIZE * 6,
+    15,
+    WHITE
+  );
+
+  DrawText(
+    "Watch out for fuel usage! ^",
+    screenWidth - MeasureText("Watch out for fuel usage! ^", 15) - 10,
+    50,
     15,
     WHITE
   );
@@ -178,7 +187,7 @@ void TutorialChunk::loadMap() {
   createTile({ 25, 2 }, TileType::BRIDGE_RIGHT);
 
   // Create grass
-  createGrass({ 0, 4 }, GrassType::GRASS_ARCH);
+  // createGrass({ 0, 4 }, GrassType::GRASS_ARCH);
   createGrass({ 2, 4 }, GrassType::GRASS_2);
   createGrass({ 3, 1 }, GrassType::GRASS_HANGING, true);
   createGrass({ 4, 1 }, GrassType::GRASS_HANGING_DOUBLE, true);

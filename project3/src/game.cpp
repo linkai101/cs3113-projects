@@ -16,10 +16,6 @@ Game::Game(
   isRunning(true)
 {}
 
-Game::~Game() {
-  CloseWindow();
-}
-
 void Game::init() {
   InitWindow(width, height, title);
   SetTargetFPS(60);
@@ -48,11 +44,15 @@ void Game::run() {
   while (isRunning) {
     processInput();
 
-    float deltaTime = GetFrameTime();
+    float ticks = (float) GetTime();
+    float deltaTime = ticks - gPreviousTicks;
+    gPreviousTicks = ticks;
     update(deltaTime);
 
     render();
   }
+
+  shutdown();
 }
 
 void Game::processInput() {
@@ -179,4 +179,16 @@ void Game::resetGame() {
     Vector2{ -25, -110 }, // colliderOffset
     false
   );
+}
+
+void Game::shutdown() {
+  CloseWindow();
+
+  UnloadTexture(skyTexture);
+  UnloadTexture(mountains1Texture);
+  UnloadTexture(mountains2Texture);
+  UnloadTexture(tilesTexture);
+  UnloadTexture(grassTexture);
+  UnloadTexture(waterTexture);
+  UnloadTexture(playerTexture);
 }

@@ -8,8 +8,6 @@ class Game {
 public:
   Game(int width, int height, const char* title);
   
-  ~Game();
-
   void init();
 
   void run();
@@ -19,18 +17,20 @@ private:
   int height;
   const char* title;
   bool isRunning;
+  float gPreviousTicks = 0.0f; // for calculating deltaTime
 
   Texture2D skyTexture;
   Texture2D mountains1Texture;
   Texture2D mountains2Texture;
   Texture2D tilesTexture;
-  Spritesheet tilesSheet;
   Texture2D grassTexture;
-  Spritesheet grassSheet;
   Texture2D waterTexture;
-  Spritesheet waterSheet;
   Texture2D playerTexture;
   Spritesheet playerSheet;
+
+  Spritesheet tilesSheet;
+  Spritesheet grassSheet;
+  Spritesheet waterSheet;
 
   std::unique_ptr<Chunk> tutorialChunk;
   std::unique_ptr<Chunk> chunk1;
@@ -45,4 +45,6 @@ private:
   void render() const;
 
   void resetGame();
+
+  void shutdown();
 };

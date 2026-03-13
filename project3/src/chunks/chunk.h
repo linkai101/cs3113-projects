@@ -45,10 +45,9 @@ protected:
   Spritesheet& grassSheet;
   Spritesheet& waterSheet;
 
-  std::vector<std::unique_ptr<Entity>> bgStaticEntities; // grass
-  std::vector<std::unique_ptr<Entity>> bgCollidableEntities; // tiles
-  std::vector<std::unique_ptr<Entity>> fgStaticEntities; // water
-  // TODO: fgCollidableEntities // falling rocks
+  std::vector<std::unique_ptr<Entity>> staticEnvironmentEntities;
+  std::vector<std::unique_ptr<Entity>> collidableEnvironmentEntities;
+  std::vector<std::unique_ptr<Entity>> deadlyEntities;
 
   virtual void loadMap() = 0;
 
