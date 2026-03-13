@@ -42,9 +42,9 @@ void TutorialChunk::resolveCollisions(Player* player) {
   Chunk::resolveCollisions(player);
 }
 
-void TutorialChunk::render() const {
-  Chunk::render();
-  
+void TutorialChunk::render(Player* player) const {
+  Chunk::render(player);
+
   DrawText(
     "<- [A]        [D] ->",
     TILE_SIZE * 2.0f - MeasureText("<- [A]        [D] ->", 15) / 2.0f,

@@ -11,8 +11,6 @@ public:
 
   void resolveCollisions(Player* player) override;
 
-  void render() const override;
-
 protected:
   void loadMap() override;
 

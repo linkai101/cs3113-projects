@@ -22,8 +22,9 @@ void Chunk::load() {
 void Chunk::unload() {
   if (!loaded) return;
 
-  staticEntities.clear();
-  collidableEntities.clear();
+  bgStaticEntities.clear();
+  bgCollidableEntities.clear();
+  fgStaticEntities.clear();
 
   loaded = false;
 }
@@ -31,11 +32,15 @@ void Chunk::unload() {
 void Chunk::update(float deltaTime) {
   if (!loaded) return;
 
-  for (auto& entity : collidableEntities) {
+  for (auto& entity : bgCollidableEntities) {
     entity->update(deltaTime);
   }
 
-  for (auto& entity : staticEntities) {
+  for (auto& entity : bgStaticEntities) {
+    entity->update(deltaTime);
+  }
+
+  for (auto& entity : fgStaticEntities) {
     entity->update(deltaTime);
   }
 }
@@ -48,7 +53,7 @@ void Chunk::resolveCollisions(Player* player) {
   // Check collisions with collidable entities
   pb.isGrounded = false;
   // Resolve horizontal collisions
-  for (auto& entity : collidableEntities) {
+  for (auto& entity : bgCollidableEntities) {
     if (!entity->getPhysicsBody()) continue;
 
     Rectangle playerBox = pb.getCollider(player->getPosition());
@@ -69,7 +74,7 @@ void Chunk::resolveCollisions(Player* player) {
     }
   }
   // Resolve vertical collisions
-  for (auto& entity : collidableEntities) {
+  for (auto& entity : bgCollidableEntities) {
     if (!entity->getPhysicsBody()) continue;
 
     Rectangle playerBox = pb.getCollider(player->getPosition());
@@ -93,13 +98,20 @@ void Chunk::resolveCollisions(Player* player) {
   }
 }
 
-void Chunk::render() const {
+void Chunk::render(Player* player) const {
   if (!loaded) return;
   
-  for (auto& entity : staticEntities) {
+  for (auto& entity : bgStaticEntities) {
     entity->render();
   }
-  for (auto& entity : collidableEntities) {
+
+  for (auto& entity : bgCollidableEntities) {
+    entity->render();
+  }
+
+  player->render();
+
+  for (auto& entity : fgStaticEntities) {
     entity->render();
   }
 }
@@ -163,7 +175,7 @@ void Chunk::createBackgroundLayer(Texture2D texture) {
   float destWidth = destHeight * aspect;
   float x = (static_cast<float>(screenWidth) - destWidth) / 2.0f;
 
-  staticEntities.push_back(std::make_unique<Entity>(
+  bgStaticEntities.push_back(std::make_unique<Entity>(
     Vector2{ x, 0 }, // top-left of layer
     Sprite(
       texture,
@@ -190,14 +202,14 @@ void Chunk::createTile(Vector2 tileCoordinates, int frameIndex, bool enablePhysi
     tile.enablePhysics(Vector2{ TILE_SIZE, TILE_SIZE }, Vector2{ 0, 0 }, true);
   }
 
-  collidableEntities.push_back(std::make_unique<Entity>(tile));
+  bgCollidableEntities.push_back(std::make_unique<Entity>(tile));
 }
 
 void Chunk::createGrass(Vector2 tileCoordinates, int frameIndex, bool hanging) {
   Vector2 position = getPositionFromTileCoordinates(tileCoordinates, screenWidth, screenHeight);
   if (!hanging) position.y -= TILE_SIZE / 16 * (20 - 16);
 
-  staticEntities.push_back(std::make_unique<Entity>(
+  bgStaticEntities.push_back(std::make_unique<Entity>(
     position,
     Sprite(
       &grassSheet,
@@ -220,12 +232,12 @@ void Chunk::createWater(Vector2 tileCoordinates, bool surface) {
     animator.addAnimation("surface", Animator::Animation{"surface", { 1, 2, 3, 4, 5 }, 10, true});
     animator.play("surface");
 
-    staticEntities.push_back(std::make_unique<Entity>(
+    fgStaticEntities.push_back(std::make_unique<Entity>(
       position,
       animator
     ));
   } else {
-    staticEntities.push_back(std::make_unique<Entity>(
+    fgStaticEntities.push_back(std::make_unique<Entity>(
       position,
       Sprite(
         &waterSheet,

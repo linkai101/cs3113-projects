@@ -22,7 +22,7 @@ public:
 
   virtual void resolveCollisions(Player* player);
 
-  virtual void render() const;
+  virtual void render(Player* player) const;
 
   void setExit(ExitDirection direction, std::optional<Chunk*> nextChunk);
 
@@ -45,8 +45,10 @@ protected:
   Spritesheet& grassSheet;
   Spritesheet& waterSheet;
 
-  std::vector<std::unique_ptr<Entity>> staticEntities;
-  std::vector<std::unique_ptr<Entity>> collidableEntities;
+  std::vector<std::unique_ptr<Entity>> bgStaticEntities; // grass
+  std::vector<std::unique_ptr<Entity>> bgCollidableEntities; // tiles
+  std::vector<std::unique_ptr<Entity>> fgStaticEntities; // water
+  // TODO: fgCollidableEntities // falling rocks
 
   virtual void loadMap() = 0;
 

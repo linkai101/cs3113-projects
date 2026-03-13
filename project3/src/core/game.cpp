@@ -141,10 +141,7 @@ void Game::render() const {
   ClearBackground(ColorFromHex("#000000"));
 
   // Render active chunk
-  if (activeChunk) activeChunk->render();
-
-  // Render player
-  if (player) player->render();
+  if (activeChunk) activeChunk->render(player.get());
 
   // Render fuel indicator
   float fuel = player->getFuel();

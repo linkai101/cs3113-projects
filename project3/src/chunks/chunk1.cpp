@@ -29,10 +29,6 @@ void Chunk1::resolveCollisions(Player* player) {
   Chunk::resolveCollisions(player);
 }
 
-void Chunk1::render() const {
-  Chunk::render();
-}
-
 void Chunk1::loadMap() {
   // Create background
   createBackgroundLayer(skyTexture);
