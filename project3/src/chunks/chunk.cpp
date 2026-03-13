@@ -245,12 +245,14 @@ void Chunk::createWater(Vector2 tileCoordinates, bool surface) {
     animator.addAnimation("surface", Animator::Animation{"surface", { 1, 2, 3, 4, 5 }, 10, true});
     animator.play("surface");
 
-    deadlyEntities.push_back(std::make_unique<Entity>(
+    Entity water = Entity(
       position,
       animator
-    ));
+    );
+    // No collision on surface water
+    deadlyEntities.push_back(std::make_unique<Entity>(water));
   } else {
-    deadlyEntities.push_back(std::make_unique<Entity>(
+    Entity water = Entity(
       position,
       Sprite(
         &waterSheet,
@@ -258,6 +260,8 @@ void Chunk::createWater(Vector2 tileCoordinates, bool surface) {
         Vector2{ TILE_SIZE, TILE_SIZE }, // size
         Vector2{ 0, 0 } // origin
       )
-    ));
+    );
+    water.enablePhysics(Vector2{ TILE_SIZE, TILE_SIZE }, Vector2{ 0, 0 }, true);
+    deadlyEntities.push_back(std::make_unique<Entity>(water));
   }
 }
