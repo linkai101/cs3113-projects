@@ -37,6 +37,8 @@ public:
 
   virtual void render();
 
+  static bool isColliding(Entity* a, Entity* b);
+
 protected:
   Vector2 position;
   Vector2 size;
