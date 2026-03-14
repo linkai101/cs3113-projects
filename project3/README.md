@@ -1,6 +1,8 @@
 # Dustrider
 For CS-UY 3113's Project 3. A jetpack-powered wasteland exploration platformer game.
 
+> NOTE: The player moves with velocity-based movement **while grounded**, but after double-jumping and activating the jetpack, the player moves with acceleration-based movement where the velocity isn't directly modified. This should meet *Requirement 2: Moving With Acceleration*.
+
 ## Class organization
 
 The entry point of the game is in `src/main.cpp`.
