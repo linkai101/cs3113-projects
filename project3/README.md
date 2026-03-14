@@ -1,6 +1,21 @@
 # Dustrider
 For CS-UY 3113's Project 3. A jetpack-powered wasteland exploration platformer game.
 
+## Class organization
+
+The entry point of the game is in `src/main.cpp`.
+
+The game is organized into the following classes:
+- **`src/game.h`**: The main game class, responsible for running the game loop.
+  - Stores resources, chunks, and player. Controls the active chunk.
+- **`src/chunks/chunk.h`**: The current "chunk" that the player is in. Can be linked together to form a continuous world.
+  - Stores entities. Handles entity updates, collisions, and level creation.
+- **`src/entities/entity.h`**: A base class for all game entities.
+  - Stores position, physics body, and the sprite/animator for rendering. Handles individual entity updates and rendering.
+- `src/components/`
+  - **`sprite.h`**, **`spritesheet.h`**, **`animator.h`**: Handles texture rendering and calls DrawTexturePro.
+  - **`physics_body.h`**: Stores physics state and updates velocity.
+
 ## Assets
 
 ### Textures
