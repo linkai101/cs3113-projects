@@ -1,6 +1,7 @@
 #pragma once
 #include "entities/entity.h"
 #include "entities/player.h"
+#include "entities/meteor.h"
 #include <vector>
 
 class Chunk {
@@ -9,7 +10,7 @@ public:
 
   Chunk(
     int screenWidth, int screenHeight,
-    Spritesheet& tilesSheet, Spritesheet& grassSheet, Spritesheet& waterSheet
+    Spritesheet& tilesSheet, Spritesheet& grassSheet, Spritesheet& waterSheet, Spritesheet& meteorSheet
   );
 
   virtual ~Chunk() = default;
@@ -44,16 +45,21 @@ protected:
   Spritesheet& tilesSheet;
   Spritesheet& grassSheet;
   Spritesheet& waterSheet;
+  Spritesheet& meteorSheet;
 
   std::vector<std::unique_ptr<Entity>> staticEnvironmentEntities;
   std::vector<std::unique_ptr<Entity>> collidableEnvironmentEntities;
-  std::vector<std::unique_ptr<Entity>> deadlyEntities;
+  std::vector<std::unique_ptr<Entity>> waterEntities;
+  std::vector<std::unique_ptr<Meteor>> meteorEntities;
+
+  std::vector<Entity*> winningPlatform; // subset of collidableEnvironmentEntities
+  std::vector<Entity*> allDeadly;
 
   virtual void loadMap() = 0;
 
   void createBackgroundLayer(Texture2D texture);
 
-  void createTile(Vector2 tileCoordinates, int frameIndex, bool enablePhysics = true);
+  void createTile(Vector2 tileCoordinates, int frameIndex, bool enablePhysics = true, bool isWinningPlatform = false);
 
   void createGrass(Vector2 tileCoordinates, int frameIndex, bool hanging = false);
 

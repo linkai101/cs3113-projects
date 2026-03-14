@@ -34,6 +34,9 @@ void Game::init() {
   waterTexture = LoadTexture("assets/textures/water.png");
   waterSheet = Spritesheet{waterTexture, Vector2{ 16, 16 }, 6};
 
+  meteorTexture = LoadTexture("assets/textures/meteor.png");
+  meteorSheet = Spritesheet{meteorTexture, Vector2{ 32, 64 }, 5};
+
   playerTexture = LoadTexture("assets/textures/jetpackman.png");
   playerSheet = Spritesheet{playerTexture, Vector2{ 692, 599 }, 5};
 
@@ -137,12 +140,12 @@ void Game::resetGame() {
   // Create chunks
   tutorialChunk = std::make_unique<TutorialChunk>(
     width, height,
-    tilesSheet, grassSheet, waterSheet,
+    tilesSheet, grassSheet, waterSheet, meteorSheet,
     skyTexture, mountains1Texture, mountains2Texture
   );
   chunk1 = std::make_unique<Chunk1>(
     width, height,
-    tilesSheet, grassSheet, waterSheet,
+    tilesSheet, grassSheet, waterSheet, meteorSheet,
     skyTexture, mountains1Texture, mountains2Texture
   );
   

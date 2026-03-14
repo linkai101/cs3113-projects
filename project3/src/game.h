@@ -25,12 +25,14 @@ private:
   Texture2D tilesTexture;
   Texture2D grassTexture;
   Texture2D waterTexture;
+  Texture2D meteorTexture;
   Texture2D playerTexture;
-  Spritesheet playerSheet;
 
   Spritesheet tilesSheet;
   Spritesheet grassSheet;
   Spritesheet waterSheet;
+  Spritesheet meteorSheet;
+  Spritesheet playerSheet;
 
   std::unique_ptr<Chunk> tutorialChunk;
   std::unique_ptr<Chunk> chunk1;

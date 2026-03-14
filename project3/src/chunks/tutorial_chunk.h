@@ -5,7 +5,7 @@ class TutorialChunk : public Chunk {
 public:
   TutorialChunk(
     int screenWidth, int screenHeight,
-    Spritesheet& tilesSheet, Spritesheet& grassSheet, Spritesheet& waterSheet,
+    Spritesheet& tilesSheet, Spritesheet& grassSheet, Spritesheet& waterSheet, Spritesheet& meteorSheet,
     Texture2D& skyTexture, Texture2D& mountains1Texture, Texture2D& mountains2Texture
   );
 

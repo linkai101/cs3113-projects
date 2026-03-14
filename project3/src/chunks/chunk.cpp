@@ -2,13 +2,14 @@
 
 Chunk::Chunk(
   int screenWidth, int screenHeight,
-  Spritesheet& tilesSheet, Spritesheet& grassSheet, Spritesheet& waterSheet
+  Spritesheet& tilesSheet, Spritesheet& grassSheet, Spritesheet& waterSheet, Spritesheet& meteorSheet
 ) :
   screenWidth(screenWidth),
   screenHeight(screenHeight),
   tilesSheet(tilesSheet),
   grassSheet(grassSheet),
-  waterSheet(waterSheet)
+  waterSheet(waterSheet),
+  meteorSheet(meteorSheet)
 {}
 
 void Chunk::load() {
@@ -24,7 +25,8 @@ void Chunk::unload() {
 
   staticEnvironmentEntities.clear();
   collidableEnvironmentEntities.clear();
-  deadlyEntities.clear();
+  waterEntities.clear();
+  meteorEntities.clear();
 
   loaded = false;
 }
@@ -41,7 +43,11 @@ void Chunk::update(float deltaTime, Player* player) {
 
   player->update(deltaTime);
 
-  for (auto& entity : deadlyEntities) {
+  for (auto& entity : meteorEntities) {
+    entity->update(deltaTime);
+  }
+
+  for (auto& entity : waterEntities) {
     entity->update(deltaTime);
   }
 }
@@ -50,6 +56,30 @@ void Chunk::resolveCollisions(Player* player) {
   if (!loaded) return;
   if (!player->getPhysicsBody()) return;
   PhysicsBody& pb = *player->getPhysicsBody();
+
+  // Check collisions with all deadly entities
+  for (auto& entity : allDeadly) {
+    if (!entity->getPhysicsBody()) continue;
+
+    if (Entity::isColliding(player, entity)) {
+      player->setGameState(Player::PlayerGameState::DEAD);
+    }
+  }
+
+  // Check collisions with winning platform
+  for (auto& entity : winningPlatform) {
+    Rectangle playerBox = pb.getCollider(player->getPosition());
+    Rectangle entityBox = entity->getPhysicsBody()->getCollider(entity->getPosition());
+
+    if (!Entity::isColliding(player, entity)) continue;
+
+    float overlapX = std::min(playerBox.x + playerBox.width,  entityBox.x + entityBox.width) - std::max(playerBox.x, entityBox.x);
+    float overlapY = std::min(playerBox.y + playerBox.height, entityBox.y + entityBox.height) - std::max(playerBox.y, entityBox.y);
+
+    if (overlapY <= overlapX && playerBox.y < entityBox.y) {
+      player->setGameState(Player::PlayerGameState::WON);
+    }
+  }
 
   // Check collisions with collidable entities
   pb.isGrounded = false;
@@ -98,15 +128,15 @@ void Chunk::resolveCollisions(Player* player) {
     }
   }
 
-  // Check collisions with deadly entities
-  for (auto& entity : deadlyEntities) {
+  // Reset meteors out of bounds
+  for (auto& entity : meteorEntities) {
     if (!entity->getPhysicsBody()) continue;
+    PhysicsBody& pb = *entity->getPhysicsBody();
+    Rectangle entityBox = pb.getCollider(entity->getPosition()); 
 
-    Rectangle playerBox = pb.getCollider(player->getPosition());
-    Rectangle entityBox = entity->getPhysicsBody()->getCollider(entity->getPosition());
-
-    if (Entity::isColliding(player, entity.get())) {
-      player->setGameState(Player::PlayerGameState::DEAD);
+    if (entityBox.y > static_cast<float>(screenHeight) + 100) {
+      entity->getPosition().y = -100;
+      pb.velocity.y = 0;
     }
   }
 }
@@ -124,7 +154,11 @@ void Chunk::render(Player* player) const {
 
   player->render();
 
-  for (auto& entity : deadlyEntities) {
+  for (auto& entity : meteorEntities) {
+    entity->render();
+  }
+
+  for (auto& entity : waterEntities) {
     entity->render();
   }
 }
@@ -199,7 +233,7 @@ void Chunk::createBackgroundLayer(Texture2D texture) {
   ));
 }
 
-void Chunk::createTile(Vector2 tileCoordinates, int frameIndex, bool enablePhysics) {
+void Chunk::createTile(Vector2 tileCoordinates, int frameIndex, bool enablePhysics, bool isWinningPlatform) {
   Vector2 position = getPositionFromTileCoordinates(tileCoordinates, screenWidth, screenHeight);
 
   Entity tile = Entity(
@@ -216,6 +250,10 @@ void Chunk::createTile(Vector2 tileCoordinates, int frameIndex, bool enablePhysi
   }
 
   collidableEnvironmentEntities.push_back(std::make_unique<Entity>(tile));
+
+  if (isWinningPlatform) {
+    winningPlatform.push_back(collidableEnvironmentEntities.back().get());
+  }
 }
 
 void Chunk::createGrass(Vector2 tileCoordinates, int frameIndex, bool hanging) {
@@ -250,7 +288,7 @@ void Chunk::createWater(Vector2 tileCoordinates, bool surface) {
       animator
     );
     // No collision on surface water
-    deadlyEntities.push_back(std::make_unique<Entity>(water));
+    waterEntities.push_back(std::make_unique<Entity>(water));
   } else {
     Entity water = Entity(
       position,
@@ -262,6 +300,7 @@ void Chunk::createWater(Vector2 tileCoordinates, bool surface) {
       )
     );
     water.enablePhysics(Vector2{ TILE_SIZE, TILE_SIZE }, Vector2{ 0, 0 }, true);
-    deadlyEntities.push_back(std::make_unique<Entity>(water));
+    waterEntities.push_back(std::make_unique<Entity>(water));
+    allDeadly.push_back(waterEntities.back().get());
   }
 }

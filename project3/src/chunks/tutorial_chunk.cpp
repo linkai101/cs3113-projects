@@ -3,10 +3,10 @@
 
 TutorialChunk::TutorialChunk(
   int screenWidth, int screenHeight,
-  Spritesheet& tilesSheet, Spritesheet& grassSheet, Spritesheet& waterSheet,
+  Spritesheet& tilesSheet, Spritesheet& grassSheet, Spritesheet& waterSheet, Spritesheet& meteorSheet,
   Texture2D& skyTexture, Texture2D& mountains1Texture, Texture2D& mountains2Texture
 ) :
-  Chunk(screenWidth, screenHeight, tilesSheet, grassSheet, waterSheet),
+  Chunk(screenWidth, screenHeight, tilesSheet, grassSheet, waterSheet, meteorSheet),
   skyTexture(skyTexture),
   mountains1Texture(mountains1Texture),
   mountains2Texture(mountains2Texture)
@@ -27,16 +27,6 @@ void TutorialChunk::resolveCollisions(Player* player) {
   // Check player falling off screen
   if (player->getPosition().y - pb.getCollider(player->getPosition()).height > static_cast<float>(screenHeight) + 500) {
     player->setGameState(Player::PlayerGameState::DEAD);
-
-    // Respawn player if they fall off the screen
-    // if (player->getPosition().y - pb.getCollider(player->getPosition()).height > static_cast<float>(screenHeight) + 500) {
-    //   player->getPosition() = getPositionFromTileCoordinates({ 2, 5 }, screenWidth, screenHeight);
-    //   pb.velocity = { 0, 0 };
-    //   pb.acceleration = { 0, 0 };
-    //   player->setJumping(false);
-    //   player->setBoosting(false);
-    //   player->setCanBoost(false);
-    // }
   }
 
   Chunk::resolveCollisions(player);

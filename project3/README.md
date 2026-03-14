@@ -17,3 +17,5 @@ Some texture assets were reformatted into custom spritesheets for use in the gam
   - `water.png` (16x16 sprites, 6 columns)
     - Fill (0), surface (1-5)
   - `grass.png` (16x20 sprites, 9 columns)
+- [Fireball Effect by NYKNCK](https://nyknck.itch.io/pixelarteffectfx017)
+  - `meteor.png` (32x64 sprites, 5 columns)
