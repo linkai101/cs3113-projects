@@ -7,7 +7,7 @@ class Scene {
 public:
   Scene(
     int screenWidth, int screenHeight, Vector2 spawnPosition,
-    Spritesheet& tilesSheet
+    Spritesheet& islandTerrainSheet
   );
 
   virtual ~Scene() = default;
@@ -22,36 +22,34 @@ public:
 
   virtual void render(Player* player) const;
 
-  /**
-   * Calculates the position of a tile from its tile coordinates. Origin is the bottom-left corner.
-   * @param tileCoordinates The tile coordinates. Origin is the bottom-left corner, one unit is TILE_SIZE.
-   * @param screenWidth The width of the screen.
-   * @param screenHeight The height of the screen.
-   * @return The position of the tile.
-   */
-  static Vector2 getPositionFromTileCoordinates(Vector2 tileCoordinates, int screenWidth, int screenHeight);
-
 protected:
   int screenWidth, screenHeight;
   Vector2 spawnPosition;
   bool loaded = false;
 
-  Spritesheet& tilesSheet;
+  Spritesheet& islandTerrainSheet;
 
-  std::vector<std::unique_ptr<Entity>> staticEnvironmentEntities;
-  std::vector<std::unique_ptr<Entity>> collidableEnvironmentEntities;
+  std::vector<std::unique_ptr<Entity>> entities;
+  
+  std::vector<Entity*> foregroundEntities;
+  std::vector<Entity*> backgroundEntities;
 
-  virtual void loadMap() = 0;
+  virtual void loadLevel() = 0;
 
   virtual void resetPlayer(Player* player);
 
   virtual void resolveCollisions(Player* player);
 
-  void createBackgroundLayer(Texture2D texture);
+  void loadTileGrid(
+    const int* grid, int rows, int cols,
+    Spritesheet& sheet, Vector2 tileOffset,
+    bool enablePhysics, bool foreground
+  );
 
-  void createTile(Vector2 tileCoordinates, int frameIndex, bool enablePhysics = true);
+  static Vector2 getTilePosition(Vector2 tileCoordinates, Vector2 tileOffset = {0, 0});
 
-  static constexpr int TILE_SIZE = 48;
+  static constexpr int TILE_SIZE = 96;
+  static constexpr int EMPTY_TILE = -1;
 
   enum TileType {
     BLOCK = 0,

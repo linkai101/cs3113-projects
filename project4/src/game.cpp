@@ -20,8 +20,8 @@ void Game::init() {
   SetTargetFPS(60);
 
   // Load textures / spritesheets
-  tilesTexture = LoadTexture("assets/textures/tiles.png");
-  tilesSheet = Spritesheet{tilesTexture, Vector2{ 16, 16 }, 4};
+  islandTerrainTexture = LoadTexture("assets/textures/island-terrain.png");
+  islandTerrainSheet = Spritesheet{islandTerrainTexture, Vector2{ 32, 32 }, 17};
 
   captainTexture = LoadTexture("assets/textures/captain.png");
   captainSheet = Spritesheet{captainTexture, Vector2{ 64, 40 }, 6};
@@ -78,7 +78,7 @@ void Game::resetGame() {
   // Create scenes
   tempScene = std::make_unique<TempScene>(
     width, height,
-    tilesSheet
+    islandTerrainSheet
   );
 
   // Create player
@@ -116,6 +116,6 @@ void Game::resetGame() {
 void Game::shutdown() {
   CloseWindow();
 
-  UnloadTexture(tilesTexture);
-  UnloadTexture(playerTexture);
+  UnloadTexture(islandTerrainTexture);
+  UnloadTexture(captainTexture);
 }

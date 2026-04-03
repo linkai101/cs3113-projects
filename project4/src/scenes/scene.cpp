@@ -2,18 +2,18 @@
 
 Scene::Scene(
   int screenWidth, int screenHeight, Vector2 spawnPosition,
-  Spritesheet& tilesSheet
+  Spritesheet& islandTerrainSheet
 ) :
   screenWidth(screenWidth),
   screenHeight(screenHeight),
   spawnPosition(spawnPosition),
-  tilesSheet(tilesSheet)
+  islandTerrainSheet(islandTerrainSheet)
 {}
 
 void Scene::load(Player* player) {
   if (loaded) return;
 
-  loadMap();
+  loadLevel();
   resetPlayer(player);
 
   loaded = true;
@@ -22,8 +22,9 @@ void Scene::load(Player* player) {
 void Scene::unload() {
   if (!loaded) return;
 
-  staticEnvironmentEntities.clear();
-  collidableEnvironmentEntities.clear();
+  foregroundEntities.clear();
+  backgroundEntities.clear();
+  entities.clear();
 
   loaded = false;
 }
@@ -41,10 +42,7 @@ void Scene::processInput(Player* player) {
 void Scene::update(float deltaTime, Player* player) {
   if (!loaded) return;
 
-  for (auto& entity : collidableEnvironmentEntities) {
-    entity->update(deltaTime);
-  }
-  for (auto& entity : staticEnvironmentEntities) {
+  for (auto& entity : entities) {
     entity->update(deltaTime);
   }
 
@@ -55,23 +53,15 @@ void Scene::update(float deltaTime, Player* player) {
 void Scene::render(Player* player) const {
   if (!loaded) return;
   
-  for (auto& entity : staticEnvironmentEntities) {
-    entity->render();
-  }
-
-  for (auto& entity : collidableEnvironmentEntities) {
+  for (auto& entity : backgroundEntities) {
     entity->render();
   }
 
   player->render();
-}
 
-
-Vector2 Scene::getPositionFromTileCoordinates(Vector2 tileCoordinates, int width, int height) {
-  return {
-    static_cast<float>(tileCoordinates.x * TILE_SIZE),
-    static_cast<float>(height - ((tileCoordinates.y + 1) * TILE_SIZE))
-  };
+  for (auto& entity : foregroundEntities) {
+    entity->render();
+  }
 }
 
 void Scene::resetPlayer(Player* player) {
@@ -90,7 +80,7 @@ void Scene::resolveCollisions(Player* player) {
   // Check collisions with collidable entities
   pb.isGrounded = false;
   // Resolve horizontal collisions
-  for (auto& entity : collidableEnvironmentEntities) {
+  for (auto& entity : entities) {
     if (!entity->getPhysicsBody()) continue;
 
     Rectangle playerBox = pb.getCollider(player->getPosition());
@@ -111,7 +101,7 @@ void Scene::resolveCollisions(Player* player) {
     }
   }
   // Resolve vertical collisions
-  for (auto& entity : collidableEnvironmentEntities) {
+  for (auto& entity : entities) {
     if (!entity->getPhysicsBody()) continue;
 
     Rectangle playerBox = pb.getCollider(player->getPosition());
@@ -135,38 +125,40 @@ void Scene::resolveCollisions(Player* player) {
   }
 }
 
-void Scene::createBackgroundLayer(Texture2D texture) {
-  float aspect = static_cast<float>(texture.width) / static_cast<float>(texture.height);
-  float destHeight = static_cast<float>(screenHeight);
-  float destWidth = destHeight * aspect;
-  float x = (static_cast<float>(screenWidth) - destWidth) / 2.0f;
+void Scene::loadTileGrid(
+  const int* grid, int rows, int cols,
+  Spritesheet& sheet, Vector2 tileOffset,
+  bool enablePhysics, bool foreground
+) {
+  for (int r = 0; r < rows; r++) {
+    for (int c = 0; c < cols; c++) {
+      int frameIndex = grid[r * cols + c];
+      if (frameIndex == EMPTY_TILE) continue;
 
-  staticEnvironmentEntities.push_back(std::make_unique<Entity>(
-    Vector2{ x, 0 }, // top-left of layer
-    Sprite(
-      texture,
-      Rectangle{ 0, 0, static_cast<float>(texture.width), static_cast<float>(texture.height) },
-      Vector2{ destWidth, destHeight },
-      Vector2{ 0, 0 }
-    )
-  ));
+      Vector2 position = getTilePosition({static_cast<float>(c), static_cast<float>(r)}, tileOffset);
+
+      Entity tile = Entity(
+        position,
+        Sprite(
+          &sheet,
+          frameIndex,
+          Vector2{ TILE_SIZE, TILE_SIZE },
+          Vector2{ 0, 0 }
+        )
+      );
+      if (enablePhysics) tile.enablePhysics(Vector2{ TILE_SIZE, TILE_SIZE }, Vector2{ 0, 0 }, true);
+
+      // Add to scene
+      entities.push_back(std::make_unique<Entity>(tile));
+      if (foreground) foregroundEntities.push_back(entities.back().get());
+      else backgroundEntities.push_back(entities.back().get());
+    }
+  }
 }
 
-void Scene::createTile(Vector2 tileCoordinates, int frameIndex, bool enablePhysics) {
-  Vector2 position = getPositionFromTileCoordinates(tileCoordinates, screenWidth, screenHeight);
-
-  Entity tile = Entity(
-    position,
-    Sprite(
-      &tilesSheet,
-      frameIndex,
-      Vector2{ TILE_SIZE, TILE_SIZE }, // size
-      Vector2{ 0, 0 } // origin
-    )
-  );
-  if (enablePhysics) {
-    tile.enablePhysics(Vector2{ TILE_SIZE, TILE_SIZE }, Vector2{ 0, 0 }, true);
-  }
-
-  collidableEnvironmentEntities.push_back(std::make_unique<Entity>(tile));
+Vector2 Scene::getTilePosition(Vector2 tileCoordinates, Vector2 tileOffset) {
+  return {
+    static_cast<float>((tileOffset.x + tileCoordinates.x) * TILE_SIZE),
+    static_cast<float>((tileOffset.y + tileCoordinates.y) * TILE_SIZE)
+  };
 }

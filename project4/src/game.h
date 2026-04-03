@@ -19,12 +19,10 @@ private:
   bool isRunning;
   float gPreviousTicks = 0.0f; // for calculating deltaTime
 
-  Texture2D tilesTexture;
-  Texture2D playerTexture;
+  Texture2D islandTerrainTexture;
   Texture2D captainTexture;
 
-  Spritesheet tilesSheet;
-  Spritesheet playerSheet;
+  Spritesheet islandTerrainSheet;
   Spritesheet captainSheet;
 
   std::unique_ptr<Scene> tempScene;
