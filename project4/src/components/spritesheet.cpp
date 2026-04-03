@@ -1,4 +1,4 @@
-#include "spritesheet.h"
+#include "components/spritesheet.h"
 
 Rectangle Spritesheet::getFrame(int index) const {
   return {

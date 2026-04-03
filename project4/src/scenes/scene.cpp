@@ -1,4 +1,4 @@
-#include "scene.h"
+#include "scenes/scene.h"
 
 Scene::Scene(
   int screenWidth, int screenHeight, Vector2 spawnPosition,

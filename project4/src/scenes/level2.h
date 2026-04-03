@@ -1,5 +1,5 @@
 #pragma once
-#include "scene.h"
+#include "scenes/scene.h"
 
 class Level2 : public Scene {
 public:

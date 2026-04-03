@@ -1,6 +1,6 @@
 #pragma once
 #include "raylib.h"
-#include "spritesheet.h"
+#include "components/spritesheet.h"
 #include <unordered_map>
 #include <string>
 #include <vector>

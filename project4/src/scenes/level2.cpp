@@ -1,4 +1,4 @@
-#include "level2.h"
+#include "scenes/level2.h"
 #include "utils/color.h"
 
 Level2::Level2(

@@ -1,4 +1,4 @@
-#include "follow_camera.h"
+#include "components/follow_camera.h"
 #include <cmath>
 
 FollowCamera::FollowCamera(int screenWidth, int screenHeight) :

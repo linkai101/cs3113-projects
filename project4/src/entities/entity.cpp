@@ -1,4 +1,4 @@
-#include "entity.h"
+#include "entities/entity.h"
 
 Entity::Entity(Vector2 position) :
   position(position),

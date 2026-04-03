@@ -1,4 +1,4 @@
-#include "sprite.h"
+#include "components/sprite.h"
 
 Sprite::Sprite(
   Texture2D texture,

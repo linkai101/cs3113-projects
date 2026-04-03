@@ -1,4 +1,4 @@
-#include "physics_body.h"
+#include "components/physics_body.h"
 
 Rectangle PhysicsBody::getCollider(Vector2 position) const {
   return {

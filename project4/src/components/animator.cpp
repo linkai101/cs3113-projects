@@ -1,4 +1,4 @@
-#include "animator.h"
+#include "components/animator.h"
 
 Animator::Animator(
   Spritesheet* sheet,
