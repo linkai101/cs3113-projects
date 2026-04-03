@@ -7,13 +7,13 @@ class Player : public Entity {
 public:
   Player(Vector2 spawnPosition, Animator animator);
 
+  void processInput();
+
   void update(float deltaTime) override;
 
   void render() const override;
 
   void playAnimation(const std::string& animationName);
-
-  void move(bool left, bool right, bool up);
 
   void setJumping(bool jumping) { this->jumping = jumping; }
   

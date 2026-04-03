@@ -13,6 +13,16 @@ Player::Player(
   )
 {}
 
+void Player::processInput() {
+  bool left = IsKeyDown(KEY_A);
+  bool right = IsKeyDown(KEY_D);
+  bool up = IsKeyDown(KEY_W) || IsKeyDown(KEY_SPACE);
+
+  movingLeft = left;
+  movingRight = right;
+  movingUp = up;
+}
+
 void Player::update(float deltaTime) {
   if (physicsBody.has_value()) {
     std::string currentAnimation = animator->getCurrentAnimation();
@@ -92,10 +102,4 @@ void Player::render() const {
 
 void Player::playAnimation(const std::string& animationName) {
   animator->play(animationName);
-}
-
-void Player::move(bool left, bool right, bool up) {
-  movingLeft = left;
-  movingRight = right;
-  movingUp = up;
 }

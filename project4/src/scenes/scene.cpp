@@ -33,12 +33,8 @@ void Scene::unload() {
 
 void Scene::processInput(Player* player) {
   if (!loaded) return;
-
-  bool left = IsKeyDown(KEY_A);
-  bool right = IsKeyDown(KEY_D);
-  bool up = IsKeyDown(KEY_W) || IsKeyDown(KEY_SPACE);
-
-  player->move(left, right, up);
+  
+  player->processInput();
 }
 
 void Scene::update(float deltaTime, Player* player) {

@@ -26,10 +26,6 @@ void Level1::resolveCollisions(Player* player) {
   Scene::resolveCollisions(player);
 }
 
-void Level1::render(Player* player) const {
-  Scene::render(player);
-}
-
 void Level1::loadLevel() {
   loadTileGrid(&TERRAIN_MAP[0][0], MAP_ROWS, MAP_COLS, islandTerrainSheet, {0, 0}, true, false);
 }

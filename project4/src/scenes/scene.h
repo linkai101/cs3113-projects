@@ -21,7 +21,7 @@ public:
 
   void update(float deltaTime, Player* player);
 
-  virtual void render(Player* player) const;
+  void render(Player* player) const;
 
 protected:
   int screenWidth, screenHeight;
