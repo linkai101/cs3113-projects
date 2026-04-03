@@ -1,6 +1,7 @@
 #pragma once
 #include "entities/entity.h"
 #include "entities/player.h"
+#include "components/follow_camera.h"
 #include <vector>
 
 class Scene {
@@ -33,6 +34,8 @@ protected:
   
   std::vector<Entity*> foregroundEntities;
   std::vector<Entity*> backgroundEntities;
+
+  FollowCamera camera;
 
   virtual void loadLevel() = 0;
 

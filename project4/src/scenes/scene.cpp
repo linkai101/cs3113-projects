@@ -7,7 +7,8 @@ Scene::Scene(
   screenWidth(screenWidth),
   screenHeight(screenHeight),
   spawnPosition(spawnPosition),
-  islandTerrainSheet(islandTerrainSheet)
+  islandTerrainSheet(islandTerrainSheet),
+  camera(screenWidth, screenHeight)
 {}
 
 void Scene::load(Player* player) {
@@ -15,6 +16,7 @@ void Scene::load(Player* player) {
 
   loadLevel();
   resetPlayer(player);
+  camera.init(player->getPosition());
 
   loaded = true;
 }
@@ -48,11 +50,15 @@ void Scene::update(float deltaTime, Player* player) {
 
   player->update(deltaTime);
   resolveCollisions(player);
+
+  camera.update(deltaTime, player->getPosition());
 }
 
 void Scene::render(Player* player) const {
   if (!loaded) return;
-  
+
+  BeginMode2D(camera.get());
+
   for (auto& entity : backgroundEntities) {
     entity->render();
   }
@@ -62,6 +68,8 @@ void Scene::render(Player* player) const {
   for (auto& entity : foregroundEntities) {
     entity->render();
   }
+
+  EndMode2D();
 }
 
 void Scene::resetPlayer(Player* player) {
