@@ -1,15 +1,8 @@
 #include "scenes/level1.h"
 #include "utils/color.h"
 
-Level1::Level1(
-  int screenWidth, int screenHeight,
-  Spritesheet& islandTerrainSheet, Spritesheet& smallMapSheet, Texture2D& islandBgTexture
-) :
-  Scene(
-    screenWidth, screenHeight, getTilePosition(MAP_SPAWN_POSITION), 
-    islandTerrainSheet, smallMapSheet
-  ),
-  islandBgTexture(islandBgTexture)
+Level1::Level1(int screenWidth, int screenHeight, Assets& assets) :
+  Scene(screenWidth, screenHeight, getTilePosition(MAP_SPAWN_POSITION), assets)
 {}
 
 void Level1::loadLevel() {
@@ -17,8 +10,8 @@ void Level1::loadLevel() {
   entities.push_back(std::make_unique<Entity>(
     Vector2{0, 0},
     Sprite(
-      islandBgTexture,
-      Rectangle{0, 0, static_cast<float>(islandBgTexture.width), static_cast<float>(islandBgTexture.height)},
+      assets.islandBgTexture,
+      Rectangle{0, 0, static_cast<float>(assets.islandBgTexture.width), static_cast<float>(assets.islandBgTexture.height)},
       Vector2{MAP_COLS * TILE_SIZE, MAP_ROWS * TILE_SIZE},
       Vector2{0, 0}
     )
@@ -26,11 +19,11 @@ void Level1::loadLevel() {
   backgroundEntities.push_back(entities.back().get());
   
   // Terrain map
-  loadTileGrid(&TERRAIN_MAP[0][0], MAP_ROWS, MAP_COLS, islandTerrainSheet, {0, 0}, true, false);
+  loadTileGrid(&TERRAIN_MAP[0][0], MAP_ROWS, MAP_COLS, assets.islandTerrainSheet, {0, 0}, true, false);
 
   // Level goal
   Animator mapAnimator = Animator(
-    &smallMapSheet,
+    &assets.smallMapSheet,
     Vector2{64, 64}, // size
     Vector2{32, 32} // origin
   );

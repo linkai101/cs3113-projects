@@ -1,5 +1,6 @@
 #pragma once
 #include "raylib.h"
+#include "assets.h"
 #include "entities/player.h"
 #include "scenes/scene.h"
 #include <memory>
@@ -7,7 +8,7 @@
 class Game {
 public:
   Game(int width, int height, const char* title);
-  
+
   void init();
 
   void run();
@@ -19,14 +20,7 @@ private:
   bool isRunning;
   float gPreviousTicks = 0.0f; // for calculating deltaTime
 
-  Texture2D islandBgTexture;
-  Texture2D islandTerrainTexture;
-  Texture2D smallMapTexture;
-  Texture2D captainTexture;
-
-  Spritesheet islandTerrainSheet;
-  Spritesheet smallMapSheet;
-  Spritesheet captainSheet;
+  Assets assets;
 
   std::unique_ptr<Scene> level1;
   std::unique_ptr<Scene> level2;

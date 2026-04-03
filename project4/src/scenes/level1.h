@@ -3,10 +3,7 @@
 
 class Level1 : public Scene {
 public:
-  Level1(
-    int screenWidth, int screenHeight,
-    Spritesheet& islandTerrainSheet, Spritesheet& smallMapSheet, Texture2D& islandBgTexture
-  );
+  Level1(int screenWidth, int screenHeight, Assets& assets);
 
 protected:
   void loadLevel() override;
@@ -14,8 +11,6 @@ protected:
   void resolveCollisions(Player* player) override;
 
 private:
-  Texture2D& islandBgTexture;
-
   Entity* levelGoal;
   
   static constexpr int E = EMPTY_TILE;

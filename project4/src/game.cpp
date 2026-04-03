@@ -20,17 +20,7 @@ void Game::init() {
   InitWindow(width, height, title);
   SetTargetFPS(60);
 
-  // Load textures / spritesheets
-  islandBgTexture = LoadTexture("assets/textures/island-bg.png");
-
-  islandTerrainTexture = LoadTexture("assets/textures/island-terrain.png");
-  islandTerrainSheet = Spritesheet{islandTerrainTexture, Vector2{ 32, 32 }, 17};
-
-  smallMapTexture = LoadTexture("assets/textures/small-map.png");
-  smallMapSheet = Spritesheet{smallMapTexture, Vector2{ 20, 20 }, 8};
-
-  captainTexture = LoadTexture("assets/textures/captain.png");
-  captainSheet = Spritesheet{captainTexture, Vector2{ 64, 40 }, 6};
+  assets.load();
 
   resetGame();
 }
@@ -106,18 +96,12 @@ void Game::resetGame() {
   player.reset();
 
   // Create scenes
-  level1 = std::make_unique<Level1>(
-    width, height,
-    islandTerrainSheet, smallMapSheet, islandBgTexture  
-  );
-  level2 = std::make_unique<Level2>(
-    width, height,
-    islandTerrainSheet, smallMapSheet, islandBgTexture
-  );
+  level1 = std::make_unique<Level1>(width, height, assets);
+  level2 = std::make_unique<Level2>(width, height, assets);
 
   // Create player
   Animator playerAnimator = Animator(
-    &captainSheet,
+    &assets.captainSheet,
     Vector2{ 192, 120 }, // size
     Vector2{ 96, 60 } // origin
   );
@@ -150,7 +134,5 @@ void Game::resetGame() {
 void Game::shutdown() {
   CloseWindow();
 
-  UnloadTexture(islandBgTexture);
-  UnloadTexture(islandTerrainTexture);
-  UnloadTexture(captainTexture);
+  assets.unload();
 }

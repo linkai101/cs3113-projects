@@ -1,4 +1,5 @@
 #pragma once
+#include "assets.h"
 #include "entities/entity.h"
 #include "entities/player.h"
 #include "components/follow_camera.h"
@@ -8,7 +9,7 @@ class Scene {
 public:
   Scene(
     int screenWidth, int screenHeight, Vector2 spawnPosition,
-    Spritesheet& islandTerrainSheet, Spritesheet& smallMapSheet
+    Assets& assets
   );
 
   virtual ~Scene() = default;
@@ -32,8 +33,7 @@ protected:
   bool loaded = false;
   bool transitionRequested = false;
 
-  Spritesheet& islandTerrainSheet;
-  Spritesheet& smallMapSheet;
+  Assets& assets;
 
   std::vector<std::unique_ptr<Entity>> entities; // all unique entities stored here
 
