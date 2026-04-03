@@ -31,5 +31,5 @@ void Level1::render(Player* player) const {
 }
 
 void Level1::loadLevel() {
-  loadTileGrid(&MAP[0][0], MAP_ROWS, MAP_COLS, islandTerrainSheet, {0, 0}, true, false);
+  loadTileGrid(&TERRAIN_MAP[0][0], MAP_ROWS, MAP_COLS, islandTerrainSheet, {0, 0}, true, false);
 }

@@ -50,28 +50,4 @@ protected:
 
   static constexpr int TILE_SIZE = 96;
   static constexpr int EMPTY_TILE = -1;
-
-  enum TileType {
-    BLOCK = 0,
-    INNER = 1,
-    INNER_FOSSIL = 2,
-    TOP_ALT = 3,
-    TOP = 4,
-    BOTTOM = 5,
-    LEFT = 6,
-    RIGHT = 7,
-    TOP_LEFT = 8,
-    TOP_RIGHT = 9,
-    BOTTOM_LEFT = 10,
-    BOTTOM_RIGHT = 11,
-    CORNER_TOP_LEFT = 12,
-    CORNER_TOP_RIGHT = 13,
-    CORNER_BOTTOM_LEFT = 14,
-    CORNER_BOTTOM_RIGHT = 15,
-    SLOPE_TOP_LEFT = 16,
-    SLOPE_TOP_RIGHT = 17,
-    BRIDGE_LEFT = 18,
-    BRIDGE_RIGHT = 19,
-    BRIDGE_MIDDLE = 20
-  };
 };
