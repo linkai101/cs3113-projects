@@ -38,6 +38,7 @@ void Level2::loadLevel() {
   ));
   levelGoal = entities.back().get();
   levelGoal->playAnimation("map-4");
+  levelGoal->enablePhysics(Vector2{32, 32}, Vector2{-16, -16}, true);
   backgroundEntities.push_back(levelGoal);
 }
 
