@@ -1,5 +1,6 @@
 #pragma once
 #include "raylib.h"
+#include <string>
 #include "components/sprite.h"
 #include "components/animator.h"
 #include "components/physics_body.h"
@@ -18,6 +19,8 @@ public:
   void enablePhysics(Vector2 colliderSize, Vector2 colliderOffset = {0, 0}, bool isStatic = false);
 
   bool getFlipX() const;
+
+  void playAnimation(const std::string& name);
 
   Vector2& getPosition() { return position; }
   const Vector2& getPosition() const { return position; }

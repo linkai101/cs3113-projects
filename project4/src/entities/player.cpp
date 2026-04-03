@@ -99,7 +99,3 @@ void Player::update(float deltaTime) {
 void Player::render() const {
   Entity::render();
 }
-
-void Player::playAnimation(const std::string& animationName) {
-  animator->play(animationName);
-}

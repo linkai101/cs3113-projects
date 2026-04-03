@@ -13,8 +13,6 @@ public:
 
   void render() const override;
 
-  void playAnimation(const std::string& animationName);
-
   void setJumping(bool jumping) { this->jumping = jumping; }
   
 private:

@@ -21,6 +21,10 @@ void Entity::enablePhysics(Vector2 colliderSize, Vector2 colliderOffset, bool is
   physicsBody = PhysicsBody{ colliderSize, colliderOffset, isStatic };
 }
 
+void Entity::playAnimation(const std::string& name) {
+  if (hasAnimator && animator.has_value()) animator->play(name);
+}
+
 bool Entity::getFlipX() const {
   if (hasAnimator && animator.has_value()) return animator->getFlipX();
   if (sprite.has_value()) return sprite->getFlipX();
