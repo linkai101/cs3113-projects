@@ -2,12 +2,13 @@
 
 Scene::Scene(
   int screenWidth, int screenHeight, Vector2 spawnPosition,
-  Spritesheet& islandTerrainSheet
+  Spritesheet& islandTerrainSheet, Spritesheet& smallMapSheet
 ) :
   screenWidth(screenWidth),
   screenHeight(screenHeight),
   spawnPosition(spawnPosition),
   islandTerrainSheet(islandTerrainSheet),
+  smallMapSheet(smallMapSheet),
   camera(screenWidth, screenHeight)
 {}
 

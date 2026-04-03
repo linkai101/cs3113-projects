@@ -26,6 +26,9 @@ void Game::init() {
   islandTerrainTexture = LoadTexture("assets/textures/island-terrain.png");
   islandTerrainSheet = Spritesheet{islandTerrainTexture, Vector2{ 32, 32 }, 17};
 
+  smallMapTexture = LoadTexture("assets/textures/small-map.png");
+  smallMapSheet = Spritesheet{smallMapTexture, Vector2{ 20, 20 }, 8};
+
   captainTexture = LoadTexture("assets/textures/captain.png");
   captainSheet = Spritesheet{captainTexture, Vector2{ 64, 40 }, 6};
 
@@ -93,11 +96,11 @@ void Game::resetGame() {
   // Create scenes
   level1 = std::make_unique<Level1>(
     width, height,
-    islandTerrainSheet, islandBgTexture
+    islandTerrainSheet, smallMapSheet, islandBgTexture  
   );
   level2 = std::make_unique<Level2>(
     width, height,
-    islandTerrainSheet, islandBgTexture
+    islandTerrainSheet, smallMapSheet, islandBgTexture
   );
 
   // Create player

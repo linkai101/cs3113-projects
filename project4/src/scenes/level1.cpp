@@ -3,11 +3,11 @@
 
 Level1::Level1(
   int screenWidth, int screenHeight,
-  Spritesheet& islandTerrainSheet, Texture2D& islandBgTexture
+  Spritesheet& islandTerrainSheet, Spritesheet& smallMapSheet, Texture2D& islandBgTexture
 ) :
   Scene(
     screenWidth, screenHeight, getTilePosition(MAP_SPAWN_POSITION), 
-    islandTerrainSheet
+    islandTerrainSheet, smallMapSheet
   ),
   islandBgTexture(islandBgTexture)
 {}

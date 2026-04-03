@@ -21,9 +21,11 @@ private:
 
   Texture2D islandBgTexture;
   Texture2D islandTerrainTexture;
+  Texture2D smallMapTexture;
   Texture2D captainTexture;
 
   Spritesheet islandTerrainSheet;
+  Spritesheet smallMapSheet;
   Spritesheet captainSheet;
 
   std::unique_ptr<Scene> level1;

@@ -5,7 +5,7 @@ class Level2 : public Scene {
 public:
   Level2(
     int screenWidth, int screenHeight,
-    Spritesheet& islandTerrainSheet, Texture2D& islandBgTexture
+    Spritesheet& islandTerrainSheet, Spritesheet& smallMapSheet, Texture2D& islandBgTexture
   );
 
 protected:

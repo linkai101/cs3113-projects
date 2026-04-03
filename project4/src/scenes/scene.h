@@ -8,7 +8,7 @@ class Scene {
 public:
   Scene(
     int screenWidth, int screenHeight, Vector2 spawnPosition,
-    Spritesheet& islandTerrainSheet
+    Spritesheet& islandTerrainSheet, Spritesheet& smallMapSheet
   );
 
   virtual ~Scene() = default;
@@ -29,6 +29,7 @@ protected:
   bool loaded = false;
 
   Spritesheet& islandTerrainSheet;
+  Spritesheet& smallMapSheet;
 
   std::vector<std::unique_ptr<Entity>> entities;
   
