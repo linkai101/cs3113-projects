@@ -1,17 +1,17 @@
-#include "temp_scene.h"
+#include "level1.h"
 #include "utils/color.h"
 
-TempScene::TempScene(
+Level1::Level1(
   int screenWidth, int screenHeight,
   Spritesheet& islandTerrainSheet
 ) :
   Scene(
-    screenWidth, screenHeight, getTilePosition({2, 2}), 
+    screenWidth, screenHeight, getTilePosition(MAP_SPAWN_POSITION), 
     islandTerrainSheet
   )
 {}
 
-void TempScene::resolveCollisions(Player* player) {
+void Level1::resolveCollisions(Player* player) {
   if (!loaded) return;
   if (!player->getPhysicsBody()) return;
   PhysicsBody& pb = *player->getPhysicsBody();
@@ -26,10 +26,10 @@ void TempScene::resolveCollisions(Player* player) {
   Scene::resolveCollisions(player);
 }
 
-void TempScene::render(Player* player) const {
+void Level1::render(Player* player) const {
   Scene::render(player);
 }
 
-void TempScene::loadLevel() {
+void Level1::loadLevel() {
   loadTileGrid(&MAP[0][0], MAP_ROWS, MAP_COLS, islandTerrainSheet, {0, 0}, true, false);
 }

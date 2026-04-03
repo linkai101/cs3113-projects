@@ -26,7 +26,7 @@ private:
   bool jumping = false;
   bool wasGrounded = true;
 
-  static constexpr float GRAVITY_ACCELERATION = 1200.0f;
+  static constexpr float GRAVITY_ACCELERATION = 2000.0f;
   static constexpr float GROUND_VELOCITY = 250.0f;
-  static constexpr float JUMP_INITIAL_VELOCITY = 400.0f;
+  static constexpr float JUMP_INITIAL_VELOCITY = 700.0f;
 };

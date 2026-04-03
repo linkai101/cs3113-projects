@@ -25,7 +25,7 @@ private:
   Spritesheet islandTerrainSheet;
   Spritesheet captainSheet;
 
-  std::unique_ptr<Scene> tempScene;
+  std::unique_ptr<Scene> level1;
   Scene* activeScene;
 
   std::unique_ptr<Player> player;

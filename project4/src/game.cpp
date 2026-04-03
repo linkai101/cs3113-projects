@@ -1,5 +1,5 @@
 #include "game.h"
-#include "scenes/temp_scene.h"
+#include "scenes/level1.h"
 #include "utils/log.h"
 #include "utils/color.h"
 #include <memory>
@@ -72,11 +72,11 @@ void Game::render() const {
 void Game::resetGame() {
   // Unload scene and player
   activeScene = nullptr;
-  tempScene.reset();
+  level1.reset();
   player.reset();
 
   // Create scenes
-  tempScene = std::make_unique<TempScene>(
+  level1 = std::make_unique<Level1>(
     width, height,
     islandTerrainSheet
   );
@@ -109,7 +109,7 @@ void Game::resetGame() {
   );
 
   // Load active scene
-  activeScene = tempScene.get();
+  activeScene = level1.get();
   activeScene->load(player.get());
 }
 
