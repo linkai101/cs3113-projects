@@ -19,6 +19,7 @@ private:
   bool isRunning;
   float gPreviousTicks = 0.0f; // for calculating deltaTime
 
+  Texture2D islandBgTexture;
   Texture2D islandTerrainTexture;
   Texture2D captainTexture;
 

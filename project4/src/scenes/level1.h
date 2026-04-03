@@ -5,7 +5,7 @@ class Level1 : public Scene {
 public:
   Level1(
     int screenWidth, int screenHeight,
-    Spritesheet& islandTerrainSheet
+    Spritesheet& islandTerrainSheet, Texture2D& islandBgTexture
   );
 
   void resolveCollisions(Player* player) override;
@@ -14,6 +14,8 @@ protected:
   void loadLevel() override;
 
 private:
+  Texture2D& islandBgTexture;
+  
   static constexpr int E = EMPTY_TILE;
   static constexpr int MAP_ROWS = 6;
   static constexpr int MAP_COLS = 9;

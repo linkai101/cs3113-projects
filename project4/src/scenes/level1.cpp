@@ -3,12 +3,13 @@
 
 Level1::Level1(
   int screenWidth, int screenHeight,
-  Spritesheet& islandTerrainSheet
+  Spritesheet& islandTerrainSheet, Texture2D& islandBgTexture
 ) :
   Scene(
     screenWidth, screenHeight, getTilePosition(MAP_SPAWN_POSITION), 
     islandTerrainSheet
-  )
+  ),
+  islandBgTexture(islandBgTexture)
 {}
 
 void Level1::resolveCollisions(Player* player) {
@@ -27,5 +28,15 @@ void Level1::resolveCollisions(Player* player) {
 }
 
 void Level1::loadLevel() {
+  backgroundEntities.push_back(new Entity(
+    {0, 0},
+    Sprite(
+      islandBgTexture,
+      Rectangle{0, 0, static_cast<float>(islandBgTexture.width), static_cast<float>(islandBgTexture.height)},
+      Vector2{MAP_COLS * TILE_SIZE, MAP_ROWS * TILE_SIZE},
+      Vector2{0, 0}
+    )
+  ));
+  
   loadTileGrid(&TERRAIN_MAP[0][0], MAP_ROWS, MAP_COLS, islandTerrainSheet, {0, 0}, true, false);
 }
