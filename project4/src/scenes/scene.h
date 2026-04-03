@@ -23,20 +23,26 @@ public:
 
   void render(Player* player) const;
 
+  bool isTransitionRequested() const { return transitionRequested; }
+  void clearTransition() { transitionRequested = false; }
+
 protected:
   int screenWidth, screenHeight;
   Vector2 spawnPosition;
   bool loaded = false;
+  bool transitionRequested = false;
 
   Spritesheet& islandTerrainSheet;
   Spritesheet& smallMapSheet;
 
-  std::vector<std::unique_ptr<Entity>> entities;
-  
+  std::vector<std::unique_ptr<Entity>> entities; // all unique entities stored here
+
   std::vector<Entity*> foregroundEntities;
   std::vector<Entity*> backgroundEntities;
 
   FollowCamera camera;
+
+  void requestTransition() { transitionRequested = true; }
 
   virtual void loadLevel() = 0;
 

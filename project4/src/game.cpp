@@ -73,6 +73,18 @@ void Game::update(float deltaTime) {
 
   // Update active scene
   if (activeScene) activeScene->update(deltaTime, player.get());
+
+  // Handle level transition
+  if (activeScene && activeScene->isTransitionRequested()) {
+    activeScene->clearTransition();
+    Scene* nextScene = nullptr;
+    if (activeScene == level1.get()) nextScene = level2.get();
+    if (nextScene) {
+      activeScene->unload();
+      activeScene = nextScene;
+      activeScene->load(player.get());
+    }
+  }
 }
 
 void Game::render() const {

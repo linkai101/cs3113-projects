@@ -11,8 +11,12 @@ public:
 protected:
   void loadLevel() override;
 
+  void resolveCollisions(Player* player) override;
+
 private:
   Texture2D& islandBgTexture;
+
+  Entity* levelGoal;
   
   static constexpr int E = EMPTY_TILE;
   static constexpr int MAP_ROWS = 6;
