@@ -100,30 +100,9 @@ void Game::resetGame() {
   level2 = std::make_unique<Level2>(width, height, assets);
 
   // Create player
-  Animator playerAnimator = Animator(
-    &assets.captainSheet,
-    Vector2{ 192, 120 }, // size
-    Vector2{ 96, 60 } // origin
-  );
-  playerAnimator.addAnimation("idle", Animator::Animation{"idle", { 0, 1, 2, 3, 4 }, 10, true});
-  playerAnimator.addAnimation("run", Animator::Animation{"run", { 6, 7, 8, 9, 10, 11 }, 10, true});
-  playerAnimator.addAnimation("jump", Animator::Animation{"jump", { 12, 13, 14 }, 10, false});
-  playerAnimator.addAnimation("fall", Animator::Animation{"fall", { 18 }, 10, true});
-  playerAnimator.addAnimation("ground", Animator::Animation{"ground", { 24, 25 }, 10, false});
-  playerAnimator.addAnimation("hit", Animator::Animation{"hit", { 30, 31, 32, 33 }, 10, false});
-  playerAnimator.addAnimation("dead-hit", Animator::Animation{"dead-hit", { 36, 37, 38, 39 }, 10, false});
-  playerAnimator.addAnimation("dead-ground", Animator::Animation{"dead-ground", { 42, 43, 44, 45 }, 10, false});
-
   player = std::make_unique<Player>(
     Vector2{ width / 2.0f, height / 2.0f }, // spawnPosition
-    playerAnimator
-  );
-  player->playAnimation("idle");
-
-  player->enablePhysics(
-    Vector2{ 50, 70 }, // colliderSize
-    Vector2{ -25, -35 }, // colliderOffset
-    false
+    assets
   );
 
   // Load active scene
