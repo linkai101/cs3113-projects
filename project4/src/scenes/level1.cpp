@@ -52,12 +52,15 @@ void Level1::loadLevel() {
 
 void Level1::resolveCollisions(Player* player) {
   if (!loaded) return;
-  if (!player->getPhysicsBody()) return;
 
-  // Check collisions with level goal
+  // Check player collisions with level goal
   if (Entity::isColliding(player, levelGoal)) {
     requestTransition();
   }
 
-  Scene::resolveCollisions(player);
+  crabby->resolveCollisions(terrainEntities);
+
+  std::vector<Entity*> playerCollidables = terrainEntities;
+  playerCollidables.push_back(crabby);
+  player->resolveCollisions(playerCollidables);
 }

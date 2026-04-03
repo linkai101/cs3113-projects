@@ -76,59 +76,6 @@ void Scene::resetPlayer(Player* player) {
   player->playAnimation("idle");
 }
 
-void Scene::resolveCollisions(Player* player) {
-  if (!loaded) return;
-  if (!player->getPhysicsBody()) return;
-  PhysicsBody& pb = *player->getPhysicsBody();
-
-  // Check collisions with collidable entities
-  pb.isGrounded = false;
-  // Resolve horizontal collisions
-  for (auto& entity : entities) {
-    if (!entity->getPhysicsBody()) continue;
-
-    Rectangle playerBox = pb.getCollider(player->getPosition());
-    Rectangle entityBox = entity->getPhysicsBody()->getCollider(entity->getPosition());
-
-    if (!Entity::isColliding(player, entity.get())) continue;
-
-    float overlapX = std::min(playerBox.x + playerBox.width,  entityBox.x + entityBox.width) - std::max(playerBox.x, entityBox.x);
-    float overlapY = std::min(playerBox.y + playerBox.height, entityBox.y + entityBox.height) - std::max(playerBox.y, entityBox.y);
-
-    if (overlapX < overlapY) {
-      if (playerBox.x < entityBox.x) {
-        player->getPosition().x -= overlapX;
-      } else {
-        player->getPosition().x += overlapX;
-      }
-      pb.velocity.x = 0;
-    }
-  }
-  // Resolve vertical collisions
-  for (auto& entity : entities) {
-    if (!entity->getPhysicsBody()) continue;
-
-    Rectangle playerBox = pb.getCollider(player->getPosition());
-    Rectangle entityBox = entity->getPhysicsBody()->getCollider(entity->getPosition());
-
-    if (!Entity::isColliding(player, entity.get())) continue;
-
-    float overlapX = std::min(playerBox.x + playerBox.width,  entityBox.x + entityBox.width) - std::max(playerBox.x, entityBox.x);
-    float overlapY = std::min(playerBox.y + playerBox.height, entityBox.y + entityBox.height) - std::max(playerBox.y, entityBox.y);
-
-    if (overlapY <= overlapX) {
-      if (playerBox.y < entityBox.y) { // Player landed on top
-        player->getPosition().y -= overlapY;
-        pb.isGrounded = true;
-        pb.velocity.y = 0;
-      } else { // Player hit ceiling
-        player->getPosition().y += overlapY;
-        pb.velocity.y = 0;
-      }
-    }
-  }
-}
-
 void Scene::loadTileGrid(
   const int* grid, int rows, int cols,
   Spritesheet& sheet, Vector2 tileOffset,
@@ -156,6 +103,7 @@ void Scene::loadTileGrid(
       entities.push_back(std::make_unique<Entity>(tile));
       if (foreground) foregroundEntities.push_back(entities.back().get());
       else backgroundEntities.push_back(entities.back().get());
+      if (enablePhysics) terrainEntities.push_back(entities.back().get());
     }
   }
 }

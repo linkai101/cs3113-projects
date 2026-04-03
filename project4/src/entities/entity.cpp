@@ -46,6 +46,58 @@ void Entity::update(float deltaTime) {
   }
 }
 
+void Entity::resolveCollisions(std::vector<Entity*> entities) {
+  if (!physicsBody.has_value()) return;
+  PhysicsBody& pb = *physicsBody;
+
+  // Check collisions with collidable entities
+  pb.isGrounded = false;
+  // Resolve horizontal collisions
+  for (Entity* entity : entities) {
+    if (!entity->getPhysicsBody()) continue;
+
+    Rectangle box = pb.getCollider(position);
+    Rectangle otherBox = entity->getPhysicsBody()->getCollider(entity->getPosition());
+
+    if (!Entity::isColliding(this, entity)) continue;
+
+    float overlapX = std::min(box.x + box.width,  otherBox.x + otherBox.width) - std::max(box.x, otherBox.x);
+    float overlapY = std::min(box.y + box.height, otherBox.y + otherBox.height) - std::max(box.y, otherBox.y);
+
+    if (overlapX < overlapY) {
+      if (box.x < otherBox.x) {
+        position.x -= overlapX;
+      } else {
+        position.x += overlapX;
+      }
+      pb.velocity.x = 0;
+    }
+  }
+  // Resolve vertical collisions
+  for (Entity* entity : entities) {
+    if (!entity->getPhysicsBody()) continue;
+
+    Rectangle box = pb.getCollider(position);
+    Rectangle otherBox = entity->getPhysicsBody()->getCollider(entity->getPosition());
+
+    if (!Entity::isColliding(this, entity)) continue;
+
+    float overlapX = std::min(box.x + box.width,  otherBox.x + otherBox.width) - std::max(box.x, otherBox.x);
+    float overlapY = std::min(box.y + box.height, otherBox.y + otherBox.height) - std::max(box.y, otherBox.y);
+
+    if (overlapY <= overlapX) {
+      if (box.y < otherBox.y) { // Crabby landed on top
+        position.y -= overlapY;
+        pb.isGrounded = true;
+        pb.velocity.y = 0;
+      } else { // Crabby hit ceiling
+        position.y += overlapY;
+        pb.velocity.y = 0;
+      }
+    }
+  }
+}
+
 void Entity::render() const {
   if (hasAnimator) {
     if (animator.has_value()) animator->render(position);

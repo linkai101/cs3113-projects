@@ -37,8 +37,12 @@ protected:
 
   std::vector<std::unique_ptr<Entity>> entities; // all unique entities stored here
 
+  // For rendering
   std::vector<Entity*> foregroundEntities;
   std::vector<Entity*> backgroundEntities;
+
+  // For collisions
+  std::vector<Entity*> terrainEntities;
 
   FollowCamera camera;
 
@@ -48,7 +52,7 @@ protected:
 
   virtual void resetPlayer(Player* player);
 
-  virtual void resolveCollisions(Player* player);
+  virtual void resolveCollisions(Player* player) = 0;
 
   void loadTileGrid(
     const int* grid, int rows, int cols,

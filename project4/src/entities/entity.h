@@ -30,6 +30,8 @@ public:
 
   virtual void update(float deltaTime);
 
+  virtual void resolveCollisions(std::vector<Entity*> entities);
+
   virtual void render() const;
 
   static bool isColliding(Entity* a, Entity* b);

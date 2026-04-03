@@ -51,5 +51,6 @@ void Level2::resolveCollisions(Player* player) {
     requestTransition();
   }
 
-  Scene::resolveCollisions(player);
+  std::vector<Entity*> playerCollidables = terrainEntities;
+  player->resolveCollisions(playerCollidables);
 }
