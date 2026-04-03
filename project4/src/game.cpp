@@ -61,7 +61,7 @@ void Game::update(float deltaTime) {
 void Game::render() const {
   BeginDrawing();
 
-  ClearBackground(ColorFromHex("#000000"));
+  ClearBackground(ColorFromHex("#33323D"));
 
   // Render active scene
   if (activeScene) activeScene->render(player.get());
