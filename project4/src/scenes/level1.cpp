@@ -40,6 +40,14 @@ void Level1::loadLevel() {
   levelGoal->playAnimation("map-4");
   levelGoal->enablePhysics(Vector2{32, 32}, Vector2{-16, -16}, true);
   backgroundEntities.push_back(levelGoal);
+
+  // Crabby
+  entities.push_back(std::make_unique<Crabby>(
+    getTilePosition(Vector2{4.5f, 4.5f}), // position
+    assets
+  ));
+  crabby = static_cast<Crabby*>(entities.back().get());
+  backgroundEntities.push_back(crabby);
 }
 
 void Level1::resolveCollisions(Player* player) {

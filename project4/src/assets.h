@@ -7,10 +7,12 @@ struct Assets {
   Texture2D islandTerrainTexture;
   Texture2D smallMapTexture;
   Texture2D captainTexture;
+  Texture2D crabbyTexture;
 
   Spritesheet islandTerrainSheet;
   Spritesheet smallMapSheet;
   Spritesheet captainSheet;
+  Spritesheet crabbySheet;
 
   void load() {
     islandBgTexture = LoadTexture("assets/textures/island-bg.png");
@@ -23,6 +25,9 @@ struct Assets {
 
     captainTexture = LoadTexture("assets/textures/captain.png");
     captainSheet = Spritesheet{captainTexture, Vector2{64, 40}, 6};
+
+    crabbyTexture = LoadTexture("assets/textures/crabby.png");
+    crabbySheet = Spritesheet{crabbyTexture, Vector2{72, 32}, 9};
   }
 
   void unload() {
