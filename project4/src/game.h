@@ -27,6 +27,7 @@ private:
   Spritesheet captainSheet;
 
   std::unique_ptr<Scene> level1;
+  std::unique_ptr<Scene> level2;
   Scene* activeScene;
 
   std::unique_ptr<Player> player;

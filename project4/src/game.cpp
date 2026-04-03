@@ -1,5 +1,6 @@
 #include "game.h"
 #include "scenes/level1.h"
+#include "scenes/level2.h"
 #include "utils/log.h"
 #include "utils/color.h"
 #include <memory>
@@ -48,7 +49,18 @@ void Game::run() {
 
 void Game::processInput() {
   if (WindowShouldClose()) isRunning = false;
-  
+
+  // DEBUG: quick scene switching
+  if (IsKeyPressed(KEY_ONE) && activeScene != level1.get()) {
+    activeScene->unload();
+    activeScene = level1.get();
+    activeScene->load(player.get());
+  } else if (IsKeyPressed(KEY_TWO) && activeScene != level2.get()) {
+    activeScene->unload();
+    activeScene = level2.get();
+    activeScene->load(player.get());
+  }
+
   // Process input for active scene
   if (activeScene) activeScene->processInput(player.get());
 }
@@ -75,10 +87,15 @@ void Game::resetGame() {
   // Unload scene and player
   activeScene = nullptr;
   level1.reset();
+  level2.reset();
   player.reset();
 
   // Create scenes
   level1 = std::make_unique<Level1>(
+    width, height,
+    islandTerrainSheet, islandBgTexture
+  );
+  level2 = std::make_unique<Level2>(
     width, height,
     islandTerrainSheet, islandBgTexture
   );

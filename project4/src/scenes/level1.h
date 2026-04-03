@@ -8,8 +8,6 @@ public:
     Spritesheet& islandTerrainSheet, Texture2D& islandBgTexture
   );
 
-  void resolveCollisions(Player* player) override;
-
 protected:
   void loadLevel() override;
 
@@ -27,5 +25,5 @@ private:
     { 19, E, E, E, E, 0, 1, 1, 24 },
     { 23, 1, 1, 1, 1, 24, 18, 18, 18 },
   };
-  static constexpr Vector2 MAP_SPAWN_POSITION = {1.5f, 4.0f};
+  static constexpr Vector2 MAP_SPAWN_POSITION = {1.5f, 4.5f};
 };

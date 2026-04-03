@@ -1,7 +1,7 @@
-#include "level1.h"
+#include "level2.h"
 #include "utils/color.h"
 
-Level1::Level1(
+Level2::Level2(
   int screenWidth, int screenHeight,
   Spritesheet& islandTerrainSheet, Texture2D& islandBgTexture
 ) :
@@ -12,7 +12,7 @@ Level1::Level1(
   islandBgTexture(islandBgTexture)
 {}
 
-void Level1::loadLevel() {
+void Level2::loadLevel() {
   backgroundEntities.push_back(new Entity(
     {0, 0},
     Sprite(
