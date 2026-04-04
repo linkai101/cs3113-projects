@@ -40,17 +40,50 @@ void Level2::loadLevel() {
   levelGoal->playAnimation("map-4");
   levelGoal->enablePhysics(Vector2{32, 32}, Vector2{-16, -16}, true);
   backgroundEntities.push_back(levelGoal);
+
+  // Crabby
+  entities.push_back(std::make_unique<Crabby>(
+    getTilePosition(Vector2{5.5f, 6.5f}), // position
+    assets
+  ));
+  crabby = static_cast<Crabby*>(entities.back().get());
+  backgroundEntities.push_back(crabby);
 }
 
 void Level2::resolveCollisions(Player* player) {
   if (!loaded) return;
   if (!player->getPhysicsBody()) return;
 
-  // Check collisions with level goal
+  // Check player collisions with level goal
   if (Entity::isColliding(player, levelGoal)) {
     requestTransition();
   }
 
+  // Check player-crabby interactions
+  bool playerSquishesCrabby = false;
+  bool crabbyHitPlayer = false;
+  if (Entity::isColliding(player, crabby) && !crabby->isDead()) {
+    if (!player->isStunned() && !player->getPhysicsBody()->isGrounded && player->getPhysicsBody()->velocity.y > 0) {
+      playerSquishesCrabby = true;
+      crabby->kill();
+    } else {
+      crabby->reverseDirection();
+      if (!player->isStunned()) crabbyHitPlayer = true;
+    }
+  }
+
+  // Resolve crabby collisions
+  crabby->resolveCollisions(terrainEntities);
+
+  // Resolve player collisions (crabby included for physics, but only as static obstacle)
   std::vector<Entity*> playerCollidables = terrainEntities;
+  playerCollidables.push_back(crabby);
   player->resolveCollisions(playerCollidables);
+
+  // Handle player outcomes
+  if (playerSquishesCrabby) {
+    player->getPhysicsBody()->velocity.y = -500.0f; // Bounce player up
+  } else if (crabbyHitPlayer) {
+    player->hit(crabby->getPosition().x);
+  }
 }
