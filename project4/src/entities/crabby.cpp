@@ -1,7 +1,8 @@
 #include "entities/crabby.h"
 
 Crabby::Crabby(Vector2 spawnPosition, Assets& assets) :
-  Entity(spawnPosition, buildAnimator(assets))
+  Entity(spawnPosition, buildAnimator(assets)),
+  tapSound(assets.tapSound)
 {
   enablePhysics(
     Vector2{72, 48}, // colliderSize
@@ -57,6 +58,7 @@ void Crabby::reverseDirection() {
 void Crabby::kill() {
   dead = true;
   physicsBody->velocity.x = 0;
+  PlaySound(tapSound);
   // physicsBody = std::nullopt; // Remove physics body
 }
 

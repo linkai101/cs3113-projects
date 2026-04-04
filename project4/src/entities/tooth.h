@@ -21,6 +21,8 @@ public:
   void kill();
 
 private:
+  Sound& tapSound;
+
   enum class State { WANDERING, DETECTING, CHASING, ANTICIPATING, ATTACKING, COOLDOWN };
 
   bool dead = false;

@@ -19,6 +19,8 @@ public:
   bool isDead() const { return dead; }
 
 private:
+  Sound& tapSound;
+
   bool dead = false;
   bool wanderingRight = true;
   bool waiting = false;

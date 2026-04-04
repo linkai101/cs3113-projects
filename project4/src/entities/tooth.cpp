@@ -2,7 +2,8 @@
 #include <cmath>
 
 Tooth::Tooth(Vector2 spawnPosition, Assets& assets) :
-  Entity(spawnPosition, buildAnimator(assets))
+  Entity(spawnPosition, buildAnimator(assets)),
+  tapSound(assets.tapSound)
 {
   enablePhysics(
     Vector2{ 50, 50 }, // colliderSize
@@ -129,6 +130,7 @@ void Tooth::resolveCollisions(std::vector<Entity*> entities) {
 void Tooth::kill() {
   dead = true;
   physicsBody->velocity.x = 0;
+  PlaySound(tapSound);
 }
 
 Animator Tooth::buildAnimator(Assets& assets) {

@@ -3,7 +3,9 @@
 #include <algorithm>
 
 Player::Player(Vector2 spawnPosition, Assets& assets) :
-  Entity(spawnPosition, buildAnimator(assets))
+  Entity(spawnPosition, buildAnimator(assets)),
+  jumpSound(assets.jumpSound),
+  hurtSound(assets.hurtSound)
 {
   enablePhysics(
     Vector2{ 50, 70 }, // colliderSize
@@ -78,6 +80,7 @@ void Player::update(float deltaTime) {
             jumping = true;
             pb.velocity.y = -JUMP_INITIAL_VELOCITY;
             playAnimation("jump");
+            PlaySound(jumpSound);
           }
         } else {
           canJump = true; // Allow jumping when grounded again after movingUp is released
@@ -111,6 +114,7 @@ void Player::update(float deltaTime) {
 
 void Player::hit(float hitSourceX) {
   playAnimation("dead-hit");
+  PlaySound(hurtSound);
   bool knockedRight = position.x >= hitSourceX;
   getPhysicsBody()->velocity.x = HIT_KNOCKBACK_SPEED_X * (knockedRight ? 1.0f : -1.0f);
   getPhysicsBody()->velocity.y = HIT_KNOCKBACK_VELOCITY_Y;

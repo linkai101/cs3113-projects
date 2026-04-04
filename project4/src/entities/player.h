@@ -20,6 +20,9 @@ public:
   bool setStunned(bool stunned) { this->stunned = stunned; }
   
 private:
+  Sound& jumpSound;
+  Sound& hurtSound;
+
   bool movingLeft = false;
   bool movingRight = false;
   bool movingUp = false;
