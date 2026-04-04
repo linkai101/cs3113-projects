@@ -16,7 +16,7 @@ public:
 
   void load(Player* player);
 
-  void unload();
+  virtual void unload();
 
   virtual void processInput(Player* player);
 
@@ -45,6 +45,8 @@ protected:
   std::vector<Entity*> terrainEntities;
 
   FollowCamera camera;
+
+  Music* bgMusic = nullptr;
 
   void requestTransition() { transitionRequested = true; }
 

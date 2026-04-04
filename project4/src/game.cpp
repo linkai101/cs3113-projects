@@ -19,6 +19,7 @@ Game::Game(
 
 void Game::init() {
   InitWindow(width, height, title);
+  InitAudioDevice();
   SetTargetFPS(60);
 
   assets.load();
@@ -117,7 +118,8 @@ void Game::resetGame() {
 }
 
 void Game::shutdown() {
-  CloseWindow();
-
   assets.unload();
+
+  CloseAudioDevice();
+  CloseWindow();
 }

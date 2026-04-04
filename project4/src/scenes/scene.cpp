@@ -24,6 +24,11 @@ void Scene::load(Player* player) {
 void Scene::unload() {
   if (!loaded) return;
 
+  if (bgMusic) {
+    StopMusicStream(*bgMusic);
+    bgMusic = nullptr;
+  }
+
   foregroundEntities.clear();
   backgroundEntities.clear();
   entities.clear();

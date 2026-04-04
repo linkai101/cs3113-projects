@@ -53,6 +53,14 @@ void Level2::loadLevel() {
   ));
   tooth = static_cast<Tooth*>(entities.back().get());
   backgroundEntities.push_back(tooth);
+
+  bgMusic = &assets.wavesMusic;
+  PlayMusicStream(assets.wavesMusic);
+}
+
+void Level2::update(float deltaTime, Player* player) {
+  UpdateMusicStream(assets.wavesMusic);
+  Scene::update(deltaTime, player);
 }
 
 void Level2::resolveCollisions(Player* player) {

@@ -45,6 +45,14 @@ void Level1::loadLevel() {
   ));
   crabby = static_cast<Crabby*>(entities.back().get());
   backgroundEntities.push_back(crabby);
+
+  bgMusic = &assets.wavesMusic;
+  PlayMusicStream(assets.wavesMusic);
+}
+
+void Level1::update(float deltaTime, Player* player) {
+  UpdateMusicStream(assets.wavesMusic);
+  Scene::update(deltaTime, player);
 }
 
 void Level1::resolveCollisions(Player* player) {

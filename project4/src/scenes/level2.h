@@ -12,6 +12,9 @@ protected:
 
   void resolveCollisions(Player* player) override;
 
+public:
+  void update(float deltaTime, Player* player) override;
+
 private:
   Entity* levelGoal;
   Crabby* crabby;

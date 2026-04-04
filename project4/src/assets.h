@@ -16,6 +16,8 @@ struct Assets {
   Spritesheet crabbySheet;
   Spritesheet toothSheet;
 
+  Music wavesMusic;
+
   void load() {
     islandBgTexture = LoadTexture("assets/textures/island-bg.png");
 
@@ -33,6 +35,8 @@ struct Assets {
 
     toothTexture = LoadTexture("assets/textures/tooth.png");
     toothSheet = Spritesheet{toothTexture, Vector2{34, 30}, 8};
+
+    wavesMusic = LoadMusicStream("assets/textures/waves-loop.wav");
   }
 
   void unload() {
@@ -42,5 +46,6 @@ struct Assets {
     UnloadTexture(captainTexture);
     UnloadTexture(crabbyTexture);
     UnloadTexture(toothTexture);
+    UnloadMusicStream(wavesMusic);
   }
 };

@@ -15,3 +15,11 @@ Some texture assets were reformatted into custom spritesheets for use in the gam
   - `small-map.png` (20x20 sprites, 8 columns)
   - `tooth.png` (34x30 sprites, 8 columns)
     - idle (0-7), run (8-13), jump (16-18), fall (24), ground (32-33), anticipation (40-42), attack (48-52), hit (56-59), dead-hit (64-67), dead-ground (72-75), attack effect excluded
+
+- [Beach & Camping Ambient Sound Pack](https://audialucas.itch.io/beach-camping-ambient-sound-pack)
+  - `waves-loop.wav`
+
+- [Brackeys' Platformer Bundle](https://brackeysgames.itch.io/brackeys-platformer-bundle)
+  - `jump.wav`
+  - `hurt.wav`
+  - `tap.wav`
