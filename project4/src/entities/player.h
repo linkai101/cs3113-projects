@@ -12,10 +12,11 @@ public:
 
   void update(float deltaTime) override;
 
-  void hit();
+  void hit(float hitSourceX);
 
   void setJumping(bool jumping) { this->jumping = jumping; }
   
+  bool isStunned() const { return stunned; }
   bool setStunned(bool stunned) { this->stunned = stunned; }
   
 private:
@@ -37,5 +38,5 @@ private:
   static constexpr float HIT_KNOCKBACK_SPEED_X = 250.0f; // direction determined by flipX
   static constexpr float HIT_KNOCKBACK_DECEL_X = 300.0f; // horizontal deceleration during stun
   static constexpr float HIT_KNOCKBACK_VELOCITY_Y = -350.0f;
-  static constexpr float STUNNED_DURATION = 1.0f; // seconds
+  static constexpr float STUNNED_DURATION = 1.5f; // seconds
 };

@@ -58,28 +58,31 @@ void Level1::resolveCollisions(Player* player) {
     requestTransition();
   }
 
-  // Check if player squishes crabby
+  // Check player-crabby interactions
   bool playerSquishesCrabby = false;
   bool crabbyHitPlayer = false;
-  if (!crabby->isDead() && Entity::isColliding(player, crabby) && !player->getPhysicsBody()->isGrounded && player->getPhysicsBody()->velocity.y > 0) {
-    playerSquishesCrabby = true;
-    crabby->kill();
-  } else if (!crabby->isDead() && Entity::isColliding(player, crabby)) {
-    crabbyHitPlayer = true;
+  if (Entity::isColliding(player, crabby) && !crabby->isDead()) {
+    if (!player->isStunned() && !player->getPhysicsBody()->isGrounded && player->getPhysicsBody()->velocity.y > 0) {
+      playerSquishesCrabby = true;
+      crabby->kill();
+    } else {
+      crabby->reverseDirection();
+      if (!player->isStunned()) crabbyHitPlayer = true;
+    }
   }
 
   // Resolve crabby collisions
   crabby->resolveCollisions(terrainEntities);
 
-  // Resolve player collisions
+  // Resolve player collisions (crabby included for physics, but only as static obstacle)
   std::vector<Entity*> playerCollidables = terrainEntities;
   playerCollidables.push_back(crabby);
   player->resolveCollisions(playerCollidables);
 
-  // Handle player-enemy interactions
+  // Handle player outcomes
   if (playerSquishesCrabby) {
     player->getPhysicsBody()->velocity.y = -500.0f; // Bounce player up
   } else if (crabbyHitPlayer) {
-    player->hit();
+    player->hit(crabby->getPosition().x);
   }
 }

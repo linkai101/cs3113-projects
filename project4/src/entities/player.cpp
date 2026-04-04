@@ -109,10 +109,12 @@ void Player::update(float deltaTime) {
   Entity::update(deltaTime);
 }
 
-void Player::hit() {
+void Player::hit(float hitSourceX) {
   playAnimation("dead-hit");
-  getPhysicsBody()->velocity.x = HIT_KNOCKBACK_SPEED_X * (getFlipX() ? 1.0f : -1.0f);
+  bool knockedRight = position.x >= hitSourceX;
+  getPhysicsBody()->velocity.x = HIT_KNOCKBACK_SPEED_X * (knockedRight ? 1.0f : -1.0f);
   getPhysicsBody()->velocity.y = HIT_KNOCKBACK_VELOCITY_Y;
+  animator->setFlipX(knockedRight);
 
   stunned = true;
   stunTimer = STUNNED_DURATION;

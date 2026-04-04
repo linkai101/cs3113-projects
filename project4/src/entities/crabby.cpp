@@ -12,22 +12,51 @@ Crabby::Crabby(Vector2 spawnPosition, Assets& assets) :
 }
 
 void Crabby::update(float deltaTime) {
-  if (dead && animator->getCurrentAnimation() != "dead-hit") {
-    playAnimation("dead-hit");
-  }
-
   if (physicsBody.has_value()) {
     PhysicsBody& pb = *physicsBody;
-
-    // Apply gravity acceleration
     pb.acceleration.y = GRAVITY_ACCELERATION;
+
+    if (dead) { // Dead
+      if (animator->getCurrentAnimation() != "dead-hit") playAnimation("dead-hit");
+    } else if (waiting) { // Alive, waiting
+      pb.velocity.x = 0;
+      if (animator->getCurrentAnimation() != "idle") playAnimation("idle");
+      waitTimer -= deltaTime;
+      if (waitTimer <= 0) {
+        waiting = false;
+        wanderingRight = !wanderingRight;
+        animator->setFlipX(wanderingRight);
+      }
+    } else { // Alive, wandering
+      pb.velocity.x = wanderingRight ? GROUND_VELOCITY : -GROUND_VELOCITY;
+      if (animator->getCurrentAnimation() != "run") playAnimation("run");
+      animator->setFlipX(wanderingRight);
+    }
   }
 
   Entity::update(deltaTime);
 }
 
+void Crabby::resolveCollisions(std::vector<Entity*> entities) {
+  float velocityXBefore = physicsBody.has_value() ? physicsBody->velocity.x : 0.0f;
+  Entity::resolveCollisions(entities);
+
+  // Check if crabby hit a wall
+  if (!waiting && velocityXBefore != 0 && physicsBody->velocity.x == 0) {
+    waiting = true;
+    waitTimer = WAIT_DURATION;
+  }
+}
+
+void Crabby::reverseDirection() {
+  waiting = false;
+  wanderingRight = !wanderingRight;
+  animator->setFlipX(wanderingRight);
+}
+
 void Crabby::kill() {
   dead = true;
+  physicsBody->velocity.x = 0;
   // physicsBody = std::nullopt; // Remove physics body
 }
 
