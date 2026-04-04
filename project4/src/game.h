@@ -22,6 +22,7 @@ private:
 
   Assets assets;
 
+  std::unique_ptr<Scene> mainMenu;
   std::unique_ptr<Scene> level1;
   std::unique_ptr<Scene> level2;
   Scene* activeScene;

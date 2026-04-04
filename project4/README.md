@@ -1,5 +1,5 @@
-# Project 4
-For CS-UY 3113's Project 4.
+# High Tide Heist
+For CS-UY 3113's Project 4. A beach-side treasure hunt platformer.
 
 ## Assets
 

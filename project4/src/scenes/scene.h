@@ -20,9 +20,9 @@ public:
 
   virtual void processInput(Player* player);
 
-  void update(float deltaTime, Player* player);
+  virtual void update(float deltaTime, Player* player);
 
-  void render(Player* player) const;
+  virtual void render(Player* player) const;
 
   bool isTransitionRequested() const { return transitionRequested; }
   void clearTransition() { transitionRequested = false; }

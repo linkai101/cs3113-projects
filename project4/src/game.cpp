@@ -1,4 +1,5 @@
 #include "game.h"
+#include "scenes/main_menu.h"
 #include "scenes/level1.h"
 #include "scenes/level2.h"
 #include "utils/log.h"
@@ -44,7 +45,10 @@ void Game::processInput() {
   if (WindowShouldClose()) isRunning = false;
 
   // DEBUG: quick scene switching
-  if (IsKeyPressed(KEY_ONE) && activeScene != level1.get()) {
+  if (IsKeyPressed(KEY_GRAVE) && activeScene != mainMenu.get()) {
+    activeScene->unload();
+    activeScene = mainMenu.get();
+  } else if (IsKeyPressed(KEY_ONE) && activeScene != level1.get()) {
     activeScene->unload();
     activeScene = level1.get();
     activeScene->load(player.get());
@@ -64,11 +68,12 @@ void Game::update(float deltaTime) {
   // Update active scene
   if (activeScene) activeScene->update(deltaTime, player.get());
 
-  // Handle level transition
+  // Handle scene transition
   if (activeScene && activeScene->isTransitionRequested()) {
     activeScene->clearTransition();
     Scene* nextScene = nullptr;
-    if (activeScene == level1.get()) nextScene = level2.get();
+    if (activeScene == mainMenu.get()) nextScene = level1.get();
+    else if (activeScene == level1.get()) nextScene = level2.get();
     if (nextScene) {
       activeScene->unload();
       activeScene = nextScene;
@@ -91,11 +96,13 @@ void Game::render() const {
 void Game::resetGame() {
   // Unload scene and player
   activeScene = nullptr;
+  mainMenu.reset();
   level1.reset();
   level2.reset();
   player.reset();
 
   // Create scenes
+  mainMenu = std::make_unique<MainMenu>(width, height, assets);
   level1 = std::make_unique<Level1>(width, height, assets);
   level2 = std::make_unique<Level2>(width, height, assets);
 
@@ -105,9 +112,8 @@ void Game::resetGame() {
     assets
   );
 
-  // Load active scene
-  activeScene = level1.get();
-  activeScene->load(player.get());
+  // Start at main menu
+  activeScene = mainMenu.get();
 }
 
 void Game::shutdown() {

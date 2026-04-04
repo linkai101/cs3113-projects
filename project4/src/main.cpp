@@ -11,7 +11,7 @@
 #include "game.h"
 
 int main(void) {
-  Game game(1200, 675, "Game");
+  Game game(1200, 675, "High Tide Heist");
   game.init();
   game.run();
   return 0;
