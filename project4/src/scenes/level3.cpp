@@ -59,9 +59,23 @@ void Level3::resolveCollisions(Player* player) {
   if (!loaded) return;
   if (!player->getPhysicsBody()) return;
 
+  star->setTarget(player->getPosition(), player->isStunned());
+
   // Check player collisions with level goal
   if (Entity::isColliding(player, levelGoal)) {
     requestTransition();
+  }
+
+  // Check player-star interactions
+  bool playerSquishesStar = false;
+  bool starHitPlayer = false;
+  if (Entity::isColliding(player, star) && !star->isDead()) {
+    if (!player->isStunned() && !player->getPhysicsBody()->isGrounded && player->getPhysicsBody()->velocity.y > 0 && !star->isAttacking()) {
+      playerSquishesStar = true;
+      star->kill();
+    } else if (star->isAttacking() && !player->isStunned()) {
+      starHitPlayer = true;
+    }
   }
 
   // Resolve star collisions
@@ -69,6 +83,13 @@ void Level3::resolveCollisions(Player* player) {
 
   // Resolve player collisions
   std::vector<Entity*> playerCollidables = terrainEntities;
-  // if (star->isDead())playerCollidables.push_back(star); // Only collidable when star is dead
+  if (star->isDead())playerCollidables.push_back(star); // Only collidable when star is dead
   player->resolveCollisions(playerCollidables);
+
+  // Handle player outcomes
+  if (playerSquishesStar) {
+    player->getPhysicsBody()->velocity.y = -500.0f; // Bounce player up
+  } else if (starHitPlayer) {
+    player->hit(star->getPosition().x);
+  }
 }

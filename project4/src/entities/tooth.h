@@ -39,10 +39,10 @@ private:
 
   static constexpr float GRAVITY_ACCELERATION = 2100.0f;
   static constexpr float WANDER_VELOCITY = 100.0f;
-  static constexpr float CHASE_VELOCITY = 250.0f;
+  static constexpr float WANDER_WAIT_DURATION = 1.0f;
   static constexpr float DETECTION_RANGE = 400.0f;
+  static constexpr float CHASE_VELOCITY = 250.0f;
   static constexpr float ATTACK_RANGE = 42.0f;
   static constexpr float ATTACK_INTERVAL = 0.5f;
   static constexpr float COOLDOWN_DURATION = 0.0f;
-  static constexpr float WANDER_WAIT_DURATION = 1.0f;
 };
