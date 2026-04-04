@@ -3,6 +3,7 @@
 #include "scenes/level1.h"
 #include "scenes/level2.h"
 #include "scenes/level3.h"
+#include "scenes/win_screen.h"
 #include "utils/log.h"
 #include "utils/color.h"
 #include <memory>
@@ -81,10 +82,14 @@ void Game::update(float deltaTime) {
     if (activeScene == mainMenu.get()) nextScene = level1.get();
     else if (activeScene == level1.get()) nextScene = level2.get();
     else if (activeScene == level2.get()) nextScene = level3.get();
+    else if (activeScene == level3.get()) nextScene = winScreen.get();
+    else if (activeScene == winScreen.get()) nextScene = mainMenu.get();
     if (nextScene) {
       activeScene->unload();
       activeScene = nextScene;
-      activeScene->load(player.get());
+      if (nextScene != mainMenu.get() && nextScene != winScreen.get()) {
+        activeScene->load(player.get());
+      }
     }
   }
 }
@@ -107,6 +112,7 @@ void Game::resetGame() {
   level1.reset();
   level2.reset();
   level3.reset();
+  winScreen.reset();
   player.reset();
 
   // Create scenes
@@ -114,6 +120,7 @@ void Game::resetGame() {
   level1 = std::make_unique<Level1>(width, height, assets);
   level2 = std::make_unique<Level2>(width, height, assets);
   level3 = std::make_unique<Level3>(width, height, assets);
+  winScreen = std::make_unique<WinScreen>(width, height, assets);
 
   // Create player
   player = std::make_unique<Player>(

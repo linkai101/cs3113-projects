@@ -26,6 +26,7 @@ private:
   std::unique_ptr<Scene> level1;
   std::unique_ptr<Scene> level2;
   std::unique_ptr<Scene> level3;
+  std::unique_ptr<Scene> winScreen;
   Scene* activeScene;
 
   std::unique_ptr<Player> player;
