@@ -73,7 +73,7 @@ void Level1::resolveCollisions(Player* player) {
 
   // Resolve player collisions
   std::vector<Entity*> playerCollidables = terrainEntities;
-  playerCollidables.push_back(crabby);
+  if (crabby->isDead()) playerCollidables.push_back(crabby); // Only collidable when crabby is dead
   player->resolveCollisions(playerCollidables);
 
   // Handle player outcomes

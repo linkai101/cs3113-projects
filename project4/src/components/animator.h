@@ -37,6 +37,8 @@ public:
 
   std::string getCurrentAnimation() const { return currentAnimation; }
 
+  bool isAnimationDone() const;
+
   void render(Vector2 position) const;
 
 private:

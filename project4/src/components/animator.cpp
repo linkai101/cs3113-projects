@@ -49,6 +49,13 @@ void Animator::update(float deltaTime) {
   }
 }
 
+bool Animator::isAnimationDone() const {
+  if (currentAnimation.empty()) return false;
+  const Animation& anim = animations.at(currentAnimation);
+  if (anim.loop) return false;
+  return currentFrame >= static_cast<int>(anim.frames.size()) - 1;
+}
+
 void Animator::render(Vector2 position) const {
   if (!currentAnimation.empty()) {
     Rectangle sourceArea = sheet->getFrame(animations.at(currentAnimation).frames[currentFrame]);

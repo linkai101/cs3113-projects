@@ -59,6 +59,8 @@ void Level2::resolveCollisions(Player* player) {
   if (!loaded) return;
   if (!player->getPhysicsBody()) return;
 
+  tooth->setTarget(player->getPosition(), player->isStunned());
+
   // Check player collisions with level goal
   if (Entity::isColliding(player, levelGoal)) {
     requestTransition();
@@ -77,6 +79,18 @@ void Level2::resolveCollisions(Player* player) {
     }
   }
 
+  // Check player-tooth interactions
+  bool playerSquishesTooth = false;
+  bool toothHitPlayer = false;
+  if (Entity::isColliding(player, tooth) && !tooth->isDead()) {
+    if (!player->isStunned() && !player->getPhysicsBody()->isGrounded && player->getPhysicsBody()->velocity.y > 0 && !tooth->isAttacking()) {
+      playerSquishesTooth = true;
+      tooth->kill();
+    } else if (tooth->isAttacking() && !player->isStunned()) {
+      toothHitPlayer = true;
+    }
+  }
+
   // Resolve crabby collisions
   crabby->resolveCollisions(terrainEntities);
 
@@ -85,8 +99,8 @@ void Level2::resolveCollisions(Player* player) {
 
   // Resolve player collisions
   std::vector<Entity*> playerCollidables = terrainEntities;
-  playerCollidables.push_back(crabby);
-  playerCollidables.push_back(tooth);
+  if (crabby->isDead())playerCollidables.push_back(crabby); // Only collidable when crabby is dead
+  if (tooth->isDead()) playerCollidables.push_back(tooth); // Only collidable when tooth is dead
   player->resolveCollisions(playerCollidables);
 
   // Handle player outcomes
@@ -94,5 +108,9 @@ void Level2::resolveCollisions(Player* player) {
     player->getPhysicsBody()->velocity.y = -500.0f; // Bounce player up
   } else if (crabbyHitPlayer) {
     player->hit(crabby->getPosition().x);
+  } else if (playerSquishesTooth) {
+    player->getPhysicsBody()->velocity.y = -500.0f; // Bounce player up
+  } else if (toothHitPlayer) {
+    player->hit(tooth->getPosition().x);
   }
 }
