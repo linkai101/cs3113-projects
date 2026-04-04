@@ -23,7 +23,7 @@ public:
 private:
   Sound& tapSound;
 
-  enum class State { WANDERING, DETECTING, CHASING, ANTICIPATING, ATTACKING, COOLDOWN };
+  enum class State { WANDERING, CHASING, ANTICIPATING, ATTACKING, COOLDOWN };
 
   bool dead = false;
   bool playerStunned = false;
@@ -31,7 +31,6 @@ private:
   bool wanderingRight = true;
   bool waiting = false;
   float waitTimer = 0.0f;
-  float detectionTimer = 0.0f;
   float attackTimer = ATTACK_INTERVAL;
   float cooldownTimer = 0.0f;
   Vector2 targetPosition = {0, 0};
@@ -46,5 +45,4 @@ private:
   static constexpr float ATTACK_INTERVAL = 0.5f;
   static constexpr float COOLDOWN_DURATION = 0.0f;
   static constexpr float WANDER_WAIT_DURATION = 1.0f;
-  static constexpr float DETECTION_WAIT_DURATION = 1.0f;
 };

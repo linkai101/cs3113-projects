@@ -32,10 +32,8 @@ void Tooth::update(float deltaTime) {
     switch (state) {
       case State::WANDERING:
         if (inRange && !playerStunned) {
-          state = State::DETECTING;
-          detectionTimer = DETECTION_WAIT_DURATION;
-          pb.velocity.x = 0;
-          if (animator->getCurrentAnimation() != "idle") playAnimation("idle");
+          state = State::CHASING;
+          attackTimer = ATTACK_INTERVAL;
           break;
         }
         if (waiting) {
@@ -51,19 +49,6 @@ void Tooth::update(float deltaTime) {
           pb.velocity.x = wanderingRight ? WANDER_VELOCITY : -WANDER_VELOCITY;
           if (animator->getCurrentAnimation() != "run") playAnimation("run");
           animator->setFlipX(wanderingRight);
-        }
-        break;
-
-      case State::DETECTING:
-        pb.velocity.x = 0;
-        if (!inRange || playerStunned) {
-          state = State::WANDERING;
-          break;
-        }
-        detectionTimer -= deltaTime;
-        if (detectionTimer <= 0) {
-          state = State::CHASING;
-          attackTimer = ATTACK_INTERVAL;
         }
         break;
 
