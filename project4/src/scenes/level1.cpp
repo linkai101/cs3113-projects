@@ -58,9 +58,28 @@ void Level1::resolveCollisions(Player* player) {
     requestTransition();
   }
 
+  // Check if player squishes crabby
+  bool playerSquishesCrabby = false;
+  bool crabbyHitPlayer = false;
+  if (!crabby->isDead() && Entity::isColliding(player, crabby) && !player->getPhysicsBody()->isGrounded && player->getPhysicsBody()->velocity.y > 0) {
+    playerSquishesCrabby = true;
+    crabby->kill();
+  } else if (!crabby->isDead() && Entity::isColliding(player, crabby)) {
+    crabbyHitPlayer = true;
+  }
+
+  // Resolve crabby collisions
   crabby->resolveCollisions(terrainEntities);
 
+  // Resolve player collisions
   std::vector<Entity*> playerCollidables = terrainEntities;
   playerCollidables.push_back(crabby);
   player->resolveCollisions(playerCollidables);
+
+  // Handle player-enemy interactions
+  if (playerSquishesCrabby) {
+    player->getPhysicsBody()->velocity.y = -500.0f; // Bounce player up
+  } else if (crabbyHitPlayer) {
+    player->hit();
+  }
 }

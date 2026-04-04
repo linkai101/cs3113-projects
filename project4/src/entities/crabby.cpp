@@ -12,6 +12,10 @@ Crabby::Crabby(Vector2 spawnPosition, Assets& assets) :
 }
 
 void Crabby::update(float deltaTime) {
+  if (dead && animator->getCurrentAnimation() != "dead-hit") {
+    playAnimation("dead-hit");
+  }
+
   if (physicsBody.has_value()) {
     PhysicsBody& pb = *physicsBody;
 
@@ -22,6 +26,11 @@ void Crabby::update(float deltaTime) {
   Entity::update(deltaTime);
 }
 
+void Crabby::kill() {
+  dead = true;
+  // physicsBody = std::nullopt; // Remove physics body
+}
+
 Animator Crabby::buildAnimator(Assets& assets) {
   Animator crabbyAnimator = Animator(
     &assets.crabbySheet,
@@ -29,6 +38,17 @@ Animator Crabby::buildAnimator(Assets& assets) {
     Vector2{ 108, 48 } // origin
   );
   crabbyAnimator.addAnimation("idle", Animator::Animation{"idle", { 0, 1, 2, 3, 4, 5, 6, 7, 8 }, 10, true});
+  crabbyAnimator.addAnimation("run", Animator::Animation{"run", { 9, 10, 11, 12, 13, 14 }, 10, true});
+  crabbyAnimator.addAnimation("jump", Animator::Animation{"jump", { 18, 19, 20 }, 10, false});
+  crabbyAnimator.addAnimation("fall", Animator::Animation{"fall", { 27 }, 10, true});
+  crabbyAnimator.addAnimation("ground", Animator::Animation{"ground", { 36, 37 }, 10, false});
+  crabbyAnimator.addAnimation("anticipation", Animator::Animation{"anticipation", { 45, 46, 47 }, 10, false});
+  crabbyAnimator.addAnimation("attack", Animator::Animation{"attack", { 54, 55, 56, 57 }, 10, false});
+  crabbyAnimator.addAnimation("hit", Animator::Animation{"hit", { 63, 64, 65, 66 }, 10, false});
+  // crabbyAnimator.addAnimation("dead-hit", Animator::Animation{"dead-hit", { 72, 73, 74, 75 }, 10, false});
+  // crabbyAnimator.addAnimation("dead-ground", Animator::Animation{"dead-ground", { 81, 82, 83, 84 }, 10, false});
+  crabbyAnimator.addAnimation("dead-hit", Animator::Animation{"dead", { 72, 73, 74, 75, 81, 82, 83, 84 }, 10, false});
+
 
   return crabbyAnimator;
 }

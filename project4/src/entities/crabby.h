@@ -10,7 +10,13 @@ public:
 
   void update(float deltaTime) override;
 
+  void kill();
+
+  bool isDead() const { return dead; }
+
 private:
+  bool dead = false;
+
   Animator buildAnimator(Assets& assets);
 
   static constexpr float GRAVITY_ACCELERATION = 2100.0f;

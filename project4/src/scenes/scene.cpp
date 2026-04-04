@@ -73,6 +73,7 @@ void Scene::resetPlayer(Player* player) {
   player->getPhysicsBody()->velocity = {0, 0};
   player->getPhysicsBody()->acceleration = {0, 0};
   player->getPhysicsBody()->isGrounded = false;
+  player->setStunned(false);
   player->playAnimation("idle");
 }
 
