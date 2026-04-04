@@ -13,6 +13,7 @@ void WinScreen::processInput(Player* player) {
 
 void WinScreen::update(float deltaTime, Player* player) {
   // Nothing to update
+}
 
 void WinScreen::render(Player* player) const {
   const char* title = "You Win!";
