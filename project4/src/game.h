@@ -25,6 +25,7 @@ private:
   std::unique_ptr<Scene> mainMenu;
   std::unique_ptr<Scene> level1;
   std::unique_ptr<Scene> level2;
+  std::unique_ptr<Scene> level3;
   Scene* activeScene;
 
   std::unique_ptr<Player> player;

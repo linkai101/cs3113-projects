@@ -9,12 +9,14 @@ struct Assets {
   Texture2D captainTexture;
   Texture2D crabbyTexture;
   Texture2D toothTexture;
+  Texture2D starTexture;
 
   Spritesheet islandTerrainSheet;
   Spritesheet smallMapSheet;
   Spritesheet captainSheet;
   Spritesheet crabbySheet;
   Spritesheet toothSheet;
+  Spritesheet starSheet;
 
   Music wavesMusic;
   Sound jumpSound;
@@ -39,6 +41,9 @@ struct Assets {
     toothTexture = LoadTexture("assets/textures/tooth.png");
     toothSheet = Spritesheet{toothTexture, Vector2{34, 30}, 8};
 
+    starTexture = LoadTexture("assets/textures/star.png");
+    starSheet = Spritesheet{starTexture, Vector2{34, 30}, 8};
+
     wavesMusic = LoadMusicStream("assets/textures/waves-loop.wav");
     jumpSound = LoadSound("assets/textures/jump.wav");
     hurtSound = LoadSound("assets/textures/hurt.wav");
@@ -52,6 +57,8 @@ struct Assets {
     UnloadTexture(captainTexture);
     UnloadTexture(crabbyTexture);
     UnloadTexture(toothTexture);
+    UnloadTexture(starTexture);
+    
     UnloadMusicStream(wavesMusic);
     UnloadSound(jumpSound);
     UnloadSound(hurtSound);

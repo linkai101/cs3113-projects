@@ -2,6 +2,7 @@
 #include "scenes/main_menu.h"
 #include "scenes/level1.h"
 #include "scenes/level2.h"
+#include "scenes/level3.h"
 #include "utils/log.h"
 #include "utils/color.h"
 #include <memory>
@@ -57,6 +58,10 @@ void Game::processInput() {
     activeScene->unload();
     activeScene = level2.get();
     activeScene->load(player.get());
+  } else if (IsKeyPressed(KEY_THREE) && activeScene != level3.get()) {
+    activeScene->unload();
+    activeScene = level3.get();
+    activeScene->load(player.get());
   }
 
   // Process input for active scene
@@ -75,6 +80,7 @@ void Game::update(float deltaTime) {
     Scene* nextScene = nullptr;
     if (activeScene == mainMenu.get()) nextScene = level1.get();
     else if (activeScene == level1.get()) nextScene = level2.get();
+    else if (activeScene == level2.get()) nextScene = level3.get();
     if (nextScene) {
       activeScene->unload();
       activeScene = nextScene;
@@ -100,12 +106,14 @@ void Game::resetGame() {
   mainMenu.reset();
   level1.reset();
   level2.reset();
+  level3.reset();
   player.reset();
 
   // Create scenes
   mainMenu = std::make_unique<MainMenu>(width, height, assets);
   level1 = std::make_unique<Level1>(width, height, assets);
   level2 = std::make_unique<Level2>(width, height, assets);
+  level3 = std::make_unique<Level3>(width, height, assets);
 
   // Create player
   player = std::make_unique<Player>(
