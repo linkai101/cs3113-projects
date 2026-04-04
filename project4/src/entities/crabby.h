@@ -27,6 +27,6 @@ private:
   Animator buildAnimator(Assets& assets);
 
   static constexpr float GRAVITY_ACCELERATION = 2100.0f;
-  static constexpr float GROUND_VELOCITY = 200.0f;
-  static constexpr float WAIT_DURATION = 2.0f;
+  static constexpr float WANDER_VELOCITY = 100.0f;
+  static constexpr float WANDER_WAIT_DURATION = 2.0f;
 };

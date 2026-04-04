@@ -31,5 +31,6 @@ private:
     { 19, E, E, 0, 9, 1, 1, 1, 24, 23, 1, 1, 24, 18 },
     { 23, 1, 1, 24, 18, 18, 18, 18, 18, 18, 18, 18, 18, 18 },
   };
-  static constexpr Vector2 MAP_SPAWN_POSITION = {1.5f, 7.5f};
+  static constexpr Vector2 SPAWN_POSITION = {1.5f, 7.5f};
+  static constexpr Vector2 GOAL_SPAWN_POSITION = {15.5f, 5.5f};
 };

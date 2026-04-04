@@ -28,7 +28,7 @@ void Crabby::update(float deltaTime) {
         animator->setFlipX(wanderingRight);
       }
     } else { // Alive, wandering
-      pb.velocity.x = wanderingRight ? GROUND_VELOCITY : -GROUND_VELOCITY;
+      pb.velocity.x = wanderingRight ? WANDER_VELOCITY : -WANDER_VELOCITY;
       if (animator->getCurrentAnimation() != "run") playAnimation("run");
       animator->setFlipX(wanderingRight);
     }
@@ -44,7 +44,7 @@ void Crabby::resolveCollisions(std::vector<Entity*> entities) {
   // Check if crabby hit a wall
   if (!waiting && velocityXBefore != 0 && physicsBody->velocity.x == 0) {
     waiting = true;
-    waitTimer = WAIT_DURATION;
+    waitTimer = WANDER_WAIT_DURATION;
   }
 }
 

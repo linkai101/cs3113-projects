@@ -2,7 +2,7 @@
 #include "utils/color.h"
 
 Level1::Level1(int screenWidth, int screenHeight, Assets& assets) :
-  Scene(screenWidth, screenHeight, getTilePosition(MAP_SPAWN_POSITION), assets)
+  Scene(screenWidth, screenHeight, getTilePosition(SPAWN_POSITION), assets)
 {}
 
 void Level1::loadLevel() {
@@ -32,10 +32,7 @@ void Level1::loadLevel() {
   mapAnimator.addAnimation("map-3", Animator::Animation{"map-3", {16, 17, 18, 19, 20, 21, 22, 23}, 10, true});
   mapAnimator.addAnimation("map-4", Animator::Animation{"map-4", {24, 25, 26, 27, 28, 29, 30, 31}, 10, true});
 
-  entities.push_back(std::make_unique<Entity>(
-    getTilePosition(Vector2{7.5f, 3.5f}), // position
-    mapAnimator
-  ));
+  entities.push_back(std::make_unique<Entity>(getTilePosition(GOAL_SPAWN_POSITION), mapAnimator));
   levelGoal = entities.back().get();
   levelGoal->playAnimation("map-4");
   levelGoal->enablePhysics(Vector2{32, 32}, Vector2{-16, -16}, true);
