@@ -134,6 +134,6 @@ Animator Player::buildAnimator(Assets& assets) {
   playerAnimator.addAnimation("hit", Animator::Animation{"hit", { 30, 31, 32, 33 }, 10, false});
   // playerAnimator.addAnimation("dead-hit", Animator::Animation{"dead-hit", { 36, 37, 38, 39 }, 10, false});
   // playerAnimator.addAnimation("dead-ground", Animator::Animation{"dead-ground", { 42, 43, 44, 45 }, 10, false});
-  playerAnimator.addAnimation("dead-hit", Animator::Animation{"dead", { 36, 37, 38, 39, 42, 43, 44, 45 }, 10, false});
+  playerAnimator.addAnimation("dead-hit", Animator::Animation{"dead-hit", { 36, 37, 38, 39, 42, 43, 44, 45 }, 10, false});
   return playerAnimator;
 }

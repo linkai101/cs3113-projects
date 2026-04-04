@@ -48,6 +48,14 @@ void Level2::loadLevel() {
   ));
   crabby = static_cast<Crabby*>(entities.back().get());
   backgroundEntities.push_back(crabby);
+
+  // Tooth
+  entities.push_back(std::make_unique<Tooth>(
+    getTilePosition(Vector2{10.5f, 6.5f}), // position
+    assets
+  ));
+  tooth = static_cast<Tooth*>(entities.back().get());
+  backgroundEntities.push_back(tooth);
 }
 
 void Level2::resolveCollisions(Player* player) {
@@ -75,9 +83,13 @@ void Level2::resolveCollisions(Player* player) {
   // Resolve crabby collisions
   crabby->resolveCollisions(terrainEntities);
 
-  // Resolve player collisions (crabby included for physics, but only as static obstacle)
+  // Resolve tooth collisions
+  tooth->resolveCollisions(terrainEntities);
+
+  // Resolve player collisions
   std::vector<Entity*> playerCollidables = terrainEntities;
   playerCollidables.push_back(crabby);
+  playerCollidables.push_back(tooth);
   player->resolveCollisions(playerCollidables);
 
   // Handle player outcomes

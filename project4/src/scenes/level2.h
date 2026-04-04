@@ -1,6 +1,7 @@
 #pragma once
 #include "scenes/scene.h"
 #include "entities/crabby.h"
+#include "entities/tooth.h"
 
 class Level2 : public Scene {
 public:
@@ -14,6 +15,7 @@ protected:
 private:
   Entity* levelGoal;
   Crabby* crabby;
+  Tooth* tooth;
   
   static constexpr int E = EMPTY_TILE;
   static constexpr int MAP_ROWS = 9;

@@ -76,7 +76,7 @@ Animator Crabby::buildAnimator(Assets& assets) {
   crabbyAnimator.addAnimation("hit", Animator::Animation{"hit", { 63, 64, 65, 66 }, 10, false});
   // crabbyAnimator.addAnimation("dead-hit", Animator::Animation{"dead-hit", { 72, 73, 74, 75 }, 10, false});
   // crabbyAnimator.addAnimation("dead-ground", Animator::Animation{"dead-ground", { 81, 82, 83, 84 }, 10, false});
-  crabbyAnimator.addAnimation("dead-hit", Animator::Animation{"dead", { 72, 73, 74, 75, 81, 82, 83, 84 }, 10, false});
+  crabbyAnimator.addAnimation("dead-hit", Animator::Animation{"dead-hit", { 72, 73, 74, 75, 81, 82, 83, 84 }, 10, false});
 
 
   return crabbyAnimator;

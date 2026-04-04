@@ -8,11 +8,13 @@ struct Assets {
   Texture2D smallMapTexture;
   Texture2D captainTexture;
   Texture2D crabbyTexture;
+  Texture2D toothTexture;
 
   Spritesheet islandTerrainSheet;
   Spritesheet smallMapSheet;
   Spritesheet captainSheet;
   Spritesheet crabbySheet;
+  Spritesheet toothSheet;
 
   void load() {
     islandBgTexture = LoadTexture("assets/textures/island-bg.png");
@@ -28,6 +30,9 @@ struct Assets {
 
     crabbyTexture = LoadTexture("assets/textures/crabby.png");
     crabbySheet = Spritesheet{crabbyTexture, Vector2{72, 32}, 9};
+
+    toothTexture = LoadTexture("assets/textures/tooth.png");
+    toothSheet = Spritesheet{toothTexture, Vector2{34, 30}, 8};
   }
 
   void unload() {
@@ -35,5 +40,7 @@ struct Assets {
     UnloadTexture(islandTerrainTexture);
     UnloadTexture(smallMapTexture);
     UnloadTexture(captainTexture);
+    UnloadTexture(crabbyTexture);
+    UnloadTexture(toothTexture);
   }
 };

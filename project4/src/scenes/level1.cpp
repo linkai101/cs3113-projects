@@ -74,7 +74,7 @@ void Level1::resolveCollisions(Player* player) {
   // Resolve crabby collisions
   crabby->resolveCollisions(terrainEntities);
 
-  // Resolve player collisions (crabby included for physics, but only as static obstacle)
+  // Resolve player collisions
   std::vector<Entity*> playerCollidables = terrainEntities;
   playerCollidables.push_back(crabby);
   player->resolveCollisions(playerCollidables);
