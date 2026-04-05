@@ -4,6 +4,7 @@
 #include "scenes/level2.h"
 #include "scenes/level3.h"
 #include "scenes/win_screen.h"
+#include "scenes/lose_screen.h"
 #include "utils/log.h"
 #include "utils/color.h"
 #include <memory>
@@ -75,6 +76,13 @@ void Game::update(float deltaTime) {
   // Update active scene
   if (activeScene) activeScene->update(deltaTime, player.get());
 
+  // Handle game over (player out of lives, wait for stun animation to finish)
+  if (player->isGameOver() && !player->isStunned() && activeScene != loseScreen.get() && activeScene != mainMenu.get()) {
+    activeScene->unload();
+    activeScene = loseScreen.get();
+    return;
+  }
+
   // Handle scene transition
   if (activeScene && activeScene->isTransitionRequested()) {
     activeScene->clearTransition();
@@ -83,13 +91,14 @@ void Game::update(float deltaTime) {
     else if (activeScene == level1.get()) nextScene = level2.get();
     else if (activeScene == level2.get()) nextScene = level3.get();
     else if (activeScene == level3.get()) nextScene = winScreen.get();
-    else if (activeScene == winScreen.get()) nextScene = mainMenu.get();
+    else if (activeScene == winScreen.get() || activeScene == loseScreen.get()) {
+      resetGame();
+      return;
+    }
     if (nextScene) {
       activeScene->unload();
       activeScene = nextScene;
-      if (nextScene != mainMenu.get() && nextScene != winScreen.get()) {
-        activeScene->load(player.get());
-      }
+      activeScene->load(player.get());
     }
   }
 }
@@ -113,6 +122,7 @@ void Game::resetGame() {
   level2.reset();
   level3.reset();
   winScreen.reset();
+  loseScreen.reset();
   player.reset();
 
   // Create scenes
@@ -121,6 +131,7 @@ void Game::resetGame() {
   level2 = std::make_unique<Level2>(width, height, assets);
   level3 = std::make_unique<Level3>(width, height, assets);
   winScreen = std::make_unique<WinScreen>(width, height, assets);
+  loseScreen = std::make_unique<LoseScreen>(width, height, assets);
 
   // Create player
   player = std::make_unique<Player>(

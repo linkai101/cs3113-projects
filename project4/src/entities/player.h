@@ -18,6 +18,10 @@ public:
   
   bool isStunned() const { return stunned; }
   bool setStunned(bool stunned) { this->stunned = stunned; }
+
+  int getLives() const { return lives; }
+  bool isGameOver() const { return gameOver; }
+  void resetLives() { lives = MAX_LIVES; gameOver = false; }
   
 private:
   Sound& jumpSound;
@@ -27,6 +31,9 @@ private:
   bool movingRight = false;
   bool movingUp = false;
 
+  int lives = MAX_LIVES;
+  bool gameOver = false;
+
   bool canJump = true;
   bool jumping = false;
   bool wasGrounded = true;
@@ -35,6 +42,7 @@ private:
 
   Animator buildAnimator(Assets& assets);
 
+  static constexpr int MAX_LIVES = 3;
   static constexpr float GRAVITY_ACCELERATION = 2100.0f;
   static constexpr float GROUND_VELOCITY = 300.0f;
   static constexpr float JUMP_INITIAL_VELOCITY = 700.0f;

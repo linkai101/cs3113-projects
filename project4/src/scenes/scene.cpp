@@ -71,6 +71,10 @@ void Scene::render(Player* player) const {
   }
 
   EndMode2D();
+
+  // HUD
+  const char* livesText = TextFormat("Lives: %d", player->getLives());
+  DrawText(livesText, 10, 10, 20, WHITE);
 }
 
 void Scene::resetPlayer(Player* player) {

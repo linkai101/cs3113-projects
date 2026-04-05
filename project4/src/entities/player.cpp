@@ -113,12 +113,20 @@ void Player::update(float deltaTime) {
 }
 
 void Player::hit(float hitSourceX) {
-  playAnimation("dead-hit");
+  if (stunned || gameOver) return;
+
+  lives--;
+  if (lives <= 0) {
+    lives = 0;
+    gameOver = true;
+  }
+
   PlaySound(hurtSound);
   bool knockedRight = position.x >= hitSourceX;
   getPhysicsBody()->velocity.x = HIT_KNOCKBACK_SPEED_X * (knockedRight ? 1.0f : -1.0f);
   getPhysicsBody()->velocity.y = HIT_KNOCKBACK_VELOCITY_Y;
   animator->setFlipX(knockedRight);
+  playAnimation("dead-hit");
 
   stunned = true;
   stunTimer = STUNNED_DURATION;
