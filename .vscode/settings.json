@@ -44,6 +44,8 @@
     "__bit_reference": "cpp",
     "cctype": "cpp",
     "clocale": "cpp",
-    "optional": "cpp"
+    "optional": "cpp",
+    "cwctype": "cpp",
+    "variant": "cpp"
   }
 }
