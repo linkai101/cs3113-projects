@@ -19,7 +19,10 @@ void Level3::loadLevel() {
   backgroundEntities.push_back(entities.back().get());
   
   // Terrain map
-  loadTileGrid(&TERRAIN_MAP[0][0], MAP_ROWS, MAP_COLS, assets.islandTerrainSheet, {0, 0}, true, false);
+  loadTileGrid(&TERRAIN_MAP[0][0], MAP_ROWS, MAP_COLS, assets.pirateShipTerrainSheet, {0, 0}, true, false);
+
+  // Platform map
+  loadTileGrid(&PLATFORM_MAP[0][0], MAP_ROWS, MAP_COLS, assets.pirateShipPlatformsSheet, {0, 0}, true, false, true);
 
   // Level goal
   Animator mapAnimator = Animator(

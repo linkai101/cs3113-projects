@@ -89,7 +89,8 @@ void Scene::resetPlayer(Player* player) {
 void Scene::loadTileGrid(
   const int* grid, int rows, int cols,
   Spritesheet& sheet, Vector2 tileOffset,
-  bool enablePhysics, bool foreground
+  bool enablePhysics, bool foreground,
+  bool platform
 ) {
   for (int r = 0; r < rows; r++) {
     for (int c = 0; c < cols; c++) {
@@ -107,7 +108,13 @@ void Scene::loadTileGrid(
           Vector2{ 0, 0 }
         )
       );
-      if (enablePhysics) tile.enablePhysics(Vector2{ TILE_SIZE, TILE_SIZE }, Vector2{ 0, 0 }, true);
+      if (enablePhysics) {
+        if (platform) {
+          tile.enablePhysics(Vector2{ TILE_SIZE, 10 }, Vector2{ 0, 0 }, true);
+        } else {
+          tile.enablePhysics(Vector2{ TILE_SIZE, TILE_SIZE }, Vector2{ 0, 0 }, true);
+        }
+      }
 
       // Add to scene
       entities.push_back(std::make_unique<Entity>(tile));

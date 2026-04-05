@@ -59,7 +59,8 @@ protected:
   void loadTileGrid(
     const int* grid, int rows, int cols,
     Spritesheet& sheet, Vector2 tileOffset,
-    bool enablePhysics, bool foreground
+    bool enablePhysics, bool foreground,
+    bool platform = false
   );
 
   static Vector2 getTilePosition(Vector2 tileCoordinates, Vector2 tileOffset = {0, 0});

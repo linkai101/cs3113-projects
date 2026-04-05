@@ -12,11 +12,13 @@ Some texture assets were reformatted into custom spritesheets for use in the gam
     - idle (0-8), run (9-14), jump (18-20), fall (27), ground (36-37), anticipation (45-47), attack (54-57), hit (63-66), dead-hit (72-75), dead-ground (81-84), attack effect excluded
   - `island-bg.png`
   - `island-terrain.png` (32x32 sprites, 17 columns)
+  - `pirate-ship-platforms.png` (32x32 sprites, 4 columns)
+  - `pirate-ship-terrain.png` (32x32 sprites, 17 columns)
   - `small-map.png` (20x20 sprites, 8 columns)
-  - `tooth.png` (34x30 sprites, 8 columns)
-    - idle (0-7), run (8-13), jump (16-18), fall (24), ground (32-33), anticipation (40-42), attack (48-52), hit (56-59), dead-hit (64-67), dead-ground (72-75), attack effect excluded
   - `star.png` (34x30, 8 columns)
     - idle (0-7), run (8-13), jump (16-18), fall (24), ground (32-33), anticipation (40-42), attack (48-51), hit (56-59), dead-hit (64-67), dead-ground (72-75), attack effect excluded
+  - `tooth.png` (34x30 sprites, 8 columns)
+    - idle (0-7), run (8-13), jump (16-18), fall (24), ground (32-33), anticipation (40-42), attack (48-52), hit (56-59), dead-hit (64-67), dead-ground (72-75), attack effect excluded
 
 - [Beach & Camping Ambient Sound Pack](https://audialucas.itch.io/beach-camping-ambient-sound-pack)
   - `waves-loop.wav`

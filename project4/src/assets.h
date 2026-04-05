@@ -5,6 +5,8 @@
 struct Assets {
   Texture2D islandBgTexture;
   Texture2D islandTerrainTexture;
+  Texture2D pirateShipTerrainTexture;
+  Texture2D pirateShipPlatformsTexture;
   Texture2D smallMapTexture;
   Texture2D captainTexture;
   Texture2D crabbyTexture;
@@ -12,6 +14,8 @@ struct Assets {
   Texture2D starTexture;
 
   Spritesheet islandTerrainSheet;
+  Spritesheet pirateShipTerrainSheet;
+  Spritesheet pirateShipPlatformsSheet;
   Spritesheet smallMapSheet;
   Spritesheet captainSheet;
   Spritesheet crabbySheet;
@@ -28,6 +32,12 @@ struct Assets {
 
     islandTerrainTexture = LoadTexture("assets/textures/island-terrain.png");
     islandTerrainSheet = Spritesheet{islandTerrainTexture, Vector2{32, 32}, 17};
+
+    pirateShipTerrainTexture = LoadTexture("assets/textures/pirate-ship-terrain.png");
+    pirateShipTerrainSheet = Spritesheet{pirateShipTerrainTexture, Vector2{32, 32}, 17};
+    
+    pirateShipPlatformsTexture = LoadTexture("assets/textures/pirate-ship-platforms.png");
+    pirateShipPlatformsSheet = Spritesheet{pirateShipPlatformsTexture, Vector2{32, 32}, 4};
 
     smallMapTexture = LoadTexture("assets/textures/small-map.png");
     smallMapSheet = Spritesheet{smallMapTexture, Vector2{20, 20}, 8};
@@ -53,6 +63,8 @@ struct Assets {
   void unload() {
     UnloadTexture(islandBgTexture);
     UnloadTexture(islandTerrainTexture);
+    UnloadTexture(pirateShipTerrainTexture);
+    UnloadTexture(pirateShipPlatformsTexture);
     UnloadTexture(smallMapTexture);
     UnloadTexture(captainTexture);
     UnloadTexture(crabbyTexture);
