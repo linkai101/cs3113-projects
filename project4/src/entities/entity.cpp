@@ -105,17 +105,17 @@ void Entity::render() const {
     if (sprite.has_value()) sprite->render(position);
   }
 
-  if (physicsBody.has_value()) {
-    // DEBUG: collider bounds
-    Rectangle collider = physicsBody->getCollider(position);
-    DrawRectangleLines(
-      collider.x,
-      collider.y,
-      collider.width,
-      collider.height,
-      BLUE
-    );
-  }
+  // if (physicsBody.has_value()) {
+  //   // DEBUG: collider bounds
+  //   Rectangle collider = physicsBody->getCollider(position);
+  //   DrawRectangleLines(
+  //     collider.x,
+  //     collider.y,
+  //     collider.width,
+  //     collider.height,
+  //     BLUE
+  //   );
+  // }
 }
 
 bool Entity::isColliding(Entity* a, Entity* b) {
