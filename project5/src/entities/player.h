@@ -22,10 +22,11 @@ private:
   bool movingLeft = false;
   bool movingRight = false;
 
+  Animator handsAnimator;
   // Overlayed animator for hands or the equipped item
-  std::optional<Animator> gearLayer;
+  Animator* gearLayer;
 
-  Animator buildAnimator(Assets& assets);
+  Animator buildAnimator(Spritesheet* sheet);
 
   static constexpr Vector2 SIZE = {95, 90};
   static constexpr Vector2 COLLIDER_SIZE = {48, 80};
