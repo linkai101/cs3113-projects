@@ -11,6 +11,8 @@ public:
 
   void update(float deltaTime) override;
 
+  void render() const override;
+
 private:
   enum class Direction { UP, DOWN, LEFT, RIGHT };
   
@@ -19,6 +21,9 @@ private:
   bool movingDown = false;
   bool movingLeft = false;
   bool movingRight = false;
+
+  // Overlayed animator for hands or the equipped item
+  std::optional<Animator> gearLayer;
 
   Animator buildAnimator(Assets& assets);
 
