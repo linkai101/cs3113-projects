@@ -56,6 +56,11 @@ bool Animator::isAnimationDone() const {
   return currentFrame >= static_cast<int>(anim.frames.size()) - 1;
 }
 
+bool Animator::isAnimationLooping() const {
+  if (currentAnimation.empty()) return false;
+  return animations.at(currentAnimation).loop;
+}
+
 void Animator::render(Vector2 position) const {
   if (!currentAnimation.empty()) {
     Rectangle sourceArea = sheet->getFrame(animations.at(currentAnimation).frames[currentFrame]);

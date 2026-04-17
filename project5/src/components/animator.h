@@ -38,6 +38,7 @@ public:
   std::string getCurrentAnimation() const { return currentAnimation; }
 
   bool isAnimationDone() const;
+  bool isAnimationLooping() const;
 
   void render(Vector2 position) const;
 

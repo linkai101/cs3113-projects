@@ -40,7 +40,13 @@ void World::processInput() {
   bool left = IsKeyDown(KEY_A);
   bool right = IsKeyDown(KEY_D);
 
-  player->processInput(up, down, left, right);
+  // DEBUG
+  if (IsKeyPressed(KEY_ZERO)) player->debug(0);
+  if (IsKeyPressed(KEY_ONE)) player->debug(1);
+  if (IsKeyPressed(KEY_TWO)) player->debug(2);
+  if (IsKeyPressed(KEY_THREE)) player->debug(3);
+
+  player->move(up, down, left, right);
 }
 
 void World::update(float deltaTime) {
