@@ -41,7 +41,7 @@ void Sprite::render(Vector2 position) const {
     sourceArea,
     destinationArea,
     originActual,
-    0.0f, // rotation
+    rotation,
     WHITE // tint
   );
 

@@ -1,6 +1,7 @@
 #pragma once
 #include "scenes/scene.h"
 #include "entities/player.h"
+#include "entities/bullet.h"
 
 class World : public Scene {
 public:
@@ -23,6 +24,8 @@ private:
   std::vector<std::unique_ptr<Entity>> entities;
 
   Player* player;
+
+  void spawnBullets(BulletType type, float aimAngle);
 
   void loadTileGrid(
     std::vector<std::unique_ptr<Entity>>& vectorToAddTo,

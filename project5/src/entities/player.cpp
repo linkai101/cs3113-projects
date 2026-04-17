@@ -33,7 +33,7 @@ void Player::update(float deltaTime) {
       weaponLayer = &shotgunAnimator;
       break;
   }
-
+  
   // Update player movement
   if (physicsBody.has_value()) {
     PhysicsBody& pb = *physicsBody;
@@ -118,14 +118,20 @@ void Player::update(float deltaTime) {
 }
 
 void Player::render() const {
-  bool weaponBehind = mouseWorldPos.y < position.y;
+  auto renderWeapon = [this]() -> void {
+    if (weaponLayer && animator->getCurrentAnimation() != "die") { // Don't render if player is dying
+      weaponLayer->render({position.x + WEAPON_POSITION_OFFSET.x, position.y + WEAPON_POSITION_OFFSET.y});
+    }
+  };
 
-  if (weaponLayer && weaponBehind) weaponLayer->render({position.x, position.y - 20});
+  bool weaponBehind = equipped != Equippable::PISTOL && mouseWorldPos.y < position.y; // Always render pistols in front for visibility
+
+  if (weaponBehind) renderWeapon();
 
   Entity::render();
 
   if (gearLayer) gearLayer->render(position);
-  if (weaponLayer && !weaponBehind) weaponLayer->render({position.x, position.y - 20});
+  if (!weaponBehind) renderWeapon();
 }
 
 void Player::move(bool up, bool down, bool left, bool right) {
@@ -145,11 +151,45 @@ void Player::move(bool up, bool down, bool left, bool right) {
   }
 }
 
+void Player::attack() {
+  if (
+    equipped == Equippable::HANDS ||
+    equipped == Equippable::BAT
+  ) {
+    switch (facingDirection) {
+      case Direction::UP:
+        animator->play("attack-up");
+        break;
+      case Direction::DOWN:
+        animator->play("attack-down");
+        break;
+      case Direction::LEFT:
+        animator->play("attack-side");
+        animator->setFlipX(true);
+        break;
+      case Direction::RIGHT:
+        animator->play("attack-side");
+        animator->setFlipX(false);
+        break;
+    }
+  } else if (equipped == Equippable::RIFLE) {
+    weaponLayer->play("shoot");
+  } else if (equipped == Equippable::PISTOL) {
+    weaponLayer->play("shoot");
+  } else if (equipped == Equippable::SHOTGUN) {
+    weaponLayer->play("shoot");
+  }
+}
+
+void Player::reload() {
+  if (weaponLayer) weaponLayer->play("reload");
+}
+
 Animator Player::buildAnimator(Spritesheet* sheet, AnimatorType type) {
   Vector2 size;
   Vector2 origin;
 
-  // set size and origin based on type
+  // Set size and origin based on type
   if (type == AnimatorType::PLAYER) {
     size = SIZE;
     origin = Vector2{SIZE.x / 2, SIZE.y};
@@ -162,7 +202,7 @@ Animator Player::buildAnimator(Spritesheet* sheet, AnimatorType type) {
     type == AnimatorType::WEAPON_SHOTGUN
   ) {
     size = WEAPON_SIZE;
-    origin = Vector2{24, WEAPON_SIZE.y - WEAPON_SIZE.y * 0.4f};
+    origin = Vector2{24, WEAPON_SIZE.y * 0.5f};
   }
 
   Animator anim = Animator(
@@ -171,7 +211,7 @@ Animator Player::buildAnimator(Spritesheet* sheet, AnimatorType type) {
     origin
   );
 
-  // add animations based on type
+  // Add animations based on type
   if (
     type == AnimatorType::PLAYER ||
     type == AnimatorType::GEAR
@@ -182,9 +222,9 @@ Animator Player::buildAnimator(Spritesheet* sheet, AnimatorType type) {
     anim.addAnimation("run-side", Animator::Animation{"run-side", {18, 19, 20, 21, 22, 23}, 10, true});
     anim.addAnimation("run-down", Animator::Animation{"run-down", {24, 25, 26, 27, 28, 29}, 10, true});
     anim.addAnimation("run-up", Animator::Animation{"run-up", {30, 31, 32, 33, 34, 35}, 10, true});
-    anim.addAnimation("pickup-side", Animator::Animation{"pickup-side", {36, 37, 38}, 10, false});
-    anim.addAnimation("pickup-down", Animator::Animation{"pickup-down", {42, 43, 44}, 10, false});
-    anim.addAnimation("pickup-up", Animator::Animation{"pickup-up", {48, 49, 50}, 10, false});
+    // anim.addAnimation("pickup-side", Animator::Animation{"pickup-side", {36, 37, 38}, 10, false});
+    // anim.addAnimation("pickup-down", Animator::Animation{"pickup-down", {42, 43, 44}, 10, false});
+    // anim.addAnimation("pickup-up", Animator::Animation{"pickup-up", {48, 49, 50}, 10, false});
     anim.addAnimation("attack-side", Animator::Animation{"attack-side", {54, 55, 56}, 10, false});
     anim.addAnimation("attack-down", Animator::Animation{"attack-down", {60, 61, 62}, 10, false});
     anim.addAnimation("attack-up", Animator::Animation{"attack-up", {66, 67, 68}, 10, false});
@@ -203,8 +243,25 @@ Animator Player::buildAnimator(Spritesheet* sheet, AnimatorType type) {
     anim.addAnimation("shoot", Animator::Animation{"shoot", {22, 23, 24, 25, 26}, 10, false});
   }
 
-
   return anim;
+}
+
+bool Player::canAttack() const {
+  // TODO: logic to check cooldown/ammo
+  return true;
+}
+
+std::optional<BulletType> Player::getEquippedBulletType() const {
+  switch (equipped) {
+    case Equippable::RIFLE: return BulletType::RIFLE;
+    case Equippable::SHOTGUN: return BulletType::SHOTGUN;
+    case Equippable::PISTOL: return BulletType::PISTOL;
+    default: return std::nullopt;
+  }
+}
+
+float Player::getAimAngle() const {
+  return atan2f(mouseWorldPos.y - position.y, mouseWorldPos.x - position.x);
 }
 
 void Player::debug(int debugAction) {
@@ -224,47 +281,7 @@ void Player::debug(int debugAction) {
     case 5: // equip shotgun
       equipped = Equippable::SHOTGUN;
       break;
-    case 0: // attack
-      switch (facingDirection) {
-        case Direction::UP:
-          animator->play("attack-up");
-          break;
-        case Direction::DOWN:
-          animator->play("attack-down");
-          break;
-        case Direction::LEFT:
-          animator->play("attack-side");
-          animator->setFlipX(true);
-          break;
-        case Direction::RIGHT:
-          animator->play("attack-side");
-          animator->setFlipX(false);
-          break;
-      }
-      if (weaponLayer) weaponLayer->play("shoot");
-      break;
-    case 9: // reload
-      if (weaponLayer) weaponLayer->play("reload");
-      break;
-    case 8: // pickup
-      switch (facingDirection) {
-        case Direction::UP:
-          animator->play("pickup-up");
-          break;
-        case Direction::DOWN:
-          animator->play("pickup-down");
-          break;
-        case Direction::LEFT:
-          animator->play("pickup-side");
-          animator->setFlipX(true);
-          break;
-        case Direction::RIGHT:
-          animator->play("pickup-side");
-          animator->setFlipX(false);
-          break;
-      }
-      break;
-    case 7: // die
+    case 0: // die
       animator->play("die");
       break;
   }

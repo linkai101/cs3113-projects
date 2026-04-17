@@ -1,5 +1,6 @@
 #pragma once
 #include "entities/entity.h"
+#include "entities/bullet.h"
 #include "assets.h"
 #include "components/animator.h"
 
@@ -13,7 +14,18 @@ public:
 
   void move(bool up, bool down, bool left, bool right);
 
+  void attack();
+
+  void reload();
+
   void setMouseWorldPosition(Vector2 pos) { mouseWorldPos = pos; }
+
+  bool canAttack() const;
+
+  // Returns the bullet type if equipping a weapon, otherwise returns std::nullopt
+  std::optional<BulletType> getEquippedBulletType() const;
+
+  float getAimAngle() const;
 
   void debug(int debugAction);
 
@@ -54,6 +66,7 @@ private:
   static constexpr Vector2 SIZE = {95, 90};
   static constexpr Vector2 GEAR_SIZE = {145, 200};
   static constexpr Vector2 WEAPON_SIZE = {100, 80};
+  static constexpr Vector2 WEAPON_POSITION_OFFSET = {0, -36};
   static constexpr Vector2 COLLIDER_SIZE = {48, 80};
   static constexpr float MOVEMENT_SPEED = 250;
 };
