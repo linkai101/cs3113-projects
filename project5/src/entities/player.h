@@ -17,7 +17,8 @@ public:
 
 private:
   enum class Direction { UP, DOWN, LEFT, RIGHT };
-  enum class AnimatorType { PLAYER, GEAR, /* WEAPON */ };
+  enum class AnimatorType { PLAYER, GEAR, WEAPON_RIFLE, WEAPON_PISTOL, WEAPON_SHOTGUN };
+  enum class Equippable { HANDS, BAT, RIFLE, PISTOL, SHOTGUN };
   
   Direction facingDirection = Direction::RIGHT;
   bool movingUp = false;
@@ -25,22 +26,30 @@ private:
   bool movingLeft = false;
   bool movingRight = false;
   
-  bool batEquipped = false;
+  Equippable equipped = Equippable::HANDS;
 
+  // Armor animators
+  // Animator helmetAnimator; // TODO
+  // Gear animators
   Animator handsAnimator;
   Animator batAnimator;
-  // Animator helmetAnimator; // TODO
+  // Weapon animators
+  Animator rifleAnimator;
+  Animator pistolAnimator;
+  Animator shotgunAnimator;
 
-  // Overlayed animator for armor, if equipped
-  Animator* armorLayer = nullptr;
-  // Overlayed animator for hands or the equipped item
-  Animator* equippedLayer = nullptr;
+  // Overlayed animator for equipped armor
+  // Animator* armorLayer = nullptr; // TODO
+  // Overlayed animator for equipped gear
+  Animator* gearLayer = nullptr;
+  // Overlayed animator for equipped weapon
+  Animator* weaponLayer = nullptr;
 
   Animator buildAnimator(Spritesheet* sheet, AnimatorType type = AnimatorType::PLAYER);
 
   static constexpr Vector2 SIZE = {95, 90};
-  static constexpr Vector2 GEAR_SIZE = {145, 200}; // hands, bat, helmet
-  // static constexpr Vector2 WEAPON_SIZE; // TODO
+  static constexpr Vector2 GEAR_SIZE = {145, 200};
+  static constexpr Vector2 WEAPON_SIZE = {100, 80};
   static constexpr Vector2 COLLIDER_SIZE = {48, 80};
   static constexpr float MOVEMENT_SPEED = 250;
 };

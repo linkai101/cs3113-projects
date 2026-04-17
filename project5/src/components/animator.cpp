@@ -50,7 +50,7 @@ void Animator::update(float deltaTime) {
 }
 
 bool Animator::isAnimationDone() const {
-  if (currentAnimation.empty()) return false;
+  if (currentAnimation.empty()) return true;
   const Animation& anim = animations.at(currentAnimation);
   if (anim.loop) return false;
   return currentFrame >= static_cast<int>(anim.frames.size()) - 1;

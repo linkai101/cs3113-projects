@@ -41,10 +41,16 @@ void World::processInput() {
   bool right = IsKeyDown(KEY_D);
 
   // DEBUG
-  if (IsKeyPressed(KEY_ZERO)) player->debug(0);
   if (IsKeyPressed(KEY_ONE)) player->debug(1);
   if (IsKeyPressed(KEY_TWO)) player->debug(2);
   if (IsKeyPressed(KEY_THREE)) player->debug(3);
+  if (IsKeyPressed(KEY_FOUR)) player->debug(4);
+  if (IsKeyPressed(KEY_FIVE)) player->debug(5);
+
+  if (IsKeyPressed(KEY_SEVEN)) player->debug(7);
+  if (IsKeyPressed(KEY_EIGHT)) player->debug(8);
+  if (IsKeyPressed(KEY_NINE)) player->debug(9);
+  if (IsKeyPressed(KEY_ZERO)) player->debug(0);
 
   player->move(up, down, left, right);
 }
