@@ -58,6 +58,10 @@ void World::processInput() {
 void World::update(float deltaTime) {
   if (!loaded) return;
 
+  if (player) {
+    player->setMouseWorldPosition(GetScreenToWorld2D(GetMousePosition(), camera.get()));
+  }
+
   for (auto& entity : entities) {
     entity->update(deltaTime);
   }

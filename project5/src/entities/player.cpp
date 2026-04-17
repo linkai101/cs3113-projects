@@ -95,12 +95,21 @@ void Player::update(float deltaTime) {
 
   // Update weapon layer
   if (weaponLayer) {
-    // Relay animator state to weapon layer
     if (weaponLayer->isAnimationDone()) {
       weaponLayer->play("idlerun");
     }
 
-    // TODO: Update weapon angle
+    float dx = mouseWorldPos.x - position.x;
+    float dy = mouseWorldPos.y - position.y;
+    float angle = atan2f(dy, dx) * RAD2DEG;
+
+    if (fabsf(angle) <= 90.0f) {
+      weaponLayer->setFlipX(false);
+      weaponLayer->setRotation(angle);
+    } else {
+      weaponLayer->setFlipX(true);
+      weaponLayer->setRotation(angle - 180.0f);
+    }
 
     weaponLayer->update(deltaTime);
   }
@@ -109,10 +118,14 @@ void Player::update(float deltaTime) {
 }
 
 void Player::render() const {
+  bool weaponBehind = mouseWorldPos.y < position.y;
+
+  if (weaponLayer && weaponBehind) weaponLayer->render({position.x, position.y - 20});
+
   Entity::render();
 
   if (gearLayer) gearLayer->render(position);
-  if (weaponLayer) weaponLayer->render(position); // TODO: Render weapon's layer based on facing direction
+  if (weaponLayer && !weaponBehind) weaponLayer->render({position.x, position.y - 20});
 }
 
 void Player::move(bool up, bool down, bool left, bool right) {
@@ -149,7 +162,7 @@ Animator Player::buildAnimator(Spritesheet* sheet, AnimatorType type) {
     type == AnimatorType::WEAPON_SHOTGUN
   ) {
     size = WEAPON_SIZE;
-    origin = Vector2{8, WEAPON_SIZE.y - 8};
+    origin = Vector2{24, WEAPON_SIZE.y - WEAPON_SIZE.y * 0.4f};
   }
 
   Animator anim = Animator(
@@ -228,8 +241,10 @@ void Player::debug(int debugAction) {
           animator->setFlipX(false);
           break;
       }
+      if (weaponLayer) weaponLayer->play("shoot");
       break;
     case 9: // reload
+      if (weaponLayer) weaponLayer->play("reload");
       break;
     case 8: // pickup
       switch (facingDirection) {

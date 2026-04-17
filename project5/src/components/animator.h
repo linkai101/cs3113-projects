@@ -35,6 +35,9 @@ public:
   void setFlipX(bool flipX) { this->flipX = flipX; }
   bool getFlipX() const { return flipX; }
 
+  void setRotation(float rotation) { this->rotation = rotation; }
+  float getRotation() const { return rotation; }
+
   std::string getCurrentAnimation() const { return currentAnimation; }
 
   bool isAnimationDone() const;
@@ -52,4 +55,5 @@ private:
   Vector2 size;
   Vector2 origin;
   bool flipX;
+  float rotation = 0.0f;
 };

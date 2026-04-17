@@ -13,6 +13,8 @@ public:
 
   void move(bool up, bool down, bool left, bool right);
 
+  void setMouseWorldPosition(Vector2 pos) { mouseWorldPos = pos; }
+
   void debug(int debugAction);
 
 private:
@@ -20,6 +22,8 @@ private:
   enum class AnimatorType { PLAYER, GEAR, WEAPON_RIFLE, WEAPON_PISTOL, WEAPON_SHOTGUN };
   enum class Equippable { HANDS, BAT, RIFLE, PISTOL, SHOTGUN };
   
+  Vector2 mouseWorldPos = {0, 0};
+
   Direction facingDirection = Direction::RIGHT;
   bool movingUp = false;
   bool movingDown = false;

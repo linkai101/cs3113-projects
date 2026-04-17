@@ -75,13 +75,23 @@ void Animator::render(Vector2 position) const {
       sourceArea,
       destinationArea,
       originActual,
-      0.0f, // rotation
+      rotation,
       WHITE // tint
     );
   }
 
-  // DEBUG: rendered bounds
-  DrawRectangleLines(position.x - origin.x, position.y - origin.y, size.x, size.y, RED);
+  // DEBUG: rendered bounds (rotated)
+  Vector2 originActual = flipX ? Vector2{size.x - origin.x, origin.y} : origin;
+  Vector2 corners[4] = {
+    {-originActual.x,          -originActual.y         },
+    {size.x - originActual.x,  -originActual.y         },
+    {size.x - originActual.x,  size.y - originActual.y },
+    {-originActual.x,          size.y - originActual.y },
+  };
+  float rad = rotation * DEG2RAD;
+  float c = cosf(rad), s = sinf(rad);
+  for (auto& p : corners) p = {p.x * c - p.y * s + position.x, p.x * s + p.y * c + position.y};
+  for (int i = 0; i < 4; i++) DrawLineV(corners[i], corners[(i + 1) % 4], RED);
 
   // DEBUG: origin
   DrawCircle(position.x, position.y, 2, RED);
