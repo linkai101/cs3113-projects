@@ -50,6 +50,7 @@ private:
   bool movingRight = false;
   
   Equippable equipped = Equippable::HANDS;
+  float attackCooldownTimer = 0.0f;
 
   // Armor animators
   // Animator helmetAnimator; // TODO
@@ -75,9 +76,19 @@ private:
   static constexpr Vector2 WEAPON_SIZE = {100, 80};
   static constexpr Vector2 WEAPON_POSITION_OFFSET = {0, -36};
   static constexpr Vector2 COLLIDER_SIZE = {40, 60};
-  static constexpr float MOVEMENT_SPEED = 250;
-  static constexpr float MELEE_RANGE = 80.0f;
-  static constexpr float MELEE_WIDTH = 80.0f;
+  static constexpr float MELEE_HITBOX_WIDTH = 80.0f;
+
+  static constexpr float MOVEMENT_SPEED = 250.0f;
+
+  static constexpr float HANDS_RANGE = 60.0f;
+  static constexpr float BAT_RANGE = 100.0f;
+
   static constexpr float HANDS_DAMAGE = 10.0f;
   static constexpr float BAT_DAMAGE = 20.0f;
+
+  static constexpr float HANDS_COOLDOWN = 0.25f;
+  static constexpr float BAT_COOLDOWN = 0.8f;
+  static constexpr float RIFLE_COOLDOWN = 0.15f;
+  static constexpr float PISTOL_COOLDOWN = 0.25f;
+  static constexpr float SHOTGUN_COOLDOWN = 0.7f;
 };

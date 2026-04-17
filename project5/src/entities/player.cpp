@@ -126,6 +126,8 @@ void Player::update(float deltaTime) {
     weaponLayer->update(deltaTime);
   }
 
+  if (attackCooldownTimer > 0.0f) attackCooldownTimer -= deltaTime;
+
   Entity::update(deltaTime);
 }
 
@@ -154,10 +156,7 @@ void Player::move(bool up, bool down, bool left, bool right) {
 }
 
 void Player::attack() {
-  if (
-    equipped == Equippable::HANDS ||
-    equipped == Equippable::BAT
-  ) {
+  if (equipped == Equippable::HANDS || equipped == Equippable::BAT) { // Melee attack
     switch (facingDirection) {
       case Direction::UP:
         animator->play("attack-up");
@@ -174,12 +173,16 @@ void Player::attack() {
         animator->setFlipX(false);
         break;
     }
-  } else if (equipped == Equippable::RIFLE) {
+    attackCooldownTimer = (equipped == Equippable::BAT) ? BAT_COOLDOWN : HANDS_COOLDOWN;
+  } else if (equipped == Equippable::RIFLE) { // Rifle
     weaponLayer->play("shoot");
-  } else if (equipped == Equippable::PISTOL) {
+    attackCooldownTimer = RIFLE_COOLDOWN;
+  } else if (equipped == Equippable::PISTOL) { // Pistol
     weaponLayer->play("shoot");
-  } else if (equipped == Equippable::SHOTGUN) {
+    attackCooldownTimer = PISTOL_COOLDOWN;
+  } else if (equipped == Equippable::SHOTGUN) { // Shotgun
     weaponLayer->play("shoot");
+    attackCooldownTimer = SHOTGUN_COOLDOWN;
   }
 }
 
@@ -249,8 +252,8 @@ Animator Player::buildAnimator(Spritesheet* sheet, AnimatorType type) {
 }
 
 bool Player::canAttack() const {
-  // TODO: logic to check cooldown/ammo
-  return true;
+  // TODO: add ammo check/reload timer for weapons
+  return attackCooldownTimer <= 0.0f;
 }
 
 std::optional<BulletType> Player::getEquippedBulletType() const {
@@ -276,14 +279,16 @@ std::optional<Rectangle> Player::getMeleeHitRect() const {
   // Frame 0 is the windup, frames 1+ are the active swing
   if (animator->getCurrentFrame() == 0) return std::nullopt;
 
+  float meleeRange = (equipped == Equippable::BAT) ? BAT_RANGE : HANDS_RANGE;
+
   if (facingDirection == Direction::LEFT) {
-    return Rectangle{position.x - COLLIDER_SIZE.x / 2 - MELEE_RANGE, position.y - COLLIDER_SIZE.y * 0.75f, MELEE_RANGE, MELEE_WIDTH};
+    return Rectangle{position.x - COLLIDER_SIZE.x / 2 - meleeRange, position.y - COLLIDER_SIZE.y * 0.75f, meleeRange, MELEE_HITBOX_WIDTH};
   } else if (facingDirection == Direction::RIGHT) {
-    return Rectangle{position.x + COLLIDER_SIZE.x / 2, position.y - COLLIDER_SIZE.y * 0.75f, MELEE_RANGE, MELEE_WIDTH};
+    return Rectangle{position.x + COLLIDER_SIZE.x / 2, position.y - COLLIDER_SIZE.y * 0.75f, meleeRange, MELEE_HITBOX_WIDTH};
   } else if (facingDirection == Direction::DOWN) {
-    return Rectangle{position.x - MELEE_WIDTH / 2, position.y - COLLIDER_SIZE.y * 0.25f, MELEE_WIDTH, MELEE_RANGE};
+    return Rectangle{position.x - MELEE_HITBOX_WIDTH / 2, position.y - COLLIDER_SIZE.y * 0.25f, MELEE_HITBOX_WIDTH, meleeRange};
   } else if (facingDirection == Direction::UP) {
-    return Rectangle{position.x - MELEE_WIDTH / 2, position.y - COLLIDER_SIZE.y - MELEE_RANGE, MELEE_WIDTH, MELEE_RANGE};
+    return Rectangle{position.x - MELEE_HITBOX_WIDTH / 2, position.y - COLLIDER_SIZE.y - meleeRange, MELEE_HITBOX_WIDTH, meleeRange};
   }
   return std::nullopt;
 }
