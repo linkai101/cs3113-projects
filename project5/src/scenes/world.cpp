@@ -154,12 +154,15 @@ Vector2 World::getTilePosition(Vector2 tileCoordinates, Vector2 tileOffset) {
 
 void World::spawnBullets(BulletType type, float aimAngle) {
   // Spawn slightly ahead of the player in the aim direction
-  static constexpr float SPAWN_DIST = 42.0f;
-  static constexpr float WEAPON_Y_OFFSET = -30.0f;
+  // Angle from the gun position (offset from player center) to the mouse,
+  // so the bullet trajectory passes through the cursor rather than running parallel.
+  Vector2 gunPos = { player->getPosition().x, player->getPosition().y + BULLET_SPAWN_Y_OFFSET };
+  Vector2 mousePos = player->getMouseWorldPosition();
+  float spawnAngle = atan2f(mousePos.y - gunPos.y, mousePos.x - gunPos.x);
 
   Vector2 origin = {
-    player->getPosition().x + cosf(aimAngle) * SPAWN_DIST,
-    player->getPosition().y + WEAPON_Y_OFFSET + sinf(aimAngle) * SPAWN_DIST
+    gunPos.x + cosf(spawnAngle) * BULLET_SPAWN_DIST,
+    gunPos.y + sinf(spawnAngle) * BULLET_SPAWN_DIST
   };
 
   auto spawn = [this, origin, type](float angle) {
@@ -167,11 +170,10 @@ void World::spawnBullets(BulletType type, float aimAngle) {
   };
 
   if (type == BulletType::SHOTGUN) {
-    static constexpr float SPREAD = 15.0f * DEG2RAD;
-    spawn(aimAngle - SPREAD);
-    spawn(aimAngle);
-    spawn(aimAngle + SPREAD);
+    spawn(spawnAngle - BULLET_SHOTGUN_SPREAD);
+    spawn(spawnAngle);
+    spawn(spawnAngle + BULLET_SHOTGUN_SPREAD);
   } else {
-    spawn(aimAngle);
+    spawn(spawnAngle);
   }
 }

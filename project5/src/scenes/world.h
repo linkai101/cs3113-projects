@@ -49,4 +49,8 @@ private:
     { 5, 5, 5, 5, 5 },
   };
   static constexpr Vector2 SPAWN_POSITION = {2.5f, 2.5f};
+
+  static constexpr float BULLET_SPAWN_DIST = 42.0f;
+  static constexpr float BULLET_SPAWN_Y_OFFSET = -42.0f;
+  static constexpr float BULLET_SHOTGUN_SPREAD = 10.0f * DEG2RAD;
 };

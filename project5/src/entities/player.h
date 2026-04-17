@@ -26,6 +26,7 @@ public:
   std::optional<BulletType> getEquippedBulletType() const;
 
   float getAimAngle() const;
+  Vector2 getMouseWorldPosition() const { return mouseWorldPos; }
 
   void debug(int debugAction);
 
