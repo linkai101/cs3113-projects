@@ -1,6 +1,7 @@
 #include <algorithm>
 #include <cmath>
 #include "scenes/world.h"
+#include "utils/collision.h"
 
 World::World(int screenWidth, int screenHeight, Assets& assets) :
   Scene(screenWidth, screenHeight, assets),
@@ -19,6 +20,9 @@ void World::load() {
   
   entities.push_back(std::make_unique<Player>(getTilePosition(SPAWN_POSITION), assets));
   player = dynamic_cast<Player*>(entities.back().get());
+
+  entities.push_back(std::make_unique<Dummy>(getTilePosition(DUMMY_SPAWN_POSITION), assets));
+  dummy = dynamic_cast<Dummy*>(entities.back().get());
 
   camera.init(player->getPosition());
 
@@ -68,12 +72,23 @@ void World::processInput() {
 void World::update(float deltaTime) {
   if (!loaded) return;
 
+  // Pass mouse position to player
   if (player) {
     player->setMouseWorldPosition(GetScreenToWorld2D(GetMousePosition(), camera.get()));
   }
 
+  // Update all entities
   for (auto& entity : entities) {
     entity->update(deltaTime);
+  }
+
+  // Resolve player collisions against all physics-enabled non-player entities
+  if (player) {
+    std::vector<Entity*> collidables;
+    for (auto& e : entities) {
+      if (e.get() != player && e->getCollider().has_value()) collidables.push_back(e.get());
+    }
+    player->resolveCollisions(collidables);
   }
 
   // Remove expired bullets
@@ -86,6 +101,41 @@ void World::update(float deltaTime) {
     entities.end()
   );
 
+  // Bullet-dummy collision
+  if (dummy) {
+    std::optional<Rectangle> dummyCollider = dummy->getCollider();
+    if (dummyCollider) {
+      entities.erase(
+        std::remove_if(entities.begin(), entities.end(),
+          [this, dummyCollider](const std::unique_ptr<Entity>& e) {
+            Bullet* b = dynamic_cast<Bullet*>(e.get());
+            if (!b) return false;
+            if (CheckPointInRect(b->getPosition(), *dummyCollider)) {
+              dummy->takeDamage(b->getDamage());
+              return true;
+            }
+            return false;
+          }),
+        entities.end()
+      );
+    }
+  }
+
+  // Melee-dummy collision
+  if (player && dummy) {
+    std::optional<Rectangle> meleeHit = player->getMeleeHitRect();
+    if (!meleeHit) {
+      playerMeleeHitRegistered = false;
+    } else if (!playerMeleeHitRegistered) {
+      std::optional<Rectangle> dummyCollider = dummy->getCollider();
+      if (dummyCollider && CheckRectCollision(*meleeHit, *dummyCollider)) {
+        dummy->takeDamage(player->getMeleeDamage());
+        playerMeleeHitRegistered = true;
+      }
+    }
+  }
+
+  // Update camera
   if (player) {
     camera.update(deltaTime, player->getPosition());
   }

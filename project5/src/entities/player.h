@@ -26,7 +26,13 @@ public:
   std::optional<BulletType> getEquippedBulletType() const;
 
   float getAimAngle() const;
+  
   Vector2 getMouseWorldPosition() const { return mouseWorldPos; }
+
+  // Returns the active melee hit rectangle during swing frames, or nullopt otherwise
+  std::optional<Rectangle> getMeleeHitRect() const;
+
+  float getMeleeDamage() const;
 
   void debug(int debugAction);
 
@@ -68,6 +74,10 @@ private:
   static constexpr Vector2 GEAR_SIZE = {145, 200};
   static constexpr Vector2 WEAPON_SIZE = {100, 80};
   static constexpr Vector2 WEAPON_POSITION_OFFSET = {0, -36};
-  static constexpr Vector2 COLLIDER_SIZE = {48, 80};
+  static constexpr Vector2 COLLIDER_SIZE = {40, 60};
   static constexpr float MOVEMENT_SPEED = 250;
+  static constexpr float MELEE_RANGE = 80.0f;
+  static constexpr float MELEE_WIDTH = 80.0f;
+  static constexpr float HANDS_DAMAGE = 10.0f;
+  static constexpr float BAT_DAMAGE = 20.0f;
 };

@@ -39,11 +39,13 @@ public:
   float getRotation() const { return rotation; }
 
   std::string getCurrentAnimation() const { return currentAnimation; }
+  
+  int getCurrentFrame() const { return currentFrame; }
 
   bool isAnimationDone() const;
   bool isAnimationLooping() const;
 
-  void render(Vector2 position) const;
+  void render(Vector2 position, Color tint = WHITE) const;
 
 private:
   Spritesheet* sheet;

@@ -42,6 +42,18 @@ void Player::update(float deltaTime) {
     pb.velocity.x = movingLeft ? -MOVEMENT_SPEED : (movingRight ? MOVEMENT_SPEED : 0);
   }
 
+  // Update facing direction from mouse position
+  float mouseAngle = atan2f(mouseWorldPos.y - position.y, mouseWorldPos.x - position.x);
+  if (mouseAngle > -PI / 4 && mouseAngle <= PI / 4) {
+    facingDirection = Direction::RIGHT;
+  } else if (mouseAngle > PI / 4 && mouseAngle <= 3 * PI / 4) {
+    facingDirection = Direction::DOWN;
+  } else if (mouseAngle > -3 * PI / 4 && mouseAngle <= -PI / 4) {
+    facingDirection = Direction::UP;
+  } else {
+    facingDirection = Direction::LEFT;
+  }
+
   // Update player animations
   std::string currentAnimation = animator->getCurrentAnimation();
   bool moving = movingUp || movingDown || movingLeft || movingRight;
@@ -139,16 +151,6 @@ void Player::move(bool up, bool down, bool left, bool right) {
   movingDown = down && !up;
   movingLeft = left && !right;
   movingRight = right && !left;
-
-  if (movingLeft) {
-    facingDirection = Direction::LEFT;
-  } else if (movingRight) {
-    facingDirection = Direction::RIGHT;
-  } else if (movingUp) {
-    facingDirection = Direction::UP;
-  } else if (movingDown) {
-    facingDirection = Direction::DOWN;
-  }
 }
 
 void Player::attack() {
@@ -262,6 +264,32 @@ std::optional<BulletType> Player::getEquippedBulletType() const {
 
 float Player::getAimAngle() const {
   return atan2f(mouseWorldPos.y - position.y, mouseWorldPos.x - position.x);
+}
+
+std::optional<Rectangle> Player::getMeleeHitRect() const {
+  if (!hasAnimator || !animator.has_value()) return std::nullopt;
+  if (equipped != Equippable::HANDS && equipped != Equippable::BAT) return std::nullopt;
+
+  std::string anim = animator->getCurrentAnimation();
+  if (anim != "attack-side" && anim != "attack-down" && anim != "attack-up") return std::nullopt;
+
+  // Frame 0 is the windup, frames 1+ are the active swing
+  if (animator->getCurrentFrame() == 0) return std::nullopt;
+
+  if (facingDirection == Direction::LEFT) {
+    return Rectangle{position.x - COLLIDER_SIZE.x / 2 - MELEE_RANGE, position.y - COLLIDER_SIZE.y * 0.75f, MELEE_RANGE, MELEE_WIDTH};
+  } else if (facingDirection == Direction::RIGHT) {
+    return Rectangle{position.x + COLLIDER_SIZE.x / 2, position.y - COLLIDER_SIZE.y * 0.75f, MELEE_RANGE, MELEE_WIDTH};
+  } else if (facingDirection == Direction::DOWN) {
+    return Rectangle{position.x - MELEE_WIDTH / 2, position.y - COLLIDER_SIZE.y * 0.25f, MELEE_WIDTH, MELEE_RANGE};
+  } else if (facingDirection == Direction::UP) {
+    return Rectangle{position.x - MELEE_WIDTH / 2, position.y - COLLIDER_SIZE.y - MELEE_RANGE, MELEE_WIDTH, MELEE_RANGE};
+  }
+  return std::nullopt;
+}
+
+float Player::getMeleeDamage() const {
+  return equipped == Equippable::BAT ? BAT_DAMAGE : HANDS_DAMAGE;
 }
 
 void Player::debug(int debugAction) {

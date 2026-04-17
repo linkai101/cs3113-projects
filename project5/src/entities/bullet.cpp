@@ -9,10 +9,12 @@ Bullet::Bullet(Vector2 position, float angleRad, BulletType type, Assets& assets
     Rectangle{0, 0, (float)getBulletTexture(assets, type).width, (float)getBulletTexture(assets, type).height},
     RENDER_SIZE,
     Vector2{RENDER_SIZE.x / 2, RENDER_SIZE.y / 2}
-  ))
+  )),
+  type(type)
 {
   velocity = {cosf(angleRad) * getBulletSpeed(type), sinf(angleRad) * getBulletSpeed(type)};
   maxRange = getBulletMaxRange(type);
+  damage = getBulletDamage(type);
   sprite->setRotation(angleRad * RAD2DEG);
 }
 
@@ -58,5 +60,13 @@ float Bullet::getBulletMaxRange(BulletType type) {
       return SHOTGUN_MAX_RANGE;
     case BulletType::PISTOL:
       return PISTOL_MAX_RANGE;
+  }
+}
+
+float Bullet::getBulletDamage(BulletType type) {
+  switch (type) {
+    case BulletType::RIFLE: return RIFLE_DAMAGE;
+    case BulletType::SHOTGUN: return SHOTGUN_DAMAGE;
+    case BulletType::PISTOL: return PISTOL_DAMAGE;
   }
 }

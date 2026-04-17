@@ -61,7 +61,7 @@ bool Animator::isAnimationLooping() const {
   return animations.at(currentAnimation).loop;
 }
 
-void Animator::render(Vector2 position) const {
+void Animator::render(Vector2 position, Color tint) const {
   if (!currentAnimation.empty()) {
     Rectangle sourceArea = sheet->getFrame(animations.at(currentAnimation).frames[currentFrame]);
     if (flipX) sourceArea.width = -sourceArea.width; // Apply flipX to source area
@@ -76,7 +76,7 @@ void Animator::render(Vector2 position) const {
       destinationArea,
       originActual,
       rotation,
-      WHITE // tint
+      tint
     );
   }
 
