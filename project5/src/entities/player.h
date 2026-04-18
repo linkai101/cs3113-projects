@@ -9,6 +9,8 @@
 
 class Player : public Entity {
 public:
+  enum class EquipSlot { NONE, BAT, RIFLE, PISTOL, SHOTGUN };
+
   Player(Vector2 spawnPosition, Assets& assets);
 
   void update(float deltaTime) override;
@@ -17,12 +19,11 @@ public:
 
   void move(bool up, bool down, bool left, bool right);
 
+  void equip(EquipSlot slot);
+
   void attack();
 
   void reload();
-
-  // TODO: remove
-  void debug(int debugAction);
 
   void takeDamage(float amount);
 

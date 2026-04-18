@@ -148,6 +148,16 @@ void Player::move(bool up, bool down, bool left, bool right) {
   movingRight = right && !left;
 }
 
+void Player::equip(EquipSlot slot) {
+  equipped = nullptr;
+  switch (slot) {
+    case EquipSlot::BAT: equipped = &bat; break;
+    case EquipSlot::RIFLE: equipped = &rifle; break;
+    case EquipSlot::PISTOL: equipped = &pistol; break;
+    case EquipSlot::SHOTGUN: equipped = &shotgun; break;
+  }
+}
+
 void Player::takeDamage(float amount) {
   if (state != State::ALIVE) return;
 
@@ -214,17 +224,6 @@ void Player::reload() {
         gun->triggerReload(toAdd);
       }
     }
-  }
-}
-
-void Player::debug(int debugAction) {
-  switch (debugAction) {
-    case 1: equipped = nullptr; break;
-    case 2: equipped = &bat; break;
-    case 3: equipped = &rifle; break;
-    case 4: equipped = &pistol; break;
-    case 5: equipped = &shotgun; break;
-    case 0: animator->play("die"); break;
   }
 }
 

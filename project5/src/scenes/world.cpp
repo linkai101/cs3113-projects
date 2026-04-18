@@ -67,6 +67,13 @@ void World::processInput() {
   bool right = IsKeyDown(KEY_D);
   player->move(up, down, left, right);
 
+  // Player equip
+  if (IsKeyPressed(KEY_Q)) player->equip(Player::EquipSlot::NONE);
+  if (IsKeyPressed(KEY_ONE)) player->equip(Player::EquipSlot::BAT);
+  if (IsKeyPressed(KEY_TWO)) player->equip(Player::EquipSlot::RIFLE);
+  if (IsKeyPressed(KEY_THREE)) player->equip(Player::EquipSlot::PISTOL);
+  if (IsKeyPressed(KEY_FOUR)) player->equip(Player::EquipSlot::SHOTGUN);
+
   // Player attack
   bool attack = IsMouseButtonPressed(MOUSE_BUTTON_LEFT) || IsKeyPressed(KEY_SPACE);
   if (attack && player->canAttack()) {
@@ -83,15 +90,6 @@ void World::processInput() {
 
   // Player reload
   if (IsKeyPressed(KEY_R)) player->reload();
-
-  // DEBUG
-  if (IsKeyPressed(KEY_ONE)) player->debug(1); // equip hands
-  if (IsKeyPressed(KEY_TWO)) player->debug(2); // equip bat
-  if (IsKeyPressed(KEY_THREE)) player->debug(3); // equip rifle
-  if (IsKeyPressed(KEY_FOUR)) player->debug(4); // equip pistol
-  if (IsKeyPressed(KEY_FIVE)) player->debug(5); // equip shotgun
-
-  if (IsKeyPressed(KEY_ZERO)) player->debug(0); // die
 }
 
 void World::update(float deltaTime) {
