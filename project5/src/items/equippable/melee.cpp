@@ -41,13 +41,13 @@ std::optional<Rectangle> Melee::getHitRect() const {
   float hitboxWidth = properties.hitboxWidth;
 
   if (playerCurrentAnimation == "attack-side" && playerFlipX) { // Left
-    return Rectangle{playerPosition.x - PLAYER_COLLIDER_SIZE.x / 2 - range, playerPosition.y - PLAYER_COLLIDER_SIZE.y * 0.75f, range, hitboxWidth};
+    return Rectangle{playerPosition.x - Player::COLLIDER_SIZE.x / 2 - range, playerPosition.y - Player::COLLIDER_SIZE.y * 0.75f, range, hitboxWidth};
   } else if (playerCurrentAnimation == "attack-side" && !playerFlipX) { // Right
-    return Rectangle{playerPosition.x + PLAYER_COLLIDER_SIZE.x / 2, playerPosition.y - PLAYER_COLLIDER_SIZE.y * 0.75f, range, hitboxWidth};
+    return Rectangle{playerPosition.x + Player::COLLIDER_SIZE.x / 2, playerPosition.y - Player::COLLIDER_SIZE.y * 0.75f, range, hitboxWidth};
   } else if (playerCurrentAnimation == "attack-down") { // Down
-    return Rectangle{playerPosition.x - hitboxWidth / 2, playerPosition.y - PLAYER_COLLIDER_SIZE.y * 0.25f, hitboxWidth, range};
+    return Rectangle{playerPosition.x - hitboxWidth / 2, playerPosition.y - Player::COLLIDER_SIZE.y * 0.25f, hitboxWidth, range};
   } else if (playerCurrentAnimation == "attack-up") { // Up
-    return Rectangle{playerPosition.x - hitboxWidth / 2, playerPosition.y - PLAYER_COLLIDER_SIZE.y - range, hitboxWidth, range};
+    return Rectangle{playerPosition.x - hitboxWidth / 2, playerPosition.y - Player::COLLIDER_SIZE.y - range, hitboxWidth, range};
   }
   return std::nullopt;
 }
@@ -59,7 +59,7 @@ Animator Melee::buildAnimator(Assets& assets, Type type) {
     case Type::BAT: sheet = &assets.batSheet; break;
   }
 
-  Vector2 origin = Vector2{RENDER_SIZE.x / 2, RENDER_SIZE.y / 2 + PLAYER_RENDER_SIZE.y / 2}; // match player's origin
+  Vector2 origin = Vector2{RENDER_SIZE.x / 2, RENDER_SIZE.y / 2 + Player::RENDER_SIZE.y / 2}; // match player's origin
 
   Animator anim = Animator(sheet, RENDER_SIZE, origin);
 

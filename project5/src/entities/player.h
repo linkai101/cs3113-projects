@@ -42,6 +42,8 @@ public:
 
   void setMouseWorldPosition(Vector2 pos) { mouseWorldPos = pos; }
 
+  static constexpr Vector2 RENDER_SIZE = {95, 90};
+  static constexpr Vector2 COLLIDER_SIZE = {40, 60};
   static constexpr float MAX_HEALTH = 100.0f;
 
 private:
@@ -72,8 +74,6 @@ private:
 
   static Animator buildAnimator(Spritesheet* sheet);
 
-  static constexpr Vector2 RENDER_SIZE = {95, 90};
-  static constexpr Vector2 COLLIDER_SIZE = {40, 60};
   static constexpr float MOVEMENT_SPEED = 250.0f;
   static constexpr float DAMAGE_FLASH_DURATION = 0.12f;
 };
