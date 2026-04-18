@@ -27,7 +27,8 @@ void Hotbar::render(float health, float maxHealth, const Equippable* equipped, i
   const int startY = screenHeight - CELL_SIZE - 16;
 
   renderHealth(health, maxHealth);
-  renderCells(activeSlot, startX, startY, gun ? gun->getCurrentMag() : -1);
+  bool hideMag = gun && gun->isReloading() && !gun->getProperties().shellByShell;
+  renderCells(activeSlot, startX, startY, (gun && !hideMag) ? gun->getCurrentMag() : -1);
   renderAmmoCounts(rifleAmmo, pistolAmmo, shotgunAmmo);
 }
 
