@@ -24,8 +24,6 @@ public:
 
   void enablePhysics(Vector2 colliderSize, Vector2 colliderOffset = {0, 0}, bool isStatic = false);
 
-  // bool getFlipX() const;
-
   void playAnimation(const std::string& name);
 
   const Vector2& getPosition() const { return position; }
@@ -34,11 +32,6 @@ public:
     if (!physicsBody.has_value()) return std::nullopt;
     return physicsBody->getCollider(position);
   }
-
-  // std::optional<PhysicsBody>& getPhysicsBody() { return physicsBody; }
-  // const std::optional<PhysicsBody>& getPhysicsBody() const { return physicsBody; }
-
-  static bool isColliding(Entity* a, Entity* b);
 
 protected:
   Vector2 position;

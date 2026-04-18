@@ -24,11 +24,11 @@ private:
   std::vector<std::unique_ptr<Entity>> terrain;
   std::vector<std::unique_ptr<Entity>> entities;
 
-  Player* player;
+  Player* player = nullptr;
   Dummy* dummy = nullptr;
   bool playerMeleeHitRegistered = false;
 
-  void spawnBullets(BulletType type, float aimAngle);
+  void spawnBullets(Gun::Type type, Gun::Properties properties, float aimAngle, int bulletCount, float spread);
 
   void loadTileGrid(
     std::vector<std::unique_ptr<Entity>>& vectorToAddTo,
@@ -56,5 +56,4 @@ private:
 
   static constexpr float BULLET_SPAWN_DIST = 42.0f;
   static constexpr float BULLET_SPAWN_Y_OFFSET = -42.0f;
-  static constexpr float BULLET_SHOTGUN_SPREAD = 10.0f * DEG2RAD;
 };

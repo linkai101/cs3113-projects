@@ -38,16 +38,16 @@ struct Assets {
     playerHandsSheet = Spritesheet{playerHandsTexture, Vector2{29, 40}, 6};
     batSheet = Spritesheet{batTexture, Vector2{29, 40}, 6};
 
-    rifleTexture = LoadTexture("assets/textures/weapons/rifle.png");
-    pistolTexture = LoadTexture("assets/textures/weapons/pistol.png");
-    shotgunTexture = LoadTexture("assets/textures/weapons/shotgun.png");
+    rifleTexture = LoadTexture("assets/textures/guns/rifle.png");
+    pistolTexture = LoadTexture("assets/textures/guns/pistol.png");
+    shotgunTexture = LoadTexture("assets/textures/guns/shotgun.png");
     rifleSheet = Spritesheet{rifleTexture, Vector2{20, 16}, 11};
     pistolSheet = Spritesheet{pistolTexture, Vector2{20, 16}, 11};
     shotgunSheet = Spritesheet{shotgunTexture, Vector2{20, 16}, 11};
 
-    rifleBulletTexture = LoadTexture("assets/textures/weapons/rifle_bullet.png");
-    pistolBulletTexture = LoadTexture("assets/textures/weapons/pistol_bullet.png");
-    shotgunBulletTexture = LoadTexture("assets/textures/weapons/shotgun_bullet.png");
+    rifleBulletTexture = LoadTexture("assets/textures/guns/rifle_bullet.png");
+    pistolBulletTexture = LoadTexture("assets/textures/guns/pistol_bullet.png");
+    shotgunBulletTexture = LoadTexture("assets/textures/guns/shotgun_bullet.png");
   }
 
   void unload() {

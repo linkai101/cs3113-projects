@@ -3,18 +3,17 @@
 #include "assets.h"
 #include <cmath>
 
-Bullet::Bullet(Vector2 position, float angleRad, BulletType type, Assets& assets) :
+Bullet::Bullet(Vector2 position, float angleRad, Gun::Type type, Gun::Properties properties, Assets& assets) :
   Entity(position, Sprite(
     getBulletTexture(assets, type),
     Rectangle{0, 0, (float)getBulletTexture(assets, type).width, (float)getBulletTexture(assets, type).height},
     RENDER_SIZE,
     Vector2{RENDER_SIZE.x / 2, RENDER_SIZE.y / 2}
   )),
-  type(type)
+  velocity(calculateBulletVelocity(angleRad, properties.bulletSpeed)),
+  maxRange(properties.maxRange),
+  damage(properties.damage)
 {
-  velocity = {cosf(angleRad) * getBulletSpeed(type), sinf(angleRad) * getBulletSpeed(type)};
-  maxRange = getBulletMaxRange(type);
-  damage = getBulletDamage(type);
   sprite->setRotation(angleRad * RAD2DEG);
 }
 
@@ -26,47 +25,17 @@ void Bullet::update(float deltaTime) {
   distanceTraveled += sqrtf(dx * dx + dy * dy);
 }
 
-bool Bullet::isExpired() const {
-  return distanceTraveled >= maxRange;
-}
-
-Texture2D Bullet::getBulletTexture(Assets& assets, BulletType type) {
+Texture2D Bullet::getBulletTexture(Assets& assets, Gun::Type type) {
   switch (type) {
-    case BulletType::RIFLE:
+    case Gun::Type::RIFLE:
       return assets.rifleBulletTexture;
-    case BulletType::SHOTGUN:
+    case Gun::Type::SHOTGUN:
       return assets.shotgunBulletTexture;
-    case BulletType::PISTOL:
+    case Gun::Type::PISTOL:
       return assets.pistolBulletTexture;
   }
 }
 
-float Bullet::getBulletSpeed(BulletType type) {
-  switch (type) {
-    case BulletType::RIFLE:
-      return RIFLE_SPEED;
-    case BulletType::SHOTGUN:
-      return SHOTGUN_SPEED;
-    case BulletType::PISTOL:
-      return PISTOL_SPEED;
-  }
-}
-
-float Bullet::getBulletMaxRange(BulletType type) {
-  switch (type) {
-    case BulletType::RIFLE:
-      return RIFLE_MAX_RANGE;
-    case BulletType::SHOTGUN:
-      return SHOTGUN_MAX_RANGE;
-    case BulletType::PISTOL:
-      return PISTOL_MAX_RANGE;
-  }
-}
-
-float Bullet::getBulletDamage(BulletType type) {
-  switch (type) {
-    case BulletType::RIFLE: return RIFLE_DAMAGE;
-    case BulletType::SHOTGUN: return SHOTGUN_DAMAGE;
-    case BulletType::PISTOL: return PISTOL_DAMAGE;
-  }
+Vector2 Bullet::calculateBulletVelocity(float angleRad, float bulletSpeed) {
+  return {cosf(angleRad) * bulletSpeed, sinf(angleRad) * bulletSpeed};
 }

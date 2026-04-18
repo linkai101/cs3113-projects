@@ -51,11 +51,15 @@ void World::processInput() {
   ) {
     player->attack();
 
-    // Spawn bullets if attacking with a weapon
-    std::optional<BulletType> bulletType = player->getEquippedBulletType();
-    if (bulletType) spawnBullets(*bulletType, player->getAimAngle());
+    // Spawn bullets if attacking with a gun
+    if (auto gun = dynamic_cast<Gun*>(player->getEquipped())) {
+      Gun::Type type = gun->getType();
+      Gun::Properties properties = gun->getProperties();
+
+      spawnBullets(type, properties, player->getAimAngle(), static_cast<int>(properties.bulletCount), properties.bulletSpread);
+    }
   }
-  if (IsKeyPressed(KEY_R)) player->reload();
+  // if (IsKeyPressed(KEY_R)) player->reload();
 
   // DEBUG
   if (IsKeyPressed(KEY_ONE)) player->debug(1); // equip hands
@@ -123,13 +127,14 @@ void World::update(float deltaTime) {
 
   // Melee-dummy collision
   if (player && dummy) {
-    std::optional<Rectangle> meleeHit = player->getMeleeHitRect();
+    Melee* activeMelee = dynamic_cast<Melee*>(player->getEquipped());
+    std::optional<Rectangle> meleeHit = activeMelee ? activeMelee->getHitRect() : std::nullopt;
     if (!meleeHit) {
       playerMeleeHitRegistered = false;
     } else if (!playerMeleeHitRegistered) {
       std::optional<Rectangle> dummyCollider = dummy->getCollider();
       if (dummyCollider && CheckRectCollision(*meleeHit, *dummyCollider)) {
-        dummy->takeDamage(player->getMeleeDamage());
+        dummy->takeDamage(activeMelee->getDamage());
         playerMeleeHitRegistered = true;
       }
     }
@@ -202,10 +207,7 @@ Vector2 World::getTilePosition(Vector2 tileCoordinates, Vector2 tileOffset) {
   };
 }
 
-void World::spawnBullets(BulletType type, float aimAngle) {
-  // Spawn slightly ahead of the player in the aim direction
-  // Angle from the gun position (offset from player center) to the mouse,
-  // so the bullet trajectory passes through the cursor rather than running parallel.
+void World::spawnBullets(Gun::Type type, Gun::Properties properties, [[maybe_unused]] float aimAngle, int bulletCount, float spread) {
   Vector2 gunPos = { player->getPosition().x, player->getPosition().y + BULLET_SPAWN_Y_OFFSET };
   Vector2 mousePos = player->getMouseWorldPosition();
   float spawnAngle = atan2f(mousePos.y - gunPos.y, mousePos.x - gunPos.x);
@@ -215,15 +217,12 @@ void World::spawnBullets(BulletType type, float aimAngle) {
     gunPos.y + sinf(spawnAngle) * BULLET_SPAWN_DIST
   };
 
-  auto spawn = [this, origin, type](float angle) {
-    entities.push_back(std::make_unique<Bullet>(origin, angle, type, assets));
+  auto spawn = [this, origin, type, properties](float angle) {
+    entities.push_back(std::make_unique<Bullet>(origin, angle, type, properties, assets));
   };
 
-  if (type == BulletType::SHOTGUN) {
-    spawn(spawnAngle - BULLET_SHOTGUN_SPREAD);
-    spawn(spawnAngle);
-    spawn(spawnAngle + BULLET_SHOTGUN_SPREAD);
-  } else {
-    spawn(spawnAngle);
+  for (int i = 0; i < bulletCount; ++i) {
+    float offset = (i - (bulletCount - 1) / 2.0f) * spread;
+    spawn(spawnAngle + offset);
   }
 }

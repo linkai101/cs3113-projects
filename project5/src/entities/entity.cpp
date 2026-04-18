@@ -1,4 +1,5 @@
 #include "entities/entity.h"
+#include "utils/collision.h"
 
 Entity::Entity(Vector2 position) :
   position(position),
@@ -24,12 +25,6 @@ void Entity::enablePhysics(Vector2 colliderSize, Vector2 colliderOffset, bool is
 void Entity::playAnimation(const std::string& name) {
   if (hasAnimator && animator.has_value()) animator->play(name);
 }
-
-// bool Entity::getFlipX() const {
-//   if (hasAnimator && animator.has_value()) return animator->getFlipX();
-//   if (sprite.has_value()) return sprite->getFlipX();
-//   return false;
-// }
 
 void Entity::update(float deltaTime) {
   if (animator.has_value()) animator->update(deltaTime);
@@ -57,7 +52,7 @@ void Entity::resolveCollisions(std::vector<Entity*> entities) {
     Rectangle box = pb.getCollider(position);
     Rectangle otherBox = entity->physicsBody->getCollider(entity->position);
 
-    if (!Entity::isColliding(this, entity)) continue;
+    if (!CheckRectCollision(box, otherBox)) continue;
 
     float overlapX = std::min(box.x + box.width,  otherBox.x + otherBox.width) - std::max(box.x, otherBox.x);
     float overlapY = std::min(box.y + box.height, otherBox.y + otherBox.height) - std::max(box.y, otherBox.y);
@@ -77,7 +72,7 @@ void Entity::resolveCollisions(std::vector<Entity*> entities) {
     Rectangle box = pb.getCollider(position);
     Rectangle otherBox = entity->physicsBody->getCollider(entity->position);
 
-    if (!Entity::isColliding(this, entity)) continue;
+    if (!CheckRectCollision(box, otherBox)) continue;
 
     float overlapX = std::min(box.x + box.width,  otherBox.x + otherBox.width) - std::max(box.x, otherBox.x);
     float overlapY = std::min(box.y + box.height, otherBox.y + otherBox.height) - std::max(box.y, otherBox.y);
@@ -110,16 +105,4 @@ void Entity::render() const {
       BLUE
     );
   }
-}
-
-bool Entity::isColliding(Entity* a, Entity* b) {
-  Rectangle aRect = a->physicsBody->getCollider(a->position);
-  Rectangle bRect = b->physicsBody->getCollider(b->position);
-
-  return (
-    aRect.x < bRect.x + bRect.width &&
-    aRect.x + aRect.width > bRect.x &&
-    aRect.y < bRect.y + bRect.height &&
-    aRect.y + aRect.height > bRect.y
-  );
 }
