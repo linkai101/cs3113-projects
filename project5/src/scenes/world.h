@@ -27,7 +27,7 @@ private:
 
   Player* player = nullptr;
   Dummy* dummy = nullptr;
-  Zombie* zombie = nullptr;
+  std::vector<Zombie*> zombies;
   bool playerMeleeHitRegistered = false;
 
   void spawnBullets(Gun::Type type, Gun::Properties properties, float aimAngle, int bulletCount, float spread);

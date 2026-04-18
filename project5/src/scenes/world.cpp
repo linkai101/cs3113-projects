@@ -25,9 +25,17 @@ void World::load() {
   entities.push_back(std::make_unique<Dummy>(getTilePosition({3.5f, 2.5f}), assets));
   dummy = dynamic_cast<Dummy*>(entities.back().get());
 
-  entities.push_back(std::make_unique<Zombie>(getTilePosition({3.5f, 4.5f}), assets));
-  zombie = dynamic_cast<Zombie*>(entities.back().get());
-  zombie->setTarget(player);
+  for (Vector2 pos : std::initializer_list<Vector2>{
+    {-6.5f, -6.5f},
+    {-6.5f, 6.5f},
+    {6.5f, -6.5f},
+    {6.5f, 6.5f},
+  }) {
+    entities.push_back(std::make_unique<Zombie>(getTilePosition(pos), assets));
+    Zombie* z = dynamic_cast<Zombie*>(entities.back().get());
+    z->setTarget(player);
+    zombies.push_back(z);
+  }
 
   camera.init(player->getPosition());
 
@@ -38,6 +46,7 @@ void World::unload() {
   if (!loaded) return;
 
   entities.clear();
+  zombies.clear();
 
   Scene::unload();
 }
@@ -149,12 +158,12 @@ void World::update(float deltaTime) {
   }
 
   // Bullet-zombie collision
-  if (zombie) {
+  for (Zombie* zombie : zombies) {
     std::optional<Rectangle> zombieCollider = zombie->getCollider();
     if (zombieCollider) {
       entities.erase(
         std::remove_if(entities.begin(), entities.end(),
-          [this, zombieCollider](const std::unique_ptr<Entity>& e) {
+          [zombie, zombieCollider](const std::unique_ptr<Entity>& e) {
             Bullet* b = dynamic_cast<Bullet*>(e.get());
             if (!b) return false;
             if (CheckPointInRect(b->getPosition(), *zombieCollider)) {
@@ -169,16 +178,19 @@ void World::update(float deltaTime) {
   }
 
   // Melee-zombie collision
-  if (player && zombie) {
+  if (player) {
     Melee* activeMelee = dynamic_cast<Melee*>(player->getEquipped());
     std::optional<Rectangle> meleeHit = activeMelee ? activeMelee->getHitRect() : std::nullopt;
     if (!meleeHit) {
       playerMeleeHitRegistered = false;
     } else if (!playerMeleeHitRegistered) {
-      std::optional<Rectangle> zombieCollider = zombie->getCollider();
-      if (zombieCollider && CheckRectCollision(*meleeHit, *zombieCollider)) {
-        zombie->takeDamage(activeMelee->getDamage());
-        playerMeleeHitRegistered = true;
+      for (Zombie* zombie : zombies) {
+        std::optional<Rectangle> zombieCollider = zombie->getCollider();
+        if (zombieCollider && CheckRectCollision(*meleeHit, *zombieCollider)) {
+          zombie->takeDamage(activeMelee->getDamage());
+          playerMeleeHitRegistered = true;
+          break;
+        }
       }
     }
   }

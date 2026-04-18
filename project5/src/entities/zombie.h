@@ -36,7 +36,7 @@ private:
   static constexpr float MOVEMENT_SPEED = 75.0f;
   static constexpr float MAX_HEALTH = 50.0f;
   static constexpr float DAMAGE_FLASH_DURATION = 0.12f;
-  static constexpr float FOLLOW_DISTANCE = 400.0f;
+  static constexpr float FOLLOW_DISTANCE = 500.0f;
   static constexpr float ATTACK_DISTANCE = 70.0f;
   static constexpr float ATTACK_DAMAGE = 10.0f;
   static constexpr float ATTACK_COOLDOWN = 1.5f;
