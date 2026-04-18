@@ -63,6 +63,6 @@ private:
   static constexpr Vector2 RENDER_POSITION_OFFSET = {0, -36};
 
   static constexpr Properties RIFLE_PROPERTIES   = {0.15f, 700.0f, 900.0f, 25.0f, 1, 0.0f, 30, false};
-  static constexpr Properties PISTOL_PROPERTIES  = {0.25f, 450.0f, 500.0f, 15.0f, 1, 0.0f, 12, false};
-  static constexpr Properties SHOTGUN_PROPERTIES = {0.6f,  350.0f, 300.0f, 10.0f, 3, 0.2f,  6, true};
+  static constexpr Properties PISTOL_PROPERTIES  = {0.25f, 450.0f, 500.0f, 20.0f, 1, 0.0f, 12, false};
+  static constexpr Properties SHOTGUN_PROPERTIES = {0.6f,  350.0f, 300.0f, 15.0f, 3, 0.2f,  6, true};
 };

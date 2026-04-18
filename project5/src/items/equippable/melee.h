@@ -64,5 +64,5 @@ private:
   static constexpr Vector2 PLAYER_COLLIDER_SIZE = {40, 60};
   
   static constexpr Properties HANDS_PROPERTIES = {0.25f, 80.0f, 60.0f, 10.0f};
-  static constexpr Properties BAT_PROPERTIES = {0.5f, 80.0f, 100.0f, 20.0f};
+  static constexpr Properties BAT_PROPERTIES = {0.5f, 140.0f, 100.0f, 20.0f};
 };
