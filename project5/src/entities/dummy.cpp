@@ -1,36 +1,102 @@
 #include "entities/dummy.h"
 #include "raylib.h"
+#include <string>
+#include <cmath>
 
-Dummy::Dummy(Vector2 spawnPosition, Assets& assets) :
-  Entity(spawnPosition, buildAnimator(&assets.playerSheet))
+Dummy::Dummy(Vector2 spawnPosition, Assets& assets, float maxHealth) :
+  Entity(spawnPosition, buildAnimator(&assets.playerSheet)),
+  health(maxHealth), maxHealth(maxHealth)
 {
   enablePhysics(COLLIDER_SIZE, Vector2{-COLLIDER_SIZE.x / 2, -COLLIDER_SIZE.y}, true);
   playAnimation("idle-side");
 }
 
 void Dummy::update(float deltaTime) {
-  if (damageFlashTimer > 0.0f) {
-    damageFlashTimer -= deltaTime;
-    if (damageFlashTimer < 0.0f) damageFlashTimer = 0.0f;
+  // Update damage indicators
+  for (auto& di : damageIndicators) {
+    di.timer -= deltaTime;
+    di.offset.y -= 30.0f * deltaTime;
   }
+  damageIndicators.erase(
+    std::remove_if(damageIndicators.begin(), damageIndicators.end(),
+      [](const DamageIndicator& di) { return di.timer <= 0.0f; }),
+    damageIndicators.end()
+  );
 
-  Entity::update(deltaTime);
+  // Update based on state
+  switch (state) {
+    case State::ALIVE:
+      // Update damage flash timer
+      if (damageFlashTimer > 0.0f) {
+        damageFlashTimer -= deltaTime;
+        if (damageFlashTimer < 0.0f) damageFlashTimer = 0.0f;
+      }
+    
+      Entity::update(deltaTime);
+      break;
+    case State::DYING:
+      Entity::update(deltaTime);
+
+      // Begin death timer after animation is done
+      if (animator.has_value() && animator->isAnimationDone()) {
+        state = State::DEAD;
+        deadTimer = DEAD_DURATION;
+      }
+      break;
+    case State::DEAD:
+      // Handle death timer
+      deadTimer -= deltaTime;
+      if (deadTimer <= 0.0f) respawn();
+      break;
+  };
 }
 
 void Dummy::render() const {
   Entity::render();
 
-  if (damageFlashTimer > 0.0f && hasAnimator && animator.has_value()) {
+  // Render damage flash
+  if (state == State::ALIVE && damageFlashTimer > 0.0f && hasAnimator && animator.has_value()) {
     float alpha = damageFlashTimer / DAMAGE_FLASH_DURATION;
     BeginBlendMode(BLEND_ADDITIVE);
     animator->render(position, Fade(WHITE, alpha));
     EndBlendMode();
   }
+
+  // Render damage indicators
+  for (const auto& di : damageIndicators) {
+    float t = di.timer / DAMAGE_INDICATOR_DURATION;
+    unsigned char alpha = static_cast<unsigned char>(255 * t);
+    Color col = {255, 80, 80, alpha};
+
+    std::string text = std::to_string(static_cast<int>(std::ceil(di.amount)));
+    int fontSize = 20;
+    int textW = MeasureText(text.c_str(), fontSize);
+    float x = position.x + di.offset.x - textW / 2.0f;
+    float y = position.y + di.offset.y;
+    DrawText(text.c_str(), static_cast<int>(x), static_cast<int>(y), fontSize, col);
+  }
 }
 
 void Dummy::takeDamage(float amount) {
-  // TODO: apply damage to health when health is implemented
+  if (state != State::ALIVE) return;
+
   damageFlashTimer = DAMAGE_FLASH_DURATION;
+  health -= amount;
+
+  float xOffset = (float)(GetRandomValue(-15, 15));
+  damageIndicators.push_back({amount, DAMAGE_INDICATOR_DURATION, {xOffset, -SIZE.y}});
+
+  if (health <= 0.0f) {
+    health = 0.0f;
+    state = State::DYING;
+    playAnimation("die");
+  }
+}
+
+void Dummy::respawn() {
+  health = maxHealth;
+  state = State::ALIVE;
+  playAnimation("idle-side");
 }
 
 Animator Dummy::buildAnimator(Spritesheet* sheet) {
@@ -45,7 +111,7 @@ Animator Dummy::buildAnimator(Spritesheet* sheet) {
   anim.addAnimation("attack-side", Animator::Animation{"attack-side", {54, 55, 56}, 3, false});
   anim.addAnimation("attack-down", Animator::Animation{"attack-down", {60, 61, 62}, 3, false});
   anim.addAnimation("attack-up", Animator::Animation{"attack-up", {66, 67, 68}, 3, false});
-  anim.addAnimation("die", Animator::Animation{"die", {72, 73, 74, 75, 76, 77}, 3, false});
+  anim.addAnimation("die", Animator::Animation{"die", {72, 73, 74, 75, 76, 77}, 10, false});
 
   return anim;
 }
