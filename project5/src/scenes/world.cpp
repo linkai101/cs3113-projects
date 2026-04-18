@@ -1,5 +1,6 @@
 #include <algorithm>
 #include <cmath>
+#include <string>
 #include "scenes/world.h"
 #include "utils/collision.h"
 
@@ -59,7 +60,7 @@ void World::processInput() {
       spawnBullets(type, properties, player->getAimAngle(), static_cast<int>(properties.bulletCount), properties.bulletSpread);
     }
   }
-  // if (IsKeyPressed(KEY_R)) player->reload();
+  if (IsKeyPressed(KEY_R)) player->reload();
 
   // DEBUG
   if (IsKeyPressed(KEY_ONE)) player->debug(1); // equip hands
@@ -166,6 +167,22 @@ void World::render() const {
   for (auto* entity : sorted) entity->render();
 
   EndMode2D();
+
+  // Ammo HUD
+  if (player) {
+    const Gun* gun = dynamic_cast<const Gun*>(player->getEquipped());
+    if (gun) {
+      const char* weaponName = "";
+      switch (gun->getType()) {
+        case Gun::Type::RIFLE: weaponName = "RIFLE"; break;
+        case Gun::Type::PISTOL: weaponName = "PISTOL"; break;
+        case Gun::Type::SHOTGUN: weaponName = "SHOTGUN"; break;
+      }
+      std::string ammoText = std::to_string(gun->getCurrentMag()) + " / " + std::to_string(player->getAmmoInventory(gun->getType()));
+      DrawText(weaponName, 20, screenHeight - 80, 28, WHITE);
+      DrawText(ammoText.c_str(), 20, screenHeight - 44, 36, WHITE);
+    }
+  }
 }
 
 void World::loadTileGrid(

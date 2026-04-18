@@ -9,11 +9,13 @@ Melee::Melee(Type type, Assets& assets) :
 {}
 
 void Melee::update(float deltaTime) {
-  // Relay player animator state to hands animator
+  // Update animator
+  // Relay player animator state to melee animator
   if (animator.getCurrentAnimation() != playerCurrentAnimation) animator.play(playerCurrentAnimation);
   animator.setFlipX(playerFlipX);
-
   animator.update(deltaTime);
+
+  // Update cooldown timer
   if (cooldownTimer > 0.0f) cooldownTimer -= deltaTime;
 }
 

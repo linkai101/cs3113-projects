@@ -1,4 +1,5 @@
 #pragma once
+#include <map>
 #include "entities/entity.h"
 #include "items/equippable.h"
 #include "items/melee.h"
@@ -20,15 +21,19 @@ public:
 
   void attack();
 
+  void reload();
+
   void setMouseWorldPosition(Vector2 pos) { mouseWorldPos = pos; }
 
   bool canAttack() const;
 
   float getAimAngle() const { return atan2f(mouseWorldPos.y - position.y, mouseWorldPos.x - position.x); }
-  
+
   Vector2 getMouseWorldPosition() const { return mouseWorldPos; }
 
   Equippable* getEquipped() const { return equipped ? equipped : const_cast<Melee*>(&hands); }
+
+  int getAmmoInventory(Gun::Type type) const;
 
   void debug(int debugAction);
 
@@ -51,6 +56,8 @@ private:
   Gun shotgun;
 
   Equippable* equipped = nullptr;
+
+  std::map<Gun::Type, int> ammoInventory;
 
   static Animator buildAnimator(Spritesheet* sheet);
 

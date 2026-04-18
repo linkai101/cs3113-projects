@@ -1,3 +1,4 @@
+#include <algorithm>
 #include "entities/player.h"
 
 Player::Player(Vector2 spawnPosition, Assets& assets) :
@@ -10,6 +11,10 @@ Player::Player(Vector2 spawnPosition, Assets& assets) :
 {
   enablePhysics(COLLIDER_SIZE, Vector2{-COLLIDER_SIZE.x / 2, -COLLIDER_SIZE.y}, false);
   playAnimation("idle-side");
+
+  ammoInventory[Gun::Type::RIFLE] = 90;
+  ammoInventory[Gun::Type::PISTOL] = 36;
+  ammoInventory[Gun::Type::SHOTGUN] = 18;
 }
 
 void Player::update(float deltaTime) {
@@ -100,7 +105,7 @@ void Player::render() const {
   const Melee* melee = dynamic_cast<const Melee*>(equipped);
   const Gun* gun = dynamic_cast<const Gun*>(equipped);
 
-  const bool gunBehindPlayer = equipped != &pistol && mouseWorldPos.y < position.y;
+  const bool gunBehindPlayer = facingDirection == Direction::UP;
 
   if (gun && !dying && gunBehindPlayer) equipped->render(position);
 
@@ -140,6 +145,8 @@ void Player::attack() {
   if (equipped) {
     if (auto gun = dynamic_cast<Gun*>(equipped)) {
       // Gun shoot
+      // Cancel in-progress reload, refunding unloaded shells
+      if (gun->isReloading()) ammoInventory[gun->getType()] += gun->cancelReload();
       gun->triggerShoot();
     } else if (auto melee = dynamic_cast<Melee*>(equipped)) {
       // Melee strike
@@ -192,6 +199,25 @@ bool Player::canAttack() const {
   return hands.canStrike();
 }
 
+
+void Player::reload() {
+  if (auto gun = dynamic_cast<Gun*>(equipped)) {
+    if (!gun->isReloading() && gun->getCurrentMag() < gun->getMagazineSize()) {
+      int needed = gun->getMagazineSize() - gun->getCurrentMag();
+      int& inv = ammoInventory[gun->getType()];
+      int toAdd = std::min(needed, inv);
+      if (toAdd > 0) {
+        inv -= toAdd;
+        gun->triggerReload(toAdd);
+      }
+    }
+  }
+}
+
+int Player::getAmmoInventory(Gun::Type type) const {
+  auto it = ammoInventory.find(type);
+  return it != ammoInventory.end() ? it->second : 0;
+}
 
 void Player::debug(int debugAction) {
   switch (debugAction) {

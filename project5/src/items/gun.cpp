@@ -1,14 +1,34 @@
+#include <algorithm>
 #include "items/gun.h"
 
 Gun::Gun(Type type, Assets& assets) :
   Equippable(),
   type(type),
   animator(buildAnimator(assets, type)),
-  properties(getProperties(type))
+  properties(getProperties(type)),
+  currentMag(getProperties(type).magazineSize)
 {}
 
 void Gun::update(float deltaTime) {
-  if (animator.isAnimationDone())  animator.play("idlerun");
+  // Update reload state
+  if (reloading && animator.isAnimationDone()) {
+    if (properties.shellByShell) {
+      currentMag = std::min(currentMag + 1, properties.magazineSize);
+      pendingReloadAmount--;
+      if (pendingReloadAmount > 0) {
+        animator.play("reload");
+      } else {
+        reloading = false;
+      }
+    } else {
+      currentMag = std::min(currentMag + pendingReloadAmount, properties.magazineSize);
+      pendingReloadAmount = 0;
+      reloading = false;
+    }
+  }
+  if (!reloading && animator.isAnimationDone()) animator.play("idlerun");
+  
+  // Update animator
   if (fabsf(angle) <= 90.0f) {
     animator.setFlipX(false);
     animator.setRotation(angle);
@@ -16,8 +36,9 @@ void Gun::update(float deltaTime) {
     animator.setFlipX(true);
     animator.setRotation(angle - 180.0f);
   }
-
   animator.update(deltaTime);
+
+  // Update cooldown timer
   if (cooldownTimer > 0.0f) cooldownTimer -= deltaTime;
 }
 
@@ -34,6 +55,21 @@ void Gun::updateAngle(Vector2 playerWorldPos, Vector2 mouseWorldPos) {
 void Gun::triggerShoot() {
   animator.play("shoot");
   cooldownTimer = properties.cooldown;
+  if (currentMag > 0) currentMag--;
+}
+
+void Gun::triggerReload(int amount) {
+  if (amount <= 0 || reloading) return;
+  pendingReloadAmount = amount;
+  reloading = true;
+  animator.play("reload");
+}
+
+int Gun::cancelReload() {
+  int refund = pendingReloadAmount;
+  pendingReloadAmount = 0;
+  reloading = false;
+  return refund;
 }
 
 Animator Gun::buildAnimator(Assets& assets, Type type) {
