@@ -27,6 +27,7 @@ void World::load() {
 
   entities.push_back(std::make_unique<Zombie>(getTilePosition({3.5f, 4.5f}), assets));
   zombie = dynamic_cast<Zombie*>(entities.back().get());
+  zombie->setTarget(player);
 
   camera.init(player->getPosition());
 
@@ -95,7 +96,9 @@ void World::update(float deltaTime) {
   if (player) {
     std::vector<Entity*> collidables;
     for (auto& e : entities) {
-      if (e.get() != player && e->getCollider().has_value()) collidables.push_back(e.get());
+      if (e.get() != player && e->getCollider().has_value()) {
+        collidables.push_back(e.get());
+      }
     }
     player->resolveCollisions(collidables);
   }

@@ -1,22 +1,102 @@
 #include "entities/zombie.h"
+#include "entities/player.h"
 #include "raylib.h"
+#include <cmath>
 
 Zombie::Zombie(Vector2 spawnPosition, Assets& assets) :
   Entity(spawnPosition, buildAnimator(&assets.zombieSheet))
 {
-  enablePhysics(COLLIDER_SIZE, Vector2{-COLLIDER_SIZE.x / 2, -COLLIDER_SIZE.y}, true);
+  enablePhysics(COLLIDER_SIZE, Vector2{-COLLIDER_SIZE.x / 2, -COLLIDER_SIZE.y}, false);
   playAnimation("idle-side");
 }
 
 void Zombie::update(float deltaTime) {
   switch (state) {
-    case State::ALIVE:
+    case State::ALIVE: {
+      // Update damage flash timer
       if (damageFlashTimer > 0.0f) {
         damageFlashTimer -= deltaTime;
         if (damageFlashTimer < 0.0f) damageFlashTimer = 0.0f;
       }
+
+      // Update attack cooldown timer
+      if (attackCooldownTimer > 0.0f) {
+        attackCooldownTimer -= deltaTime;
+        if (attackCooldownTimer < 0.0f) attackCooldownTimer = 0.0f;
+      }
+
+      if (target && target->isDead()) {
+        if (physicsBody.has_value()) physicsBody->velocity = {0, 0};
+        std::string idleAnim =
+          (facingDirection == Direction::DOWN) ? "idle-down" :
+          (facingDirection == Direction::UP)   ? "idle-up"   : "idle-side";
+        if (animator.has_value() && animator->getCurrentAnimation() != idleAnim)
+          playAnimation(idleAnim);
+      } else if (target) {
+        float dx = target->getPosition().x - position.x;
+        float dy = target->getPosition().y - position.y;
+        float dist = sqrtf(dx * dx + dy * dy);
+
+        if (isAttacking) {
+          // Launch attack
+          if (physicsBody.has_value()) physicsBody->velocity = {0, 0};
+          if (animator.has_value() && animator->isAnimationDone()) {
+            target->takeDamage(ATTACK_DAMAGE);
+            attackCooldownTimer = ATTACK_COOLDOWN;
+            isAttacking = false;
+            std::string idleAnim =
+              (facingDirection == Direction::DOWN) ? "idle-down" :
+              (facingDirection == Direction::UP) ? "idle-up" : "idle-side";
+            playAnimation(idleAnim);
+          }
+        } else if (dist <= ATTACK_DISTANCE && attackCooldownTimer <= 0.0f) {
+          // Begin attack
+          isAttacking = true;
+          if (physicsBody.has_value()) physicsBody->velocity = {0, 0};
+          if (fabsf(dx) >= fabsf(dy)) {
+            facingDirection = dx >= 0 ? Direction::RIGHT : Direction::LEFT;
+            if (animator.has_value()) animator->setFlipX(dx < 0);
+            playAnimation("attack-side");
+          } else if (dy > 0) {
+            facingDirection = Direction::DOWN;
+            playAnimation("attack-down");
+          } else {
+            facingDirection = Direction::UP;
+            playAnimation("attack-up");
+          }
+        } else if (dist > ATTACK_DISTANCE && dist <= FOLLOW_DISTANCE) {
+          // Begin following target
+          float nx = dx / dist;
+          float ny = dy / dist;
+          if (physicsBody.has_value()) physicsBody->velocity = {nx * MOVEMENT_SPEED, ny * MOVEMENT_SPEED};
+          std::string runAnim;
+          if (fabsf(dx) >= fabsf(dy)) {
+            facingDirection = dx >= 0 ? Direction::RIGHT : Direction::LEFT;
+            if (animator.has_value()) animator->setFlipX(dx < 0);
+            runAnim = "run-side";
+          } else if (dy > 0) {
+            facingDirection = Direction::DOWN;
+            runAnim = "run-down";
+          } else {
+            facingDirection = Direction::UP;
+            runAnim = "run-up";
+          }
+          if (animator.has_value() && animator->getCurrentAnimation() != runAnim)
+            playAnimation(runAnim);
+        } else {
+          // Idle
+          if (physicsBody.has_value()) physicsBody->velocity = {0, 0};
+          std::string idleAnim =
+            (facingDirection == Direction::DOWN) ? "idle-down" :
+            (facingDirection == Direction::UP) ? "idle-up" : "idle-side";
+          if (animator.has_value() && animator->getCurrentAnimation() != idleAnim)
+            playAnimation(idleAnim);
+        }
+      }
+
       Entity::update(deltaTime);
       break;
+    }
     case State::DYING:
       if (damageFlashTimer > 0.0f) {
         damageFlashTimer -= deltaTime;
@@ -54,13 +134,14 @@ void Zombie::takeDamage(float amount) {
   if (health <= 0.0f) {
     health = 0.0f;
     state = State::DYING;
+    isAttacking = false;
     playAnimation("die");
   }
 }
 
 Animator Zombie::buildAnimator(Spritesheet* sheet) {
   Vector2 origin = Vector2{RENDER_SIZE.x / 2, RENDER_SIZE.y};
-  
+
   Animator anim = Animator(sheet, RENDER_SIZE, origin);
 
   anim.addAnimation("idle-side", Animator::Animation{"idle-side", {0, 1, 2, 3, 4, 5}, 10, true});
