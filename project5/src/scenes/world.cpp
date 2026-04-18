@@ -22,8 +22,11 @@ void World::load() {
   entities.push_back(std::make_unique<Player>(getTilePosition(SPAWN_POSITION), assets));
   player = dynamic_cast<Player*>(entities.back().get());
 
-  entities.push_back(std::make_unique<Dummy>(getTilePosition(DUMMY_SPAWN_POSITION), assets));
+  entities.push_back(std::make_unique<Dummy>(getTilePosition({3.5f, 2.5f}), assets));
   dummy = dynamic_cast<Dummy*>(entities.back().get());
+
+  entities.push_back(std::make_unique<Zombie>(getTilePosition({3.5f, 4.5f}), assets));
+  zombie = dynamic_cast<Zombie*>(entities.back().get());
 
   camera.init(player->getPosition());
 
@@ -41,15 +44,16 @@ void World::unload() {
 void World::processInput() {
   if (!loaded) return;
 
+  // Player movement
   bool up = IsKeyDown(KEY_W);
   bool down = IsKeyDown(KEY_S);
   bool left = IsKeyDown(KEY_A);
   bool right = IsKeyDown(KEY_D);
+  player->move(up, down, left, right);
 
-  if (
-    IsMouseButtonPressed(MOUSE_BUTTON_LEFT) &&
-    player->canAttack()
-  ) {
+  // Player attack
+  bool attack = IsMouseButtonPressed(MOUSE_BUTTON_LEFT) || IsKeyPressed(KEY_SPACE);
+  if (attack && player->canAttack()) {
     player->attack();
 
     // Spawn bullets if attacking with a gun
@@ -60,6 +64,8 @@ void World::processInput() {
       spawnBullets(type, properties, player->getAimAngle(), static_cast<int>(properties.bulletCount), properties.bulletSpread);
     }
   }
+
+  // Player reload
   if (IsKeyPressed(KEY_R)) player->reload();
 
   // DEBUG
@@ -70,8 +76,6 @@ void World::processInput() {
   if (IsKeyPressed(KEY_FIVE)) player->debug(5); // equip shotgun
 
   if (IsKeyPressed(KEY_ZERO)) player->debug(0); // die
-
-  player->move(up, down, left, right);
 }
 
 void World::update(float deltaTime) {
@@ -136,6 +140,41 @@ void World::update(float deltaTime) {
       std::optional<Rectangle> dummyCollider = dummy->getCollider();
       if (dummyCollider && CheckRectCollision(*meleeHit, *dummyCollider)) {
         dummy->takeDamage(activeMelee->getDamage());
+        playerMeleeHitRegistered = true;
+      }
+    }
+  }
+
+  // Bullet-zombie collision
+  if (zombie) {
+    std::optional<Rectangle> zombieCollider = zombie->getCollider();
+    if (zombieCollider) {
+      entities.erase(
+        std::remove_if(entities.begin(), entities.end(),
+          [this, zombieCollider](const std::unique_ptr<Entity>& e) {
+            Bullet* b = dynamic_cast<Bullet*>(e.get());
+            if (!b) return false;
+            if (CheckPointInRect(b->getPosition(), *zombieCollider)) {
+              zombie->takeDamage(b->getDamage());
+              return true;
+            }
+            return false;
+          }),
+        entities.end()
+      );
+    }
+  }
+
+  // Melee-zombie collision
+  if (player && zombie) {
+    Melee* activeMelee = dynamic_cast<Melee*>(player->getEquipped());
+    std::optional<Rectangle> meleeHit = activeMelee ? activeMelee->getHitRect() : std::nullopt;
+    if (!meleeHit) {
+      playerMeleeHitRegistered = false;
+    } else if (!playerMeleeHitRegistered) {
+      std::optional<Rectangle> zombieCollider = zombie->getCollider();
+      if (zombieCollider && CheckRectCollision(*meleeHit, *zombieCollider)) {
+        zombie->takeDamage(activeMelee->getDamage());
         playerMeleeHitRegistered = true;
       }
     }

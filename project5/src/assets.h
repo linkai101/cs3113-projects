@@ -9,6 +9,9 @@ struct Assets {
   Texture2D playerTexture;
   Spritesheet playerSheet;
 
+  Texture2D zombieTexture;
+  Spritesheet zombieSheet;
+
   Texture2D playerHandsTexture;
   Texture2D batTexture;
   Spritesheet playerHandsSheet;
@@ -33,6 +36,9 @@ struct Assets {
     playerTexture = LoadTexture("assets/textures/entities/player.png");
     playerSheet = Spritesheet{playerTexture, Vector2{19, 18}, 6};
 
+    zombieTexture = LoadTexture("assets/textures/entities/zombie.png");
+    zombieSheet = Spritesheet{zombieTexture, Vector2{19, 18}, 6};
+
     playerHandsTexture = LoadTexture("assets/textures/gear/player_hands.png");
     batTexture = LoadTexture("assets/textures/gear/bat.png");
     playerHandsSheet = Spritesheet{playerHandsTexture, Vector2{29, 40}, 6};
@@ -54,6 +60,8 @@ struct Assets {
     UnloadTexture(terrainTexture);
 
     UnloadTexture(playerTexture);
+
+    UnloadTexture(zombieTexture);
 
     UnloadTexture(playerHandsTexture);
     UnloadTexture(batTexture);

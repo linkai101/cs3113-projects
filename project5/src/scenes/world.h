@@ -3,6 +3,7 @@
 #include "entities/player.h"
 #include "entities/bullet.h"
 #include "entities/dummy.h"
+#include "entities/zombie.h"
 
 class World : public Scene {
 public:
@@ -26,6 +27,7 @@ private:
 
   Player* player = nullptr;
   Dummy* dummy = nullptr;
+  Zombie* zombie = nullptr;
   bool playerMeleeHitRegistered = false;
 
   void spawnBullets(Gun::Type type, Gun::Properties properties, float aimAngle, int bulletCount, float spread);
@@ -52,7 +54,6 @@ private:
     { 5, 5, 5, 5, 5 },
   };
   static constexpr Vector2 SPAWN_POSITION = {2.5f, 2.5f};
-  static constexpr Vector2 DUMMY_SPAWN_POSITION = {3.5f, 2.5f};
 
   static constexpr float BULLET_SPAWN_DIST = 42.0f;
   static constexpr float BULLET_SPAWN_Y_OFFSET = -42.0f;

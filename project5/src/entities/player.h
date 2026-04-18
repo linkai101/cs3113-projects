@@ -9,8 +9,6 @@
 
 class Player : public Entity {
 public:
-  enum class Direction { UP, DOWN, LEFT, RIGHT };
-
   Player(Vector2 spawnPosition, Assets& assets);
 
   void update(float deltaTime) override;

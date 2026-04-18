@@ -8,6 +8,8 @@
 
 class Entity {
 public:
+  enum class Direction { UP, DOWN, LEFT, RIGHT };
+
   Entity(Vector2 position);
 
   Entity(Vector2 position, Sprite sprite);
