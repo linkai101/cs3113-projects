@@ -35,6 +35,10 @@ void Dummy::update(float deltaTime) {
       Entity::update(deltaTime);
       break;
     case State::DYING:
+      if (damageFlashTimer > 0.0f) {
+        damageFlashTimer -= deltaTime;
+        if (damageFlashTimer < 0.0f) damageFlashTimer = 0.0f;
+      }
       Entity::update(deltaTime);
 
       // Begin death timer after animation is done
@@ -55,7 +59,7 @@ void Dummy::render() const {
   Entity::render();
 
   // Render damage flash
-  if (state == State::ALIVE && damageFlashTimer > 0.0f && hasAnimator && animator.has_value()) {
+  if (state != State::DEAD && damageFlashTimer > 0.0f && hasAnimator && animator.has_value()) {
     float alpha = damageFlashTimer / DAMAGE_FLASH_DURATION;
     BeginBlendMode(BLEND_ADDITIVE);
     animator->render(position, Fade(WHITE, alpha));

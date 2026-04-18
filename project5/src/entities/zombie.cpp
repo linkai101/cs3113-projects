@@ -18,6 +18,10 @@ void Zombie::update(float deltaTime) {
       Entity::update(deltaTime);
       break;
     case State::DYING:
+      if (damageFlashTimer > 0.0f) {
+        damageFlashTimer -= deltaTime;
+        if (damageFlashTimer < 0.0f) damageFlashTimer = 0.0f;
+      }
       Entity::update(deltaTime);
       if (animator.has_value() && animator->isAnimationDone()) {
         state = State::DEAD;
@@ -32,7 +36,7 @@ void Zombie::update(float deltaTime) {
 void Zombie::render() const {
   Entity::render();
 
-  if (state == State::ALIVE && damageFlashTimer > 0.0f && hasAnimator && animator.has_value()) {
+  if (state != State::DEAD && damageFlashTimer > 0.0f && hasAnimator && animator.has_value()) {
     float alpha = damageFlashTimer / DAMAGE_FLASH_DURATION;
     BeginBlendMode(BLEND_ADDITIVE);
     animator->render(position, Fade(WHITE, alpha));
