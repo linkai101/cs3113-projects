@@ -80,10 +80,10 @@ void Hotbar::renderCells(int activeSlot, int startX, int startY, int currentMag)
 
     // Render mag count in active gun cell
     if (i == activeSlot && currentMag >= 0) {
-      const int magFontSize = 16;
+      const int magFontSize = 20;
       std::string magText = std::to_string(currentMag);
       int textW = MeasureText(magText.c_str(), magFontSize);
-      DrawText(magText.c_str(), cellX + CELL_SIZE - textW - 10, startY + CELL_SIZE - magFontSize - 8, magFontSize, WHITE);
+      DrawText(magText.c_str(), cellX + CELL_SIZE - textW - 12, startY + CELL_SIZE - magFontSize - 10, magFontSize, WHITE);
     }
   }
 }
@@ -96,7 +96,7 @@ void Hotbar::renderAmmoCounts(int rifleAmmo, int pistolAmmo, int shotgunAmmo) co
     { &assets.shotgunBulletIconTexture, shotgunAmmo },
   };
 
-  const int fontSize = 16;
+  const int fontSize = 20;
   const int bottomY = screenHeight - 16;
 
   int totalAmmoW = 0;
