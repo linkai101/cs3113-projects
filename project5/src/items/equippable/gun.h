@@ -59,8 +59,15 @@ private:
 
   static Properties getProperties(Type type);
 
+  static Texture2D& getPickableTexture(Assets& assets, Type type);
+
+  static Vector2 getPickableRenderSize(Assets& assets, Type type);
+
   static constexpr Vector2 RENDER_SIZE = {100, 80};
   static constexpr Vector2 RENDER_POSITION_OFFSET = {0, -36};
+  static constexpr Vector2 RIFLE_PICKABLE_RENDER_SIZE = {80, 40};
+  static constexpr Vector2 PISTOL_PICKABLE_RENDER_SIZE = {40, 35};
+  static constexpr Vector2 SHOTGUN_PICKABLE_RENDER_SIZE = {75, 30};
 
   static constexpr Properties RIFLE_PROPERTIES   = {0.15f, 700.0f, 900.0f, 25.0f, 1, 0.0f, 30, false};
   static constexpr Properties PISTOL_PROPERTIES  = {0.25f, 450.0f, 500.0f, 20.0f, 1, 0.0f, 12, false};

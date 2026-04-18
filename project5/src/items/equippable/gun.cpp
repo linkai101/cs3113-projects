@@ -2,7 +2,7 @@
 #include "items/equippable/gun.h"
 
 Gun::Gun(Type type, Assets& assets) :
-  Equippable(),
+  Equippable(getPickableTexture(assets, type), getPickableRenderSize(assets, type)),
   type(type),
   animator(buildAnimator(assets, type)),
   properties(getProperties(type)),
@@ -110,5 +110,21 @@ Gun::Properties Gun::getProperties(Type type) {
     case Type::RIFLE: return RIFLE_PROPERTIES;
     case Type::PISTOL: return PISTOL_PROPERTIES;
     case Type::SHOTGUN: return SHOTGUN_PROPERTIES;
+  }
+}
+
+Texture2D& Gun::getPickableTexture(Assets& assets, Type type) {
+  switch (type) {
+    case Type::RIFLE: return assets.riflePickableTexture;
+    case Type::PISTOL: return assets.pistolPickableTexture;
+    case Type::SHOTGUN: return assets.shotgunPickableTexture;
+  }
+}
+
+Vector2 Gun::getPickableRenderSize(Assets& assets, Type type) {
+  switch (type) {
+    case Type::RIFLE: return RIFLE_PICKABLE_RENDER_SIZE;
+    case Type::PISTOL: return PISTOL_PICKABLE_RENDER_SIZE;
+    case Type::SHOTGUN: return SHOTGUN_PICKABLE_RENDER_SIZE;
   }
 }

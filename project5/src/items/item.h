@@ -10,7 +10,7 @@ public:
 
   Item(Spritesheet* sheet, int frameIndex, Vector2 groundRenderSize);
 
-  Item(Texture2D texture, Rectangle textureArea, Vector2 groundRenderSize);
+  Item(Texture2D texture, Vector2 groundRenderSize);
 
   virtual ~Item() = default;
 
@@ -23,6 +23,8 @@ public:
   }
 
 protected:
+  void initGroundSprite(Texture2D texture, Vector2 groundRenderSize);
+
   void placeOnGround(Vector2 position);
 
 private:

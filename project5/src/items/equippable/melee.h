@@ -60,7 +60,8 @@ private:
   static Properties getProperties(Type type);
 
   static constexpr Vector2 RENDER_SIZE = {145, 200};
-  
+  static constexpr Vector2 BAT_PICKABLE_RENDER_SIZE = {40, 60};
+
   static constexpr Properties HANDS_PROPERTIES = {0.25f, 80.0f, 60.0f, 10.0f};
   static constexpr Properties BAT_PROPERTIES = {0.5f, 140.0f, 100.0f, 20.0f};
 };

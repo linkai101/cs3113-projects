@@ -6,7 +6,9 @@ Melee::Melee(Type type, Assets& assets) :
   type(type),
   animator(buildAnimator(assets, type)),
   properties(getProperties(type))
-{}
+{
+  if (type == Type::BAT) initGroundSprite(assets.batPickableTexture, BAT_PICKABLE_RENDER_SIZE);
+}
 
 void Melee::update(float deltaTime) {
   // Update animator
