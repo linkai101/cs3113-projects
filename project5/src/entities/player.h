@@ -24,7 +24,13 @@ public:
   // TODO: remove
   void debug(int debugAction);
 
+  void takeDamage(float amount);
+
   bool canAttack() const;
+
+  bool isDead() const { return state == State::DEAD; }
+
+  float getHealth() const { return health; }
 
   int getAmmoInventory(Gun::Type type) const;
 
@@ -36,8 +42,16 @@ public:
 
   void setMouseWorldPosition(Vector2 pos) { mouseWorldPos = pos; }
 
+  static constexpr float MAX_HEALTH = 100.0f;
+
 private:
+  enum class State { ALIVE, DYING, DEAD };
+
   Vector2 mouseWorldPos = {0, 0};
+
+  State state = State::ALIVE;
+  float health = MAX_HEALTH;
+  float damageFlashTimer = 0.0f;
 
   Direction facingDirection = Direction::RIGHT;
   bool movingUp = false;
@@ -45,17 +59,15 @@ private:
   bool movingLeft = false;
   bool movingRight = false;
   
-  Melee hands;
-
   // Items
   // TODO: implement item inventory
+  Melee hands; // Active when equipped is nullptr
   Melee bat;
   Gun rifle;
   Gun pistol;
   Gun shotgun;
 
   Equippable* equipped = nullptr;
-
   std::map<Gun::Type, int> ammoInventory;
 
   static Animator buildAnimator(Spritesheet* sheet);
@@ -63,4 +75,5 @@ private:
   static constexpr Vector2 RENDER_SIZE = {95, 90};
   static constexpr Vector2 COLLIDER_SIZE = {40, 60};
   static constexpr float MOVEMENT_SPEED = 250.0f;
+  static constexpr float DAMAGE_FLASH_DURATION = 0.12f;
 };

@@ -207,6 +207,23 @@ void World::render() const {
 
   EndMode2D();
 
+  // Health HUD
+  if (player) {
+    float health = player->getHealth();
+    float maxHealth = Player::MAX_HEALTH;
+    float ratio = health / maxHealth;
+
+    const int barWidth = 200;
+    const int barHeight = 16;
+    const int barX = 20;
+    const int barY = screenHeight - 130;
+
+    DrawRectangle(barX, barY, barWidth, barHeight, Color{80, 0, 0, 255});
+    DrawRectangle(barX, barY, static_cast<int>(barWidth * ratio), barHeight, Color{220, 50, 50, 255});
+    DrawRectangleLines(barX, barY, barWidth, barHeight, WHITE);
+    DrawText("HP", barX, barY - 22, 20, WHITE);
+  }
+
   // Ammo HUD
   if (player) {
     const Gun* gun = dynamic_cast<const Gun*>(player->getEquipped());

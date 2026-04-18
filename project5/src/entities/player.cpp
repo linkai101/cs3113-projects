@@ -18,6 +18,29 @@ Player::Player(Vector2 spawnPosition, Assets& assets) :
 }
 
 void Player::update(float deltaTime) {
+  // Handle dying state
+  if (state == State::DYING) {
+    if (damageFlashTimer > 0.0f) {
+      damageFlashTimer -= deltaTime;
+      if (damageFlashTimer < 0.0f) damageFlashTimer = 0.0f;
+    }
+    Entity::update(deltaTime);
+    if (animator.has_value() && animator->isAnimationDone()) {
+      state = State::DEAD;
+      physicsBody = std::nullopt;
+    }
+    return;
+  }
+
+  // Handle dead state
+  if (state == State::DEAD) return;
+
+  // Update damage flash timer
+  if (damageFlashTimer > 0.0f) {
+    damageFlashTimer -= deltaTime;
+    if (damageFlashTimer < 0.0f) damageFlashTimer = 0.0f;
+  }
+
   // Update player movement
   if (physicsBody.has_value()) {
     PhysicsBody& pb = *physicsBody;
@@ -101,28 +124,51 @@ void Player::update(float deltaTime) {
 }
 
 void Player::render() const {
-  const bool dying = animator->getCurrentAnimation() == "die";
+  const bool alive = state == State::ALIVE;
   const Melee* melee = dynamic_cast<const Melee*>(equipped);
   const Gun* gun = dynamic_cast<const Gun*>(equipped);
 
   const bool gunBehindPlayer = facingDirection == Direction::UP;
 
-  if (gun && !dying && gunBehindPlayer) equipped->render(position);
-
+  if (alive && gun && gunBehindPlayer) equipped->render(position);
   Entity::render();
+  if (alive && ((gun && !gunBehindPlayer) || melee)) equipped->render(position);
+  if (alive && !equipped) hands.render(position);
 
-  if (gun && !dying && !gunBehindPlayer || melee) equipped->render(position);
-  if (!equipped) hands.render(position);
+  // Render damage flash
+  if (damageFlashTimer > 0.0f && hasAnimator && animator.has_value()) {
+    float alpha = damageFlashTimer / DAMAGE_FLASH_DURATION;
+    BeginBlendMode(BLEND_ADDITIVE);
+    animator->render(position, Fade(WHITE, alpha));
+    EndBlendMode();
+  }
 }
 
 void Player::move(bool up, bool down, bool left, bool right) {
+  if (state != State::ALIVE) return;
   movingUp = up && !down;
   movingDown = down && !up;
   movingLeft = left && !right;
   movingRight = right && !left;
 }
 
+void Player::takeDamage(float amount) {
+  if (state != State::ALIVE) return;
+
+  damageFlashTimer = DAMAGE_FLASH_DURATION;
+  health -= amount;
+
+  if (health <= 0.0f) {
+    health = 0.0f;
+    state = State::DYING;
+    movingUp = movingDown = movingLeft = movingRight = false;
+    if (physicsBody.has_value()) physicsBody->velocity = {0, 0};
+    playAnimation("die");
+  }
+}
+
 void Player::attack() {
+  if (state != State::ALIVE) return;
   auto playMeleePlayerAnimation = [this]() -> void {
     switch (facingDirection) {
       case Direction::UP:
@@ -161,6 +207,7 @@ void Player::attack() {
 }
 
 void Player::reload() {
+  if (state != State::ALIVE) return;
   if (auto gun = dynamic_cast<Gun*>(equipped)) {
     if (!gun->isReloading() && gun->getCurrentMag() < gun->getMagazineSize()) {
       int needed = gun->getMagazineSize() - gun->getCurrentMag();
