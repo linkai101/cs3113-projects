@@ -1,20 +1,33 @@
 #pragma once
-#include "raylib.h"
 #include "entities/entity.h"
+#include "components/sprite.h"
 #include "assets.h"
+#include <optional>
 
 class Item {
 public:
   Item() = default;
 
+  Item(Spritesheet* sheet, int frameIndex, Vector2 groundRenderSize);
+
+  Item(Texture2D texture, Rectangle textureArea, Vector2 groundRenderSize);
+
   virtual ~Item() = default;
 
-  // Drop the item on the ground
-  // void drop(Vector2 position);
+  bool isGrounded() const { return groundEntity != nullptr; }
+
+  Entity* getGroundEntity() const { return groundEntity.get(); }
+
+  std::optional<Rectangle> getCollider() const {
+    return groundEntity ? groundEntity->getCollider() : std::nullopt;
+  }
+
+protected:
+  void placeOnGround(Vector2 position);
 
 private:
-  bool isGrounded = false;
-  
-  // TODO: Entity to render when grounded
-  // Entity object;
+  std::optional<Sprite> groundSprite;
+  Vector2 groundRenderSize = {0, 0};
+
+  std::unique_ptr<Entity> groundEntity;
 };

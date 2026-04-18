@@ -4,6 +4,7 @@
 #include "entities/bullet.h"
 #include "entities/dummy.h"
 #include "entities/zombie.h"
+#include "items/ammo_crate.h"
 
 class World : public Scene {
 public:
@@ -28,6 +29,7 @@ private:
   Player* player = nullptr;
   Dummy* dummy = nullptr;
   std::vector<Zombie*> zombies;
+  std::vector<std::unique_ptr<AmmoCrate>> ammoCrates;
   bool playerMeleeHitRegistered = false;
 
   void spawnBullets(Gun::Type type, Gun::Properties properties, float aimAngle, int bulletCount, float spread);

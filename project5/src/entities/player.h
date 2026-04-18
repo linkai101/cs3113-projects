@@ -34,6 +34,8 @@ public:
 
   int getAmmoInventory(Gun::Type type) const;
 
+  void addAmmo(Gun::Type type, int amount);
+
   float getAimAngle() const { return atan2f(mouseWorldPos.y - position.y, mouseWorldPos.x - position.x); }
 
   Vector2 getMouseWorldPosition() const { return mouseWorldPos; }

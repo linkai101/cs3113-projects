@@ -28,6 +28,8 @@ struct Assets {
   Texture2D pistolBulletTexture;
   Texture2D shotgunBulletTexture;
 
+  Texture2D ammoCrateTexture;
+  Spritesheet ammoCrateSheet;
 
   void load() {
     terrainTexture = LoadTexture("assets/textures/tiles/terrain_yellow.png");
@@ -54,6 +56,9 @@ struct Assets {
     rifleBulletTexture = LoadTexture("assets/textures/guns/rifle_bullet.png");
     pistolBulletTexture = LoadTexture("assets/textures/guns/pistol_bullet.png");
     shotgunBulletTexture = LoadTexture("assets/textures/guns/shotgun_bullet.png");
+
+    ammoCrateTexture = LoadTexture("assets/textures/objects/pickable/ammo_crate.png");
+    ammoCrateSheet = Spritesheet{ammoCrateTexture, Vector2{9, 7}, 3};
   }
 
   void unload() {
@@ -73,5 +78,7 @@ struct Assets {
     UnloadTexture(rifleBulletTexture);
     UnloadTexture(pistolBulletTexture);
     UnloadTexture(shotgunBulletTexture);
+
+    UnloadTexture(ammoCrateTexture);
   }
 };

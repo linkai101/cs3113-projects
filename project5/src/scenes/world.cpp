@@ -37,6 +37,10 @@ void World::load() {
     zombies.push_back(z);
   }
 
+  ammoCrates.push_back(std::make_unique<AmmoCrate>(getTilePosition({1.5f, 1.5f}), Gun::Type::RIFLE, 30, assets));
+  ammoCrates.push_back(std::make_unique<AmmoCrate>(getTilePosition({3.5f, 1.5f}), Gun::Type::PISTOL, 12, assets));
+  ammoCrates.push_back(std::make_unique<AmmoCrate>(getTilePosition({2.5f, 3.5f}), Gun::Type::SHOTGUN, 6, assets));
+
   camera.init(player->getPosition());
 
   Scene::load();
@@ -47,6 +51,7 @@ void World::unload() {
 
   entities.clear();
   zombies.clear();
+  ammoCrates.clear();
 
   Scene::unload();
 }
@@ -195,6 +200,26 @@ void World::update(float deltaTime) {
     }
   }
 
+  // Ammo pickup
+  if (player) {
+    std::optional<Rectangle> playerCollider = player->getCollider();
+    if (playerCollider) {
+      ammoCrates.erase(
+        std::remove_if(ammoCrates.begin(), ammoCrates.end(),
+          [this, &playerCollider](const std::unique_ptr<AmmoCrate>& pickup) {
+            std::optional<Rectangle> pickupCollider = pickup->getCollider();
+            if (!pickupCollider) return false;
+            if (CheckRectCollision(*playerCollider, *pickupCollider)) {
+              player->addAmmo(pickup->getGunType(), pickup->getAmount());
+              return true;
+            }
+            return false;
+          }),
+          ammoCrates.end()
+      );
+    }
+  }
+
   // Update camera
   if (player) {
     camera.update(deltaTime, player->getPosition());
@@ -213,8 +238,11 @@ void World::render() const {
 
   // Render entities by y position
   std::vector<Entity*> sorted;
-  sorted.reserve(entities.size());
+  sorted.reserve(entities.size() + ammoCrates.size());
   for (auto& entity : entities) sorted.push_back(entity.get());
+  for (auto& crate : ammoCrates) {
+    if (Entity* e = crate->getGroundEntity()) sorted.push_back(e);
+  }
   std::sort(sorted.begin(), sorted.end(), [](const Entity* a, const Entity* b) {
     return a->getPosition().y < b->getPosition().y;
   });

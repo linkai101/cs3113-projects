@@ -11,10 +11,6 @@ Player::Player(Vector2 spawnPosition, Assets& assets) :
 {
   enablePhysics(COLLIDER_SIZE, Vector2{-COLLIDER_SIZE.x / 2, -COLLIDER_SIZE.y}, false);
   playAnimation("idle-side");
-
-  ammoInventory[Gun::Type::RIFLE] = 90;
-  ammoInventory[Gun::Type::PISTOL] = 36;
-  ammoInventory[Gun::Type::SHOTGUN] = 18;
 }
 
 void Player::update(float deltaTime) {
@@ -252,6 +248,10 @@ bool Player::canAttack() const {
 int Player::getAmmoInventory(Gun::Type type) const {
   auto it = ammoInventory.find(type);
   return it != ammoInventory.end() ? it->second : 0;
+}
+
+void Player::addAmmo(Gun::Type type, int amount) {
+  ammoInventory[type] += amount;
 }
 
 Animator Player::buildAnimator(Spritesheet* sheet) {
