@@ -5,6 +5,7 @@
 #include "entities/dummy.h"
 #include "entities/zombie.h"
 #include "items/ammo_crate.h"
+#include "hud/hotbar.h"
 
 class World : public Scene {
 public:
@@ -22,6 +23,7 @@ public:
 
 private:
   FollowCamera camera;
+  Hotbar hotbar;
 
   std::vector<std::unique_ptr<Entity>> terrain;
   std::vector<std::unique_ptr<Entity>> entities;

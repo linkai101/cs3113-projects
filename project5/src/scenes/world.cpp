@@ -6,7 +6,8 @@
 
 World::World(int screenWidth, int screenHeight, Assets& assets) :
   Scene(screenWidth, screenHeight, assets),
-  camera(screenWidth, screenHeight)
+  camera(screenWidth, screenHeight),
+  hotbar(screenWidth, screenHeight, assets)
 {}
 
 void World::load() {
@@ -282,6 +283,9 @@ void World::render() const {
       DrawText(ammoText.c_str(), 20, screenHeight - 44, 36, WHITE);
     }
   }
+
+  // Hotbar HUD
+  if (player) hotbar.render(player->getEquipped());
 }
 
 void World::loadTileGrid(
