@@ -160,26 +160,29 @@ void Player::attack() {
   }
 }
 
-Animator Player::buildAnimator(Spritesheet* sheet) {
-  Vector2 origin = Vector2{SIZE.x / 2, SIZE.y};
+void Player::reload() {
+  if (auto gun = dynamic_cast<Gun*>(equipped)) {
+    if (!gun->isReloading() && gun->getCurrentMag() < gun->getMagazineSize()) {
+      int needed = gun->getMagazineSize() - gun->getCurrentMag();
+      int& inv = ammoInventory[gun->getType()];
+      int toAdd = std::min(needed, inv);
+      if (toAdd > 0) {
+        inv -= toAdd;
+        gun->triggerReload(toAdd);
+      }
+    }
+  }
+}
 
-  Animator anim = Animator(sheet, SIZE, origin);
-
-  anim.addAnimation("idle-side", Animator::Animation{"idle-side", {0, 1, 2, 3, 4, 5}, 10, true});
-  anim.addAnimation("idle-down", Animator::Animation{"idle-down", {6, 7, 8, 9, 10, 11}, 10, true});
-  anim.addAnimation("idle-up", Animator::Animation{"idle-up", {12, 13, 14, 15, 16, 17}, 10, true});
-  anim.addAnimation("run-side", Animator::Animation{"run-side", {18, 19, 20, 21, 22, 23}, 10, true});
-  anim.addAnimation("run-down", Animator::Animation{"run-down", {24, 25, 26, 27, 28, 29}, 10, true});
-  anim.addAnimation("run-up", Animator::Animation{"run-up", {30, 31, 32, 33, 34, 35}, 10, true});
-  // anim.addAnimation("pickup-side", Animator::Animation{"pickup-side", {36, 37, 38}, 10, false});
-  // anim.addAnimation("pickup-down", Animator::Animation{"pickup-down", {42, 43, 44}, 10, false});
-  // anim.addAnimation("pickup-up", Animator::Animation{"pickup-up", {48, 49, 50}, 10, false});
-  anim.addAnimation("attack-side", Animator::Animation{"attack-side", {54, 55, 56}, 10, false});
-  anim.addAnimation("attack-down", Animator::Animation{"attack-down", {60, 61, 62}, 10, false});
-  anim.addAnimation("attack-up", Animator::Animation{"attack-up", {66, 67, 68}, 10, false});
-  anim.addAnimation("die", Animator::Animation{"die", {72, 73, 74, 75, 76, 77}, 10, false});
-
-  return anim;
+void Player::debug(int debugAction) {
+  switch (debugAction) {
+    case 1: equipped = nullptr; break;
+    case 2: equipped = &bat; break;
+    case 3: equipped = &rifle; break;
+    case 4: equipped = &pistol; break;
+    case 5: equipped = &shotgun; break;
+    case 0: animator->play("die"); break;
+  }
 }
 
 bool Player::canAttack() const {
@@ -199,33 +202,29 @@ bool Player::canAttack() const {
   return hands.canStrike();
 }
 
-
-void Player::reload() {
-  if (auto gun = dynamic_cast<Gun*>(equipped)) {
-    if (!gun->isReloading() && gun->getCurrentMag() < gun->getMagazineSize()) {
-      int needed = gun->getMagazineSize() - gun->getCurrentMag();
-      int& inv = ammoInventory[gun->getType()];
-      int toAdd = std::min(needed, inv);
-      if (toAdd > 0) {
-        inv -= toAdd;
-        gun->triggerReload(toAdd);
-      }
-    }
-  }
-}
-
 int Player::getAmmoInventory(Gun::Type type) const {
   auto it = ammoInventory.find(type);
   return it != ammoInventory.end() ? it->second : 0;
 }
 
-void Player::debug(int debugAction) {
-  switch (debugAction) {
-    case 1: equipped = nullptr; break;
-    case 2: equipped = &bat; break;
-    case 3: equipped = &rifle; break;
-    case 4: equipped = &pistol; break;
-    case 5: equipped = &shotgun; break;
-    case 0: animator->play("die"); break;
-  }
+Animator Player::buildAnimator(Spritesheet* sheet) {
+  Vector2 origin = Vector2{RENDER_SIZE.x / 2, RENDER_SIZE.y};
+
+  Animator anim = Animator(sheet, RENDER_SIZE, origin);
+
+  anim.addAnimation("idle-side", Animator::Animation{"idle-side", {0, 1, 2, 3, 4, 5}, 10, true});
+  anim.addAnimation("idle-down", Animator::Animation{"idle-down", {6, 7, 8, 9, 10, 11}, 10, true});
+  anim.addAnimation("idle-up", Animator::Animation{"idle-up", {12, 13, 14, 15, 16, 17}, 10, true});
+  anim.addAnimation("run-side", Animator::Animation{"run-side", {18, 19, 20, 21, 22, 23}, 10, true});
+  anim.addAnimation("run-down", Animator::Animation{"run-down", {24, 25, 26, 27, 28, 29}, 10, true});
+  anim.addAnimation("run-up", Animator::Animation{"run-up", {30, 31, 32, 33, 34, 35}, 10, true});
+  // anim.addAnimation("pickup-side", Animator::Animation{"pickup-side", {36, 37, 38}, 10, false});
+  // anim.addAnimation("pickup-down", Animator::Animation{"pickup-down", {42, 43, 44}, 10, false});
+  // anim.addAnimation("pickup-up", Animator::Animation{"pickup-up", {48, 49, 50}, 10, false});
+  anim.addAnimation("attack-side", Animator::Animation{"attack-side", {54, 55, 56}, 10, false});
+  anim.addAnimation("attack-down", Animator::Animation{"attack-down", {60, 61, 62}, 10, false});
+  anim.addAnimation("attack-up", Animator::Animation{"attack-up", {66, 67, 68}, 10, false});
+  anim.addAnimation("die", Animator::Animation{"die", {72, 73, 74, 75, 76, 77}, 10, false});
+
+  return anim;
 }

@@ -21,9 +21,12 @@ public:
 
   void reload();
 
-  void setMouseWorldPosition(Vector2 pos) { mouseWorldPos = pos; }
+  // TODO: remove
+  void debug(int debugAction);
 
   bool canAttack() const;
+
+  int getAmmoInventory(Gun::Type type) const;
 
   float getAimAngle() const { return atan2f(mouseWorldPos.y - position.y, mouseWorldPos.x - position.x); }
 
@@ -31,9 +34,7 @@ public:
 
   Equippable* getEquipped() const { return equipped ? equipped : const_cast<Melee*>(&hands); }
 
-  int getAmmoInventory(Gun::Type type) const;
-
-  void debug(int debugAction);
+  void setMouseWorldPosition(Vector2 pos) { mouseWorldPos = pos; }
 
 private:
   Vector2 mouseWorldPos = {0, 0};
@@ -59,7 +60,7 @@ private:
 
   static Animator buildAnimator(Spritesheet* sheet);
 
-  static constexpr Vector2 SIZE = {95, 90};
+  static constexpr Vector2 RENDER_SIZE = {95, 90};
   static constexpr Vector2 COLLIDER_SIZE = {40, 60};
   static constexpr float MOVEMENT_SPEED = 250.0f;
 };
