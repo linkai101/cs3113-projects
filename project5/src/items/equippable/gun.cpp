@@ -1,5 +1,5 @@
 #include <algorithm>
-#include "items/gun.h"
+#include "items/equippable/gun.h"
 
 Gun::Gun(Type type, Assets& assets) :
   Equippable(),

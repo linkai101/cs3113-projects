@@ -1,7 +1,7 @@
 #pragma once
 #include "raylib.h"
 #include "entities/entity.h"
-#include "items/gun.h"
+#include "items/equippable/gun.h"
 #include "assets.h"
 
 class Bullet : public Entity {
@@ -19,7 +19,6 @@ private:
   float maxRange;
   float damage;
   float distanceTraveled = 0.0f;
-
 
   static Texture2D getBulletTexture(Assets& assets, Gun::Type type);
 

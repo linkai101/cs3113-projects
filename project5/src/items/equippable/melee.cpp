@@ -1,5 +1,5 @@
 #include "entities/player.h"
-#include "items/melee.h"
+#include "items/equippable/melee.h"
 
 Melee::Melee(Type type, Assets& assets) :
   Equippable(),

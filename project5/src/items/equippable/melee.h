@@ -1,5 +1,5 @@
 #pragma once
-#include "items/equippable.h"
+#include "items/equippable/equippable.h"
 
 class Melee : public Equippable {
 public:

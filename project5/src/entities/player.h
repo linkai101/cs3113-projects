@@ -1,9 +1,9 @@
 #pragma once
 #include <map>
 #include "entities/entity.h"
-#include "items/equippable.h"
-#include "items/melee.h"
-#include "items/gun.h"
+#include "items/equippable/equippable.h"
+#include "items/equippable/melee.h"
+#include "items/equippable/gun.h"
 #include "assets.h"
 #include "components/animator.h"
 

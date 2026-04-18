@@ -1,6 +1,6 @@
 # Source and target
-# Automatically include all .cpp files under src/ and one-level subdirectories
-SRCS = $(wildcard src/*.cpp src/*/*.cpp)
+# All .cpp files under src/ (any depth)
+SRCS := $(shell find src -name '*.cpp' | LC_ALL=C sort)
 TARGET = raylib_app
 OBJS = $(SRCS:src/%.cpp=build/%.o)
 DEPS = $(OBJS:.o=.d)
