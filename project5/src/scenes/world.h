@@ -32,6 +32,7 @@ private:
   std::string levelPath;
 
   std::vector<std::unique_ptr<Entity>> terrain;
+  std::vector<Rectangle> collisionBoxes;
   std::vector<std::unique_ptr<Entity>> entities;
   std::vector<std::unique_ptr<Bullet>> bullets;
 

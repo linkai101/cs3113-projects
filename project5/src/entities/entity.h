@@ -21,6 +21,7 @@ public:
   virtual void update(float deltaTime);
 
   virtual void resolveCollisions(std::vector<Entity*> entities);
+  void resolveCollisions(const std::vector<Rectangle>& boxes);
 
   virtual void render() const;
 

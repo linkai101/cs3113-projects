@@ -87,6 +87,30 @@ void Entity::resolveCollisions(std::vector<Entity*> entities) {
   }
 }
 
+void Entity::resolveCollisions(const std::vector<Rectangle>& boxes) {
+  if (!physicsBody.has_value()) return;
+  PhysicsBody& pb = *physicsBody;
+
+  for (const Rectangle& otherBox : boxes) {
+    Rectangle box = pb.getCollider(position);
+    if (!CheckRectCollision(box, otherBox)) continue;
+    float overlapX = std::min(box.x + box.width,  otherBox.x + otherBox.width)  - std::max(box.x, otherBox.x);
+    float overlapY = std::min(box.y + box.height, otherBox.y + otherBox.height) - std::max(box.y, otherBox.y);
+    if (overlapX < overlapY) {
+      position.x += (box.x < otherBox.x) ? -overlapX : overlapX;
+    }
+  }
+  for (const Rectangle& otherBox : boxes) {
+    Rectangle box = pb.getCollider(position);
+    if (!CheckRectCollision(box, otherBox)) continue;
+    float overlapX = std::min(box.x + box.width, otherBox.x + otherBox.width)  - std::max(box.x, otherBox.x);
+    float overlapY = std::min(box.y + box.height, otherBox.y + otherBox.height) - std::max(box.y, otherBox.y);
+    if (overlapY <= overlapX) {
+      position.y += (box.y < otherBox.y) ? -overlapY : overlapY;
+    }
+  }
+}
+
 void Entity::render() const {
   if (hasAnimator) {
     if (animator.has_value()) animator->render(position);

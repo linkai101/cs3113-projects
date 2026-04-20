@@ -18,6 +18,16 @@ void World::load() {
 
   loadLevel(levelPath);
 
+  // Add boundary walls
+  float mapW = mapCols * TILE_SIZE;
+  float mapH = mapRows * TILE_SIZE;
+  float margin = -TILE_SIZE * 0.25f;
+  float thick = 2000.0f;
+  collisionBoxes.push_back({ margin - thick, margin - thick, thick, mapH - margin * 2 + thick * 2 });
+  collisionBoxes.push_back({ mapW - margin, margin - thick, thick, mapH - margin * 2 + thick * 2 });
+  collisionBoxes.push_back({ margin - thick, margin - thick, mapW - margin * 2 + thick * 2, thick });
+  collisionBoxes.push_back({ margin - thick, mapH - margin, mapW - margin * 2 + thick * 2, thick });
+
   entities.push_back(std::make_unique<Player>(getTilePosition(SPAWN_POSITION), assets));
   player = dynamic_cast<Player*>(entities.back().get());
 
@@ -50,6 +60,7 @@ void World::unload() {
   if (!loaded) return;
 
   terrain.clear();
+  collisionBoxes.clear();
   entities.clear();
   bullets.clear();
   zombies.clear();
@@ -111,21 +122,41 @@ void World::update(float deltaTime) {
     bullet->update(deltaTime);
   }
 
-  // Resolve player collisions against all physics-enabled non-player entities
+  // Resolve player collisions other entities and static colliders
   if (player) {
     std::vector<Entity*> collidables;
     for (auto& e : entities) {
-      if (e.get() != player && e->getCollider().has_value()) {
+      if (e.get() != player && e->getCollider().has_value()) { // non-player physics-enabled entities
         collidables.push_back(e.get());
       }
     }
     player->resolveCollisions(collidables);
+    player->resolveCollisions(collisionBoxes);
+  }
+
+  // Resolve zombie collisions against collision boxes
+  if (!collisionBoxes.empty()) {
+    for (Zombie* zombie : zombies) {
+      zombie->resolveCollisions(collisionBoxes);
+    }
   }
 
   // Remove expired bullets
   bullets.erase(
     std::remove_if(bullets.begin(), bullets.end(),
       [](const std::unique_ptr<Bullet>& b) { return b->isExpired(); }),
+    bullets.end()
+  );
+
+  // Bullet-collision box check
+  bullets.erase(
+    std::remove_if(bullets.begin(), bullets.end(),
+      [this](const std::unique_ptr<Bullet>& b) {
+        for (const Rectangle& box : collisionBoxes) {
+          if (CheckPointInRect(b->getPosition(), box)) return true;
+        }
+        return false;
+      }),
     bullets.end()
   );
 
@@ -266,6 +297,7 @@ void World::loadLevel(const std::string& path) {
   std::string line;
   std::string currentLayer;
   std::vector<std::vector<int>> currentGrid;
+  bool inColliders = false;
 
   auto loadLayer = [&]() {
     if (!currentLayer.empty() && !currentGrid.empty()) {
@@ -284,13 +316,23 @@ void World::loadLevel(const std::string& path) {
       // Ignore, info only
     } else if (token == "layer") {
       loadLayer();
+      inColliders = false;
       iss >> currentLayer;
+    } else if (token == "colliders") {
+      loadLayer();
+      inColliders = true;
+    } else if (inColliders) {
+      float col = std::stof(token);
+      float row, w, h;
+      iss >> row >> w >> h;
+      collisionBoxes.push_back({ col * TILE_SIZE, row * TILE_SIZE, w * TILE_SIZE, h * TILE_SIZE });
     } else {
-      std::vector<int> row;
-      row.push_back(std::stoi(token));
+      // Layer grid row
+      std::vector<int> gridRow;
+      gridRow.push_back(std::stoi(token));
       int val;
-      while (iss >> val) row.push_back(val);
-      currentGrid.push_back(std::move(row));
+      while (iss >> val) gridRow.push_back(val);
+      currentGrid.push_back(std::move(gridRow));
     }
   }
   loadLayer();
