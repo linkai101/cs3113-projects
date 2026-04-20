@@ -13,15 +13,21 @@ struct Assets {
   Texture2D ironFenceTexture;
   Spritesheet ironFenceSheet;
 
-  // ENTITIES
+  // PLAYER
   Texture2D playerTexture;
   Spritesheet playerSheet;
 
+  // ENEMIES
   Texture2D zombieTexture;
   Spritesheet zombieSheet;
   
   Texture2D giantTexture;
   Spritesheet giantSheet;
+
+  Texture2D ghoulTexture;
+  Spritesheet ghoulSheet;
+  Texture2D ghoulAxeThrownTexture;
+  Spritesheet ghoulAxeThrownSheet;
 
   // MELEE
   Texture2D playerHandsTexture;
@@ -89,21 +95,27 @@ struct Assets {
     ironFenceTexture = LoadTexture("assets/textures/tiles/iron_fence.png");
     ironFenceSheet = Spritesheet{ironFenceTexture, Vector2{16, 16}, 3};
 
-    // ENTITIES
-    playerTexture = LoadTexture("assets/textures/entities/player.png");
+    // PLAYER
+    playerTexture = LoadTexture("assets/textures/player/player.png");
     playerSheet = Spritesheet{playerTexture, Vector2{19, 18}, 6};
 
-    zombieTexture = LoadTexture("assets/textures/entities/zombie.png");
+    // ENEMIES
+    zombieTexture = LoadTexture("assets/textures/enemies/zombie.png");
     zombieSheet = Spritesheet{zombieTexture, Vector2{19, 18}, 6};
 
-    giantTexture = LoadTexture("assets/textures/entities/giant.png");
+    giantTexture = LoadTexture("assets/textures/enemies/giant.png");
     giantSheet = Spritesheet{giantTexture, Vector2{30, 30}, 15};
 
+    ghoulTexture = LoadTexture("assets/textures/enemies/ghoul.png");
+    ghoulSheet = Spritesheet{ghoulTexture, Vector2{27, 27}, 9};
+    ghoulAxeThrownTexture = LoadTexture("assets/textures/enemies/ghoul_axe_thrown.png");
+    ghoulAxeThrownSheet = Spritesheet{ghoulAxeThrownTexture, Vector2{14, 14}, 8};
+
     // MELEE
-    playerHandsTexture = LoadTexture("assets/textures/gear/player_hands.png");
+    playerHandsTexture = LoadTexture("assets/textures/player/player_hands.png");
     playerHandsSheet = Spritesheet{playerHandsTexture, Vector2{29, 40}, 6};
 
-    batTexture = LoadTexture("assets/textures/gear/bat.png");
+    batTexture = LoadTexture("assets/textures/player/bat.png");
     batSheet = Spritesheet{batTexture, Vector2{29, 40}, 6};
     batPickableTexture = LoadTexture("assets/textures/objects/pickable/bat.png");
 
@@ -156,10 +168,14 @@ struct Assets {
     UnloadTexture(buildingsBeigeTexture);
     UnloadTexture(ironFenceTexture);
 
-    // ENTITIES
+    // PLAYER
     UnloadTexture(playerTexture);
+
+    // ENEMIES
     UnloadTexture(zombieTexture);
     UnloadTexture(giantTexture);
+    UnloadTexture(ghoulTexture);
+    UnloadTexture(ghoulAxeThrownTexture);
 
     // MELEE
     UnloadTexture(playerHandsTexture);

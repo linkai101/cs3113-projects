@@ -4,6 +4,9 @@
 #include <sstream>
 #include <string>
 #include "scenes/world.h"
+#include "entities/enemy/zombie.h"
+#include "entities/enemy/giant.h"
+#include "entities/enemy/ghoul.h"
 #include "sound_manager.h"
 #include "utils/collision.h"
 
@@ -53,6 +56,16 @@ void World::load() {
     {22.5f, 9.5f},
   }) {
     entities.push_back(std::make_unique<Giant>(getTilePosition(pos), assets));
+    Enemy* e = dynamic_cast<Enemy*>(entities.back().get());
+    e->setTarget(player);
+    enemies.push_back(e);
+  }
+
+  // Spawn ghouls
+  for (Vector2 pos : std::initializer_list<Vector2>{
+    {5.5f, 15.5f},
+  }) {
+    entities.push_back(std::make_unique<Ghoul>(getTilePosition(pos), assets));
     Enemy* e = dynamic_cast<Enemy*>(entities.back().get());
     e->setTarget(player);
     enemies.push_back(e);
