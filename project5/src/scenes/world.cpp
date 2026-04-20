@@ -192,7 +192,6 @@ void World::update(float deltaTime) {
         if (zombieCollider && CheckRectCollision(*meleeHit, *zombieCollider)) {
           zombie->takeDamage(activeMelee->getDamage());
           playerMeleeHitRegistered = true;
-          break;
         }
       }
     }
