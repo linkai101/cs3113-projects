@@ -21,14 +21,14 @@ void World::load() {
   entities.push_back(std::make_unique<Player>(getTilePosition(SPAWN_POSITION), assets));
   player = dynamic_cast<Player*>(entities.back().get());
 
-  entities.push_back(std::make_unique<Dummy>(getTilePosition({3.5f, 2.5f}), assets));
+  entities.push_back(std::make_unique<Dummy>(getTilePosition({12.5f, 4.5f}), assets));
   dummy = dynamic_cast<Dummy*>(entities.back().get());
 
   for (Vector2 pos : std::initializer_list<Vector2>{
-    {-6.5f, -6.5f},
-    {-6.5f, 6.5f},
-    {6.5f, -6.5f},
-    {6.5f, 6.5f},
+    {6.5f, 9.5f},
+    {10.5f, 9.5f},
+    {14.5f, 9.5f},
+    {18.5f, 9.5f},
   }) {
     entities.push_back(std::make_unique<Zombie>(getTilePosition(pos), assets));
     Zombie* z = dynamic_cast<Zombie*>(entities.back().get());
@@ -36,9 +36,9 @@ void World::load() {
     zombies.push_back(z);
   }
 
-  ammoCrates.push_back(std::make_unique<AmmoCrate>(getTilePosition({1.5f, 1.5f}), Gun::Type::RIFLE, 30, assets));
-  ammoCrates.push_back(std::make_unique<AmmoCrate>(getTilePosition({3.5f, 1.5f}), Gun::Type::PISTOL, 12, assets));
-  ammoCrates.push_back(std::make_unique<AmmoCrate>(getTilePosition({2.5f, 3.5f}), Gun::Type::SHOTGUN, 6, assets));
+  ammoCrates.push_back(std::make_unique<AmmoCrate>(getTilePosition({4.5f, 7.0f}), Gun::Type::RIFLE, 30, assets));
+  ammoCrates.push_back(std::make_unique<AmmoCrate>(getTilePosition({6.0f, 7.0f}), Gun::Type::PISTOL, 12, assets));
+  ammoCrates.push_back(std::make_unique<AmmoCrate>(getTilePosition({7.5f, 7.0f}), Gun::Type::SHOTGUN, 6, assets));
 
   camera.init(player->getPosition());
   camera.setBounds(mapCols * TILE_SIZE, mapRows * TILE_SIZE);
