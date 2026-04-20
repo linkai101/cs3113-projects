@@ -41,6 +41,7 @@ void World::load() {
   ammoCrates.push_back(std::make_unique<AmmoCrate>(getTilePosition({2.5f, 3.5f}), Gun::Type::SHOTGUN, 6, assets));
 
   camera.init(player->getPosition());
+  camera.setBounds(mapCols * TILE_SIZE, mapRows * TILE_SIZE);
 
   Scene::load();
 }
@@ -302,6 +303,8 @@ void World::loadLayerFromGrid(const std::string& layerName, const std::vector<st
 
   int rows = static_cast<int>(grid.size());
   int cols = static_cast<int>(grid[0].size());
+  mapRows = rows;
+  mapCols = cols;
 
   std::vector<int> flat;
   flat.reserve(rows * cols);

@@ -24,6 +24,9 @@ public:
   void render() const override;
 
 private:
+  int mapCols = 0;
+  int mapRows = 0;
+
   FollowCamera camera;
   Hotbar hotbar;
   std::string levelPath;
