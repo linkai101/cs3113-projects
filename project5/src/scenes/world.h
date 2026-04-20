@@ -5,9 +5,9 @@
 #include "entities/player.h"
 #include "entities/bullet.h"
 #include "entities/dummy.h"
-#include "entities/enemy.h"
-#include "entities/zombie.h"
-#include "entities/giant.h"
+#include "entities/enemy/enemy.h"
+#include "entities/enemy/zombie.h"
+#include "entities/enemy/giant.h"
 #include "items/ammo_crate.h"
 #include "hud/hotbar.h"
 

@@ -1,4 +1,4 @@
-#include "entities/zombie.h"
+#include "entities/enemy/zombie.h"
 #include "entities/player.h"
 #include "raylib.h"
 #include <cmath>
@@ -38,10 +38,9 @@ void Zombie::update(float deltaTime) {
         float dist = sqrtf(dx * dx + dy * dy);
 
         if (isAttacking) {
-          // Launch attack
+          // Attack animation playing
           if (physicsBody.has_value()) physicsBody->velocity = {0, 0};
           if (animator.has_value() && animator->isAnimationDone()) {
-            target->takeDamage(ATTACK_DAMAGE);
             attackCooldownTimer = ATTACK_COOLDOWN;
             isAttacking = false;
             std::string idleAnim =
@@ -49,20 +48,39 @@ void Zombie::update(float deltaTime) {
               (facingDirection == Direction::UP) ? "idle-up" : "idle-side";
             playAnimation(idleAnim);
           }
+        } else if (isWindingUp) {
+          // Wind up before attacking
+          if (physicsBody.has_value()) physicsBody->velocity = {0, 0};
+          std::string idleAnim =
+            (facingDirection == Direction::DOWN) ? "idle-down" :
+            (facingDirection == Direction::UP) ? "idle-up" : "idle-side";
+          if (animator.has_value() && animator->getCurrentAnimation() != idleAnim)
+            playAnimation(idleAnim);
+          windUpTimer -= deltaTime;
+          if (windUpTimer <= 0.0f) {
+            isWindingUp = false;
+            isAttacking = true;
+            if (dist <= ATTACK_DISTANCE) target->takeDamage(ATTACK_DAMAGE);
+            if (facingDirection == Direction::DOWN) {
+              playAnimation("attack-down");
+            } else if (facingDirection == Direction::UP) {
+              playAnimation("attack-up");
+            } else {
+              playAnimation("attack-side");
+            }
+          }
         } else if (dist <= ATTACK_DISTANCE && attackCooldownTimer <= 0.0f) {
-          // Begin attack
-          isAttacking = true;
+          // Commit to attack, begin wind up
+          isWindingUp = true;
+          windUpTimer = WIND_UP_DURATION;
           if (physicsBody.has_value()) physicsBody->velocity = {0, 0};
           if (fabsf(dx) >= fabsf(dy)) {
             facingDirection = dx >= 0 ? Direction::RIGHT : Direction::LEFT;
             if (animator.has_value()) animator->setFlipX(dx < 0);
-            playAnimation("attack-side");
           } else if (dy > 0) {
             facingDirection = Direction::DOWN;
-            playAnimation("attack-down");
           } else {
             facingDirection = Direction::UP;
-            playAnimation("attack-up");
           }
         } else if (dist > ATTACK_DISTANCE && dist <= FOLLOW_DISTANCE) {
           // Begin following target
@@ -135,6 +153,7 @@ void Zombie::takeDamage(float amount) {
     health = 0.0f;
     state = State::DYING;
     isAttacking = false;
+    isWindingUp = false;
     playAnimation("die");
   }
 }

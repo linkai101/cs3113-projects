@@ -1,4 +1,4 @@
-#include "entities/giant.h"
+#include "entities/enemy/giant.h"
 #include "entities/player.h"
 #include "raylib.h"
 #include <cmath>
@@ -38,31 +38,57 @@ void Giant::update(float deltaTime) {
         float dist = sqrtf(dx * dx + dy * dy);
 
         if (isAttacking) {
-          // Launch attack
+          // Attack animation playing
           if (physicsBody.has_value()) physicsBody->velocity = {0, 0};
           if (animator.has_value() && animator->isAnimationDone()) {
-            target->takeDamage(ATTACK_DAMAGE);
-            attackCooldownTimer = ATTACK_COOLDOWN;
+            attackCooldownTimer = isAttack2 ? ATTACK2_COOLDOWN : ATTACK_COOLDOWN;
             isAttacking = false;
+            isAttack2 = false;
             std::string idleAnim =
-              (facingDirection == Direction::DOWN) ? "idle-down" :
-              (facingDirection == Direction::UP) ? "idle-up" : "idle-side";
+              (facingDirection == Direction::DOWN) ? "idle-down"
+              : (facingDirection == Direction::UP) ? "idle-up"
+              : "idle-side";
             playAnimation(idleAnim);
           }
-        } else if (dist <= ATTACK_DISTANCE && attackCooldownTimer <= 0.0f) {
-          // Begin attack
-          isAttacking = true;
+        } else if (isWindingUp) {
+          // Wind up before attacking
+          if (physicsBody.has_value()) physicsBody->velocity = {0, 0};
+          std::string idleAnim =
+            (facingDirection == Direction::DOWN) ? "idle-down" :
+            (facingDirection == Direction::UP) ? "idle-up" : "idle-side";
+          if (animator.has_value() && animator->getCurrentAnimation() != idleAnim)
+            playAnimation(idleAnim);
+          windUpTimer -= deltaTime;
+          if (windUpTimer <= 0.0f) {
+            isWindingUp = false;
+            isAttacking = true;
+            float attackDist = isAttack2 ? ATTACK2_DISTANCE : ATTACK_DISTANCE;
+            if (dist <= attackDist) target->takeDamage(isAttack2 ? ATTACK2_DAMAGE : ATTACK_DAMAGE);
+            if (facingDirection == Direction::DOWN) {
+              playAnimation(isAttack2 ? "attack2-down" : "attack1-down");
+            } else if (facingDirection == Direction::UP) {
+              playAnimation(isAttack2 ? "attack2-up" : "attack1-up");
+            } else {
+              playAnimation(isAttack2 ? "attack2-side" : "attack1-side");
+            }
+          }
+        } else if (
+          attackCooldownTimer <= 0.0f &&
+          ((attack1Count % 3 == 2 && dist <= ATTACK2_DISTANCE) || (attack1Count % 3 != 2 && dist <= ATTACK_DISTANCE))
+        ) {
+          // Commit to attack, begin wind up
+          attack1Count++;
+          isAttack2 = (attack1Count % 3 == 0);
+          isWindingUp = true;
+          windUpTimer = isAttack2 ? ATTACK2_WIND_UP_DURATION : WIND_UP_DURATION;
           if (physicsBody.has_value()) physicsBody->velocity = {0, 0};
           if (fabsf(dx) >= fabsf(dy)) {
             facingDirection = dx >= 0 ? Direction::RIGHT : Direction::LEFT;
             if (animator.has_value()) animator->setFlipX(dx < 0);
-            playAnimation("attack1-side");
           } else if (dy > 0) {
             facingDirection = Direction::DOWN;
-            playAnimation("attack1-down");
           } else {
             facingDirection = Direction::UP;
-            playAnimation("attack1-up");
           }
         } else if (dist > ATTACK_DISTANCE && dist <= FOLLOW_DISTANCE) {
           // Begin following target
@@ -135,6 +161,8 @@ void Giant::takeDamage(float amount) {
     health = 0.0f;
     state = State::DYING;
     isAttacking = false;
+    isAttack2 = false;
+    isWindingUp = false;
     playAnimation("die");
   }
 }

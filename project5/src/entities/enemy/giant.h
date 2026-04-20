@@ -1,5 +1,5 @@
 #pragma once
-#include "entities/enemy.h"
+#include "entities/enemy/enemy.h"
 #include "assets.h"
 
 class Giant : public Enemy {
@@ -27,6 +27,10 @@ private:
 
   Player* target = nullptr;
   bool isAttacking = false;
+  bool isAttack2 = false;
+  bool isWindingUp = false;
+  float windUpTimer = 0.0f;
+  int attack1Count = 0;
   float attackCooldownTimer = 0.0f;
 
   static constexpr Vector2 RENDER_SIZE = {150, 150};
@@ -35,7 +39,14 @@ private:
   static constexpr float MAX_HEALTH = 200.0f;
   static constexpr float DAMAGE_FLASH_DURATION = 0.12f;
   static constexpr float FOLLOW_DISTANCE = 700.0f;
+
   static constexpr float ATTACK_DISTANCE = 70.0f;
   static constexpr float ATTACK_DAMAGE = 25.0f;
-  static constexpr float ATTACK_COOLDOWN = 2.0f;
+  static constexpr float ATTACK_COOLDOWN = 1.5f;
+  static constexpr float WIND_UP_DURATION = 0.5f;
+
+  static constexpr float ATTACK2_DISTANCE = 100.0f;
+  static constexpr float ATTACK2_DAMAGE = 80.0f;
+  static constexpr float ATTACK2_COOLDOWN = 2.0f;
+  static constexpr float ATTACK2_WIND_UP_DURATION = 1.0f;
 };
