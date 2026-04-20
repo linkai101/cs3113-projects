@@ -67,6 +67,7 @@ private:
 
   static Vector2 getTilePosition(Vector2 tileCoordinates, Vector2 tileOffset = {0, 0});
 
+  static constexpr Vector2 CURSOR_RENDER_SIZE = {25, 35};
   static constexpr int TILE_SIZE = 80;
 
   static constexpr Vector2 SPAWN_POSITION = {9.5f, 5.5f};

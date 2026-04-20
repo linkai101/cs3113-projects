@@ -61,6 +61,7 @@ struct Assets {
   // UI
   Texture2D hotbarCellTexture;
   Texture2D hotbarCellSelectedTexture;
+  Texture2D cursorTexture;
 
   Texture2D rifleBulletIconTexture;
   Texture2D pistolBulletIconTexture;
@@ -144,6 +145,7 @@ struct Assets {
     // UI
     hotbarCellTexture = LoadTexture("assets/textures/ui/hotbar_cell.png");
     hotbarCellSelectedTexture = LoadTexture("assets/textures/ui/hotbar_cell_selected.png");
+    cursorTexture = LoadTexture("assets/textures/ui/cursor.png");
 
     rifleBulletIconTexture = LoadTexture("assets/textures/ui/rifle_bullet.png");
     pistolBulletIconTexture = LoadTexture("assets/textures/ui/pistol_bullet.png");
@@ -204,6 +206,7 @@ struct Assets {
     // UI
     UnloadTexture(hotbarCellTexture);
     UnloadTexture(hotbarCellSelectedTexture);
+    UnloadTexture(cursorTexture);
 
     UnloadTexture(rifleBulletIconTexture);
     UnloadTexture(pistolBulletIconTexture);

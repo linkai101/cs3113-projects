@@ -20,6 +20,7 @@ void Game::init() {
   InitWindow(width, height, title);
   InitAudioDevice();
   SetTargetFPS(60);
+  HideCursor();
 
   assets.load();
   SoundManager::get().init(&assets);
@@ -77,6 +78,7 @@ void Game::render() {
 }
 
 void Game::shutdown() {
+  ShowCursor();
   shader.unload();
   assets.unload();
 

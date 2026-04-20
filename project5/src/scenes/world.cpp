@@ -415,6 +415,17 @@ void World::renderHUD() const {
     player->getAmmoInventory(Gun::Type::PISTOL),
     player->getAmmoInventory(Gun::Type::SHOTGUN)
   );
+
+  // Render cursor
+  Vector2 mouse = GetMousePosition();
+  DrawTexturePro(
+    assets.cursorTexture,
+    {0, 0, (float)assets.cursorTexture.width, (float)assets.cursorTexture.height},
+    {mouse.x, mouse.y, CURSOR_RENDER_SIZE.x, CURSOR_RENDER_SIZE.y},
+    {CURSOR_RENDER_SIZE.x / 2.0f, CURSOR_RENDER_SIZE.y / 2.0f},
+    0.0f,
+    WHITE
+  );
 }
 
 float World::getPlayerDamageFlashIntensity() const {
