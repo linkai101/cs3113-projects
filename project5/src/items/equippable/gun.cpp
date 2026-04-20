@@ -1,5 +1,6 @@
 #include <algorithm>
 #include "items/equippable/gun.h"
+#include "sound_manager.h"
 
 Gun::Gun(Type type, Assets& assets) :
   Equippable(getPickableTexture(assets, type), getPickableRenderSize(assets, type)),
@@ -17,6 +18,7 @@ void Gun::update(float deltaTime) {
       pendingReloadAmount--;
       if (pendingReloadAmount > 0) {
         animator.play("reload");
+        SoundManager::get().play(SFX::RELOAD_SHELL);
       } else {
         reloading = false;
       }
@@ -24,6 +26,7 @@ void Gun::update(float deltaTime) {
       currentMag = std::min(currentMag + pendingReloadAmount, properties.magazineSize);
       pendingReloadAmount = 0;
       reloading = false;
+      SoundManager::get().play(SFX::RELOAD_END_MAG);
     }
   }
   if (!reloading && animator.isAnimationDone()) animator.play("idlerun");

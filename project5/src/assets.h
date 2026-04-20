@@ -59,6 +59,20 @@ struct Assets {
   Texture2D pistolBulletIconTexture;
   Texture2D shotgunBulletIconTexture;
 
+  // SOUNDS
+  Sound pistolFireSound;
+  Sound rifleFireSound;
+  Sound shotgunFireSound;
+  Sound gunEmptySound;
+  Sound reloadMagSound;
+  Sound reloadEndMagSound;
+  Sound reloadShellSound;
+  Sound batSwingSound;
+  Sound punchSound;
+  Sound pickupSound;
+  Sound bandageSound;
+  Music ambientWindMusic;
+
   Spritesheet* getTileSheet(const std::string& name) {
     if (name == "terrain_yellow") return &terrainYellowSheet;
     if (name == "buildings_beige") return &buildingsBeigeSheet;
@@ -120,6 +134,20 @@ struct Assets {
     rifleBulletIconTexture = LoadTexture("assets/textures/ui/rifle_bullet.png");
     pistolBulletIconTexture = LoadTexture("assets/textures/ui/pistol_bullet.png");
     shotgunBulletIconTexture = LoadTexture("assets/textures/ui/shotgun_bullet.png");
+
+    // SOUNDS
+    pistolFireSound = LoadSound("assets/sounds/pistol_fire.wav");
+    rifleFireSound = LoadSound("assets/sounds/rifle_fire.wav");
+    shotgunFireSound = LoadSound("assets/sounds/shotgun_fire.wav");
+    gunEmptySound = LoadSound("assets/sounds/gun_empty.mp3");
+    reloadMagSound = LoadSound("assets/sounds/reload_mag.mp3");
+    reloadEndMagSound = LoadSound("assets/sounds/reload_end_mag.wav");
+    reloadShellSound = LoadSound("assets/sounds/reload_shell.wav");
+    batSwingSound = LoadSound("assets/sounds/bat_swing.wav");
+    punchSound = LoadSound("assets/sounds/punch.wav");
+    pickupSound = LoadSound("assets/sounds/pickup.wav");
+    bandageSound = LoadSound("assets/sounds/bandage.wav");
+    ambientWindMusic = LoadMusicStream("assets/sounds/ambient_wind.mp3");
   }
 
   void unload() {
@@ -161,5 +189,19 @@ struct Assets {
     UnloadTexture(rifleBulletIconTexture);
     UnloadTexture(pistolBulletIconTexture);
     UnloadTexture(shotgunBulletIconTexture);
+
+    // SOUNDS
+    UnloadSound(pistolFireSound);
+    UnloadSound(rifleFireSound);
+    UnloadSound(shotgunFireSound);
+    UnloadSound(gunEmptySound);
+    UnloadSound(reloadMagSound);
+    UnloadSound(reloadEndMagSound);
+    UnloadSound(reloadShellSound);
+    UnloadSound(batSwingSound);
+    UnloadSound(punchSound);
+    UnloadSound(pickupSound);
+    UnloadSound(bandageSound);
+    UnloadMusicStream(ambientWindMusic);
   }
 };

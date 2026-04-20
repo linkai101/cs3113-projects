@@ -4,6 +4,7 @@
 #include <sstream>
 #include <string>
 #include "scenes/world.h"
+#include "sound_manager.h"
 #include "utils/collision.h"
 
 World::World(int screenWidth, int screenHeight, Assets& assets, std::string levelPath) :
@@ -65,6 +66,8 @@ void World::load() {
   camera.setBounds(mapCols * TILE_SIZE, mapRows * TILE_SIZE);
 
   Scene::load();
+
+  SoundManager::get().playMusic(MusicTrack::AMBIENT_WIND);
 }
 
 void World::unload() {
@@ -107,7 +110,19 @@ void World::processInput() {
       Gun::Type type = gun->getType();
       Gun::Properties properties = gun->getProperties();
 
+      switch (type) {
+        case Gun::Type::PISTOL:  SoundManager::get().play(SFX::PISTOL_FIRE);  break;
+        case Gun::Type::RIFLE:   SoundManager::get().play(SFX::RIFLE_FIRE);   break;
+        case Gun::Type::SHOTGUN: SoundManager::get().play(SFX::SHOTGUN_FIRE); break;
+      }
+
       spawnBullets(type, properties, player->getAimAngle(), static_cast<int>(properties.bulletCount), properties.bulletSpread);
+    }
+  } else if (attack) {
+    if (auto gun = dynamic_cast<Gun*>(player->getEquipped())) {
+      if (gun->getCurrentMag() == 0 && !gun->isReloading()) {
+        SoundManager::get().play(SFX::GUN_EMPTY);
+      }
     }
   }
 
@@ -250,6 +265,7 @@ void World::update(float deltaTime) {
             if (!pickupCollider) return false;
             if (CheckRectCollision(*playerCollider, *pickupCollider)) {
               player->addAmmo(pickup->getGunType(), pickup->getAmount());
+              SoundManager::get().play(SFX::PICKUP);
               return true;
             }
             return false;

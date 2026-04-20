@@ -1,5 +1,6 @@
 #include <algorithm>
 #include "entities/player.h"
+#include "sound_manager.h"
 
 Player::Player(Vector2 spawnPosition, Assets& assets) :
   Entity(spawnPosition, buildAnimator(&assets.playerSheet)),
@@ -204,11 +205,13 @@ void Player::attack() {
       // Melee strike
       playMeleePlayerAnimation();
       melee->triggerStrike();
+      SoundManager::get().play(SFX::BAT_SWING);
     }
   } else {
     // Hands strike
     playMeleePlayerAnimation();
     hands.triggerStrike();
+    SoundManager::get().play(SFX::PUNCH);
   }
 }
 
@@ -222,6 +225,7 @@ void Player::reload() {
       if (toAdd > 0) {
         inv -= toAdd;
         gun->triggerReload(toAdd);
+        SoundManager::get().play(gun->getProperties().shellByShell ? SFX::RELOAD_SHELL : SFX::RELOAD_MAG);
       }
     }
   }

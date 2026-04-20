@@ -2,6 +2,7 @@
 #include "utils/log.h"
 #include "utils/color.h"
 #include "scenes/world.h"
+#include "sound_manager.h"
 #include <memory>
 
 Game::Game(
@@ -21,6 +22,7 @@ void Game::init() {
   SetTargetFPS(60);
 
   assets.load();
+  SoundManager::get().init(&assets);
 
   world = std::make_unique<World>(width, height, assets, "assets/levels/level1.txt");
   world->load();
@@ -52,7 +54,7 @@ void Game::processInput() {
 }
 
 void Game::update(float deltaTime) {
-  // Update active scene
+  SoundManager::get().update();
   if (activeScene) activeScene->update(deltaTime);
 }
 
