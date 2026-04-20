@@ -2,6 +2,7 @@
 #include "raylib.h"
 #include "assets.h"
 #include "scenes/scene.h"
+#include "utils/shader_program.h"
 #include <memory>
 
 class Game {
@@ -24,11 +25,13 @@ private:
   std::unique_ptr<Scene> world;
   Scene* activeScene;
 
+  ShaderProgram shader;
+
   void processInput();
 
   void update(float deltaTime);
 
-  void render() const;
+  void render();
 
   void shutdown();
 };

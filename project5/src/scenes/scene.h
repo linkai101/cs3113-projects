@@ -19,6 +19,10 @@ public:
 
   virtual void render() const = 0;
 
+  virtual void renderHUD() const {}
+
+  virtual float getPlayerDamageFlashIntensity() const { return 0.0f; }
+
 protected:
   int screenWidth, screenHeight;
   Assets& assets;

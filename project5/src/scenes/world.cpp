@@ -291,8 +291,9 @@ void World::render() const {
   for (auto& bullet : bullets) bullet->render();
 
   EndMode2D();
+}
 
-  // Hotbar HUD
+void World::renderHUD() const {
   if (player) hotbar.render(
     player->getHealth(),
     Player::MAX_HEALTH,
@@ -301,6 +302,10 @@ void World::render() const {
     player->getAmmoInventory(Gun::Type::PISTOL),
     player->getAmmoInventory(Gun::Type::SHOTGUN)
   );
+}
+
+float World::getPlayerDamageFlashIntensity() const {
+  return player ? player->getDamageFlashIntensity() : 0.0f;
 }
 
 void World::loadLevel(const std::string& path) {

@@ -33,6 +33,8 @@ public:
 
   float getHealth() const { return health; }
 
+  float getDamageFlashIntensity() const { return damageFlashTimer / DAMAGE_FLASH_DURATION; }
+
   int getAmmoInventory(Gun::Type type) const;
 
   void addAmmo(Gun::Type type, int amount);

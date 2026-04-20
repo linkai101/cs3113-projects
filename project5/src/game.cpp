@@ -25,6 +25,8 @@ void Game::init() {
   world = std::make_unique<World>(width, height, assets, "assets/levels/level1.txt");
   world->load();
   activeScene = world.get();
+
+  shader.load("shaders/vertex.glsl", "shaders/fragment.glsl");
 }
 
 void Game::run() {
@@ -54,18 +56,26 @@ void Game::update(float deltaTime) {
   if (activeScene) activeScene->update(deltaTime);
 }
 
-void Game::render() const {
+void Game::render() {
   BeginDrawing();
 
   ClearBackground(ColorFromHex("#000000"));
 
-  // Render active scene
-  if (activeScene) activeScene->render();
+  if (activeScene) {
+    shader.setFloat("damageFlash", activeScene->getPlayerDamageFlashIntensity());
+
+    shader.begin();
+    activeScene->render();
+    shader.end();
+
+    activeScene->renderHUD();
+  }
 
   EndDrawing();
 }
 
 void Game::shutdown() {
+  shader.unload();
   assets.unload();
 
   CloseAudioDevice();
