@@ -1,16 +1,16 @@
-#include "entities/zombie.h"
+#include "entities/giant.h"
 #include "entities/player.h"
 #include "raylib.h"
 #include <cmath>
 
-Zombie::Zombie(Vector2 spawnPosition, Assets& assets) :
-  Enemy(spawnPosition, buildAnimator(&assets.zombieSheet))
+Giant::Giant(Vector2 spawnPosition, Assets& assets) :
+  Enemy(spawnPosition, buildAnimator(&assets.giantSheet))
 {
   enablePhysics(COLLIDER_SIZE, Vector2{-COLLIDER_SIZE.x / 2, -COLLIDER_SIZE.y}, false);
   playAnimation("idle-side");
 }
 
-void Zombie::update(float deltaTime) {
+void Giant::update(float deltaTime) {
   switch (state) {
     case State::ALIVE: {
       // Update damage flash timer
@@ -56,13 +56,13 @@ void Zombie::update(float deltaTime) {
           if (fabsf(dx) >= fabsf(dy)) {
             facingDirection = dx >= 0 ? Direction::RIGHT : Direction::LEFT;
             if (animator.has_value()) animator->setFlipX(dx < 0);
-            playAnimation("attack-side");
+            playAnimation("attack1-side");
           } else if (dy > 0) {
             facingDirection = Direction::DOWN;
-            playAnimation("attack-down");
+            playAnimation("attack1-down");
           } else {
             facingDirection = Direction::UP;
-            playAnimation("attack-up");
+            playAnimation("attack1-up");
           }
         } else if (dist > ATTACK_DISTANCE && dist <= FOLLOW_DISTANCE) {
           // Begin following target
@@ -113,7 +113,7 @@ void Zombie::update(float deltaTime) {
   }
 }
 
-void Zombie::render() const {
+void Giant::render() const {
   Entity::render();
 
   if (state != State::DEAD && damageFlashTimer > 0.0f && hasAnimator && animator.has_value()) {
@@ -125,7 +125,7 @@ void Zombie::render() const {
 
 }
 
-void Zombie::takeDamage(float amount) {
+void Giant::takeDamage(float amount) {
   if (state != State::ALIVE) return;
 
   damageFlashTimer = DAMAGE_FLASH_DURATION;
@@ -139,21 +139,24 @@ void Zombie::takeDamage(float amount) {
   }
 }
 
-Animator Zombie::buildAnimator(Spritesheet* sheet) {
+Animator Giant::buildAnimator(Spritesheet* sheet) {
   Vector2 origin = Vector2{RENDER_SIZE.x / 2, RENDER_SIZE.y};
 
   Animator anim = Animator(sheet, RENDER_SIZE, origin);
 
   anim.addAnimation("idle-side", Animator::Animation{"idle-side", {0, 1, 2, 3, 4, 5}, 10, true});
-  anim.addAnimation("idle-down", Animator::Animation{"idle-down", {6, 7, 8, 9, 10, 11}, 10, true});
-  anim.addAnimation("idle-up", Animator::Animation{"idle-up", {12, 13, 14, 15, 16, 17}, 10, true});
-  anim.addAnimation("run-side", Animator::Animation{"run-side", {18, 19, 20, 21, 22, 23}, 10, true});
-  anim.addAnimation("run-down", Animator::Animation{"run-down", {24, 25, 26, 27, 28, 29}, 10, true});
-  anim.addAnimation("run-up", Animator::Animation{"run-up", {30, 31, 32, 33, 34, 35}, 10, true});
-  anim.addAnimation("attack-side", Animator::Animation{"attack-side", {36, 37, 38}, 10, false});
-  anim.addAnimation("attack-down", Animator::Animation{"attack-down", {42, 43, 44}, 10, false});
-  anim.addAnimation("attack-up", Animator::Animation{"attack-up", {48, 49, 50}, 10, false});
-  anim.addAnimation("die", Animator::Animation{"die", {54, 55, 56, 57, 58, 59}, 10, false});
+  anim.addAnimation("idle-down", Animator::Animation{"idle-down", {15, 16, 17, 18, 19, 20}, 10, true});
+  anim.addAnimation("idle-up", Animator::Animation{"idle-up", {30, 31, 32, 33, 34, 35}, 10, true});
+  anim.addAnimation("run-side", Animator::Animation{"run-side", {45, 46, 47, 48, 49, 50, 51, 52}, 10, true});
+  anim.addAnimation("run-down", Animator::Animation{"run-down", {60, 61, 62, 63, 64, 65, 66, 67}, 10, true});
+  anim.addAnimation("run-up", Animator::Animation{"run-up", {75, 76, 77, 78, 79, 80, 81, 82}, 10, true});
+  anim.addAnimation("attack1-side", Animator::Animation{"attack1-side", {90, 91, 92, 93, 94, 95, 96, 97}, 10, false});
+  anim.addAnimation("attack1-down", Animator::Animation{"attack1-down", {105, 106, 107, 108, 109, 110, 111, 112}, 10, false});
+  anim.addAnimation("attack1-up", Animator::Animation{"attack1-up", {120, 121, 122, 123, 124, 125, 126, 127}, 10, false});
+  anim.addAnimation("attack2-side", Animator::Animation{"attack2-side", {135, 136, 137, 138, 139, 140, 141, 142, 143, 144, 145, 146, 147, 148, 149}, 10, false});
+  anim.addAnimation("attack2-down", Animator::Animation{"attack2-down", {150, 151, 152, 153, 154, 155, 156, 157, 158, 159, 160, 161, 162, 163, 164}, 10, false});
+  anim.addAnimation("attack2-up", Animator::Animation{"attack2-up", {165, 166, 167, 168, 169, 170, 171, 172, 173, 174, 175, 176, 177, 178, 179}, 10, false});
+  anim.addAnimation("die", Animator::Animation{"die", {180, 181, 182, 183, 184, 185, 186, 187}, 10, false});
 
   return anim;
 }

@@ -5,7 +5,9 @@
 #include "entities/player.h"
 #include "entities/bullet.h"
 #include "entities/dummy.h"
+#include "entities/enemy.h"
 #include "entities/zombie.h"
+#include "entities/giant.h"
 #include "items/ammo_crate.h"
 #include "hud/hotbar.h"
 
@@ -38,7 +40,7 @@ private:
 
   Player* player = nullptr;
   Dummy* dummy = nullptr;
-  std::vector<Zombie*> zombies;
+  std::vector<Enemy*> enemies;
   std::vector<std::unique_ptr<AmmoCrate>> ammoCrates;
   bool playerMeleeHitRegistered = false;
 

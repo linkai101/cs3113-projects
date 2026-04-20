@@ -19,6 +19,9 @@ struct Assets {
 
   Texture2D zombieTexture;
   Spritesheet zombieSheet;
+  
+  Texture2D giantTexture;
+  Spritesheet giantSheet;
 
   // MELEE
   Texture2D playerHandsTexture;
@@ -79,6 +82,9 @@ struct Assets {
     zombieTexture = LoadTexture("assets/textures/entities/zombie.png");
     zombieSheet = Spritesheet{zombieTexture, Vector2{19, 18}, 6};
 
+    giantTexture = LoadTexture("assets/textures/entities/giant.png");
+    giantSheet = Spritesheet{giantTexture, Vector2{30, 30}, 15};
+
     // MELEE
     playerHandsTexture = LoadTexture("assets/textures/gear/player_hands.png");
     playerHandsSheet = Spritesheet{playerHandsTexture, Vector2{29, 40}, 6};
@@ -125,6 +131,7 @@ struct Assets {
     // ENTITIES
     UnloadTexture(playerTexture);
     UnloadTexture(zombieTexture);
+    UnloadTexture(giantTexture);
 
     // MELEE
     UnloadTexture(playerHandsTexture);

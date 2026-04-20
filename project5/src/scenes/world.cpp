@@ -34,6 +34,7 @@ void World::load() {
   entities.push_back(std::make_unique<Dummy>(getTilePosition({12.5f, 4.5f}), assets));
   dummy = dynamic_cast<Dummy*>(entities.back().get());
 
+  // Spawn zombies
   for (Vector2 pos : std::initializer_list<Vector2>{
     {6.5f, 9.5f},
     {10.5f, 9.5f},
@@ -41,9 +42,19 @@ void World::load() {
     {18.5f, 9.5f},
   }) {
     entities.push_back(std::make_unique<Zombie>(getTilePosition(pos), assets));
-    Zombie* z = dynamic_cast<Zombie*>(entities.back().get());
-    z->setTarget(player);
-    zombies.push_back(z);
+    Enemy* e = dynamic_cast<Enemy*>(entities.back().get());
+    e->setTarget(player);
+    enemies.push_back(e);
+  }
+
+  // Spawn giants
+  for (Vector2 pos : std::initializer_list<Vector2>{
+    {22.5f, 9.5f},
+  }) {
+    entities.push_back(std::make_unique<Giant>(getTilePosition(pos), assets));
+    Enemy* e = dynamic_cast<Enemy*>(entities.back().get());
+    e->setTarget(player);
+    enemies.push_back(e);
   }
 
   ammoCrates.push_back(std::make_unique<AmmoCrate>(getTilePosition({4.5f, 7.0f}), Gun::Type::RIFLE, 30, assets));
@@ -63,7 +74,7 @@ void World::unload() {
   collisionBoxes.clear();
   entities.clear();
   bullets.clear();
-  zombies.clear();
+  enemies.clear();
   ammoCrates.clear();
 
   Scene::unload();
@@ -134,10 +145,10 @@ void World::update(float deltaTime) {
     player->resolveCollisions(collisionBoxes);
   }
 
-  // Resolve zombie collisions against collision boxes
+  // Resolve enemy collisions against collision boxes
   if (!collisionBoxes.empty()) {
-    for (Zombie* zombie : zombies) {
-      zombie->resolveCollisions(collisionBoxes);
+    for (Enemy* enemy : enemies) {
+      enemy->resolveCollisions(collisionBoxes);
     }
   }
 
@@ -193,15 +204,15 @@ void World::update(float deltaTime) {
     }
   }
 
-  // Bullet-zombie collision
-  for (Zombie* zombie : zombies) {
-    std::optional<Rectangle> zombieCollider = zombie->getCollider();
-    if (zombieCollider) {
+  // Bullet-enemy collision
+  for (Enemy* enemy : enemies) {
+    std::optional<Rectangle> enemyCollider = enemy->getCollider();
+    if (enemyCollider) {
       bullets.erase(
         std::remove_if(bullets.begin(), bullets.end(),
-          [zombie, zombieCollider](const std::unique_ptr<Bullet>& b) {
-            if (CheckPointInRect(b->getPosition(), *zombieCollider)) {
-              zombie->takeDamage(b->getDamage());
+          [enemy, enemyCollider](const std::unique_ptr<Bullet>& b) {
+            if (CheckPointInRect(b->getPosition(), *enemyCollider)) {
+              enemy->takeDamage(b->getDamage());
               return true;
             }
             return false;
@@ -211,17 +222,17 @@ void World::update(float deltaTime) {
     }
   }
 
-  // Melee-zombie collision
+  // Melee-enemy collision
   if (player) {
     Melee* activeMelee = dynamic_cast<Melee*>(player->getEquipped());
     std::optional<Rectangle> meleeHit = activeMelee ? activeMelee->getHitRect() : std::nullopt;
     if (!meleeHit) {
       playerMeleeHitRegistered = false;
     } else if (!playerMeleeHitRegistered) {
-      for (Zombie* zombie : zombies) {
-        std::optional<Rectangle> zombieCollider = zombie->getCollider();
-        if (zombieCollider && CheckRectCollision(*meleeHit, *zombieCollider)) {
-          zombie->takeDamage(activeMelee->getDamage());
+      for (Enemy* enemy : enemies) {
+        std::optional<Rectangle> enemyCollider = enemy->getCollider();
+        if (enemyCollider && CheckRectCollision(*meleeHit, *enemyCollider)) {
+          enemy->takeDamage(activeMelee->getDamage());
           playerMeleeHitRegistered = true;
         }
       }

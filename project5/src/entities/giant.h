@@ -2,9 +2,9 @@
 #include "entities/enemy.h"
 #include "assets.h"
 
-class Zombie : public Enemy {
+class Giant : public Enemy {
 public:
-  Zombie(Vector2 spawnPosition, Assets& assets);
+  Giant(Vector2 spawnPosition, Assets& assets);
 
   void update(float deltaTime) override;
 
@@ -29,13 +29,13 @@ private:
   bool isAttacking = false;
   float attackCooldownTimer = 0.0f;
 
-  static constexpr Vector2 RENDER_SIZE = {95, 90};
-  static constexpr Vector2 COLLIDER_SIZE = {40, 60};
-  static constexpr float MOVEMENT_SPEED = 75.0f;
-  static constexpr float MAX_HEALTH = 50.0f;
+  static constexpr Vector2 RENDER_SIZE = {150, 150};
+  static constexpr Vector2 COLLIDER_SIZE = {60, 100};
+  static constexpr float MOVEMENT_SPEED = 50.0f;
+  static constexpr float MAX_HEALTH = 200.0f;
   static constexpr float DAMAGE_FLASH_DURATION = 0.12f;
   static constexpr float FOLLOW_DISTANCE = 700.0f;
   static constexpr float ATTACK_DISTANCE = 70.0f;
-  static constexpr float ATTACK_DAMAGE = 10.0f;
-  static constexpr float ATTACK_COOLDOWN = 1.5f;
+  static constexpr float ATTACK_DAMAGE = 25.0f;
+  static constexpr float ATTACK_COOLDOWN = 2.0f;
 };
