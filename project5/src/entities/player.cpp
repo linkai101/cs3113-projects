@@ -175,6 +175,11 @@ void Player::takeDamage(float amount) {
   }
 }
 
+void Player::heal(float amount) {
+  if (state != State::ALIVE) return;
+  health = std::min(health + amount, MAX_HEALTH);
+}
+
 void Player::attack() {
   if (state != State::ALIVE) return;
   auto playMeleePlayerAnimation = [this]() -> void {

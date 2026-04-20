@@ -9,6 +9,7 @@
 #include "entities/enemy/enemy.h"
 #include "entities/enemy/ghoul.h"
 #include "items/ammo_crate.h"
+#include "items/bandage.h"
 #include "hud/hotbar.h"
 
 class World : public Scene {
@@ -48,6 +49,7 @@ private:
   std::vector<Enemy*> enemies;
   std::vector<Ghoul*> ghouls;
   std::vector<std::unique_ptr<AmmoCrate>> ammoCrates;
+  std::vector<std::unique_ptr<Bandage>> bandages;
   bool playerMeleeHitRegistered = false;
 
   void spawnBullets(Gun::Type type, Gun::Properties properties, float aimAngle, int bulletCount, float spread);

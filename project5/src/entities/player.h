@@ -27,6 +27,8 @@ public:
 
   void takeDamage(float amount);
 
+  void heal(float amount);
+
   bool canAttack() const;
 
   bool isDead() const { return state == State::DEAD; }

@@ -76,6 +76,8 @@ void World::load() {
   ammoCrates.push_back(std::make_unique<AmmoCrate>(getTilePosition({6.0f, 7.0f}), Gun::Type::PISTOL, 12, assets));
   ammoCrates.push_back(std::make_unique<AmmoCrate>(getTilePosition({7.5f, 7.0f}), Gun::Type::SHOTGUN, 6, assets));
 
+  bandages.push_back(std::make_unique<Bandage>(getTilePosition({9.0f, 7.0f}), assets));
+
   camera.init(player->getPosition());
   camera.setBounds(mapCols * TILE_SIZE, mapRows * TILE_SIZE);
 
@@ -95,6 +97,7 @@ void World::unload() {
   enemies.clear();
   ghouls.clear();
   ammoCrates.clear();
+  bandages.clear();
 
   Scene::unload();
 }
@@ -341,6 +344,30 @@ void World::update(float deltaTime) {
     }
   }
 
+  // Bandage pickup
+  if (player) {
+    std::optional<Rectangle> playerCollider = player->getCollider();
+    if (playerCollider) {
+      bandages.erase(
+        std::remove_if(bandages.begin(), bandages.end(),
+          [this, &playerCollider](const std::unique_ptr<Bandage>& bandage) {
+            std::optional<Rectangle> bandageCollider = bandage->getCollider();
+            if (!bandageCollider) return false;
+            if (
+              CheckRectCollision(*playerCollider, *bandageCollider) &&
+              player->getHealth() < Player::MAX_HEALTH // health not full
+            ) {
+              player->heal(Bandage::HEAL_AMOUNT);
+              SoundManager::get().play(SFX::BANDAGE);
+              return true;
+            }
+            return false;
+          }),
+        bandages.end()
+      );
+    }
+  }
+
   // Update camera
   if (player) {
     camera.update(deltaTime, player->getPosition());
@@ -359,10 +386,13 @@ void World::render() const {
 
   // Render entities by y position
   std::vector<Entity*> sorted;
-  sorted.reserve(entities.size() + ammoCrates.size());
+  sorted.reserve(entities.size() + ammoCrates.size() + bandages.size());
   for (auto& entity : entities) sorted.push_back(entity.get());
   for (auto& crate : ammoCrates) {
     if (Entity* e = crate->getGroundEntity()) sorted.push_back(e);
+  }
+  for (auto& bandage : bandages) {
+    if (Entity* e = bandage->getGroundEntity()) sorted.push_back(e);
   }
   std::sort(sorted.begin(), sorted.end(), [](const Entity* a, const Entity* b) {
     return a->getPosition().y < b->getPosition().y;

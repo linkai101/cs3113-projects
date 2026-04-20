@@ -56,6 +56,7 @@ struct Assets {
   // OTHER ITEMS
   Texture2D ammoCrateTexture;
   Spritesheet ammoCrateSheet;
+  Texture2D bandagePickableTexture;
 
   // UI
   Texture2D hotbarCellTexture;
@@ -138,6 +139,7 @@ struct Assets {
     // OTHER ITEMS
     ammoCrateTexture = LoadTexture("assets/textures/objects/pickable/ammo_crate.png");
     ammoCrateSheet = Spritesheet{ammoCrateTexture, Vector2{9, 7}, 3};
+    bandagePickableTexture = LoadTexture("assets/textures/objects/pickable/bandage.png");
 
     // UI
     hotbarCellTexture = LoadTexture("assets/textures/ui/hotbar_cell.png");
@@ -197,6 +199,7 @@ struct Assets {
 
     // OTHER ITEMS
     UnloadTexture(ammoCrateTexture);
+    UnloadTexture(bandagePickableTexture);
 
     // UI
     UnloadTexture(hotbarCellTexture);
