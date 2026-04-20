@@ -60,13 +60,15 @@ void Ghoul::update(float deltaTime) {
           if (windUpTimer <= 0.0f) {
             isWindingUp = false;
             isAttacking = true;
-            if (dist <= ATTACK_DISTANCE) target->takeDamage(ATTACK_DAMAGE);
+            pendingAxeThrow = true;
+            pendingAxeOrigin = {position.x, position.y - COLLIDER_SIZE.y * 0.6f};
+            pendingAxeAngle = atan2f(dy, dx);
             if (facingDirection == Direction::DOWN) {
-              playAnimation("attack1-down");
+              playAnimation("attack2-down");
             } else if (facingDirection == Direction::UP) {
-              playAnimation("attack1-up");
+              playAnimation("attack2-up");
             } else {
-              playAnimation("attack1-side");
+              playAnimation("attack2-side");
             }
           }
         } else if (dist <= ATTACK_DISTANCE && attackCooldownTimer <= 0.0f) {

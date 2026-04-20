@@ -66,9 +66,10 @@ void World::load() {
     {5.5f, 15.5f},
   }) {
     entities.push_back(std::make_unique<Ghoul>(getTilePosition(pos), assets));
-    Enemy* e = dynamic_cast<Enemy*>(entities.back().get());
-    e->setTarget(player);
-    enemies.push_back(e);
+    Ghoul* g = dynamic_cast<Ghoul*>(entities.back().get());
+    g->setTarget(player);
+    enemies.push_back(g);
+    ghouls.push_back(g);
   }
 
   ammoCrates.push_back(std::make_unique<AmmoCrate>(getTilePosition({4.5f, 7.0f}), Gun::Type::RIFLE, 30, assets));
@@ -90,7 +91,9 @@ void World::unload() {
   collisionBoxes.clear();
   entities.clear();
   bullets.clear();
+  ghoulAxes.clear();
   enemies.clear();
+  ghouls.clear();
   ammoCrates.clear();
 
   Scene::unload();
@@ -161,6 +164,19 @@ void World::update(float deltaTime) {
     bullet->update(deltaTime);
   }
 
+  // Spawn axes from ghouls
+  for (Ghoul* ghoul : ghouls) {
+    if (ghoul->hasPendingAxe()) {
+      auto [origin, angle] = ghoul->consumePendingAxe();
+      ghoulAxes.push_back(std::make_unique<GhoulAxe>(origin, angle, assets));
+    }
+  }
+
+  // Update ghoul axes
+  for (auto& axe : ghoulAxes) {
+    axe->update(deltaTime);
+  }
+
   // Resolve player collisions other entities and static colliders
   if (player) {
     std::vector<Entity*> collidables;
@@ -186,6 +202,43 @@ void World::update(float deltaTime) {
       [](const std::unique_ptr<Bullet>& b) { return b->isExpired(); }),
     bullets.end()
   );
+
+  // Remove expired axes
+  ghoulAxes.erase(
+    std::remove_if(ghoulAxes.begin(), ghoulAxes.end(),
+      [](const std::unique_ptr<GhoulAxe>& a) { return a->isExpired(); }),
+    ghoulAxes.end()
+  );
+
+  // Axe-collision box check
+  ghoulAxes.erase(
+    std::remove_if(ghoulAxes.begin(), ghoulAxes.end(),
+      [this](const std::unique_ptr<GhoulAxe>& a) {
+        for (const Rectangle& box : collisionBoxes) {
+          if (CheckPointInRect(a->getPosition(), box)) return true;
+        }
+        return false;
+      }),
+    ghoulAxes.end()
+  );
+
+  // Axe-player collision
+  if (player) {
+    std::optional<Rectangle> playerCollider = player->getCollider();
+    if (playerCollider) {
+      ghoulAxes.erase(
+        std::remove_if(ghoulAxes.begin(), ghoulAxes.end(),
+          [this, &playerCollider](const std::unique_ptr<GhoulAxe>& a) {
+            if (CheckPointInRect(a->getPosition(), *playerCollider)) {
+              player->takeDamage(a->getDamage());
+              return true;
+            }
+            return false;
+          }),
+        ghoulAxes.end()
+      );
+    }
+  }
 
   // Bullet-collision box check
   bullets.erase(
@@ -316,8 +369,9 @@ void World::render() const {
   });
   for (auto* entity : sorted) entity->render();
 
-  // Render bullets above all entities
+  // Render bullets and axes above all entities
   for (auto& bullet : bullets) bullet->render();
+  for (auto& axe : ghoulAxes) axe->render();
 
   EndMode2D();
 }

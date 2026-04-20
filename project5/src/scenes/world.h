@@ -4,8 +4,10 @@
 #include "scenes/scene.h"
 #include "entities/player.h"
 #include "entities/bullet.h"
+#include "entities/ghoul_axe.h"
 #include "entities/dummy.h"
 #include "entities/enemy/enemy.h"
+#include "entities/enemy/ghoul.h"
 #include "items/ammo_crate.h"
 #include "hud/hotbar.h"
 
@@ -39,10 +41,12 @@ private:
   std::vector<Rectangle> collisionBoxes;
   std::vector<std::unique_ptr<Entity>> entities;
   std::vector<std::unique_ptr<Bullet>> bullets;
+  std::vector<std::unique_ptr<GhoulAxe>> ghoulAxes;
 
   Player* player = nullptr;
   Dummy* dummy = nullptr;
   std::vector<Enemy*> enemies;
+  std::vector<Ghoul*> ghouls;
   std::vector<std::unique_ptr<AmmoCrate>> ammoCrates;
   bool playerMeleeHitRegistered = false;
 
