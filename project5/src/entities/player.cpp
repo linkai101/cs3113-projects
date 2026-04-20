@@ -152,6 +152,7 @@ void Player::move(bool up, bool down, bool left, bool right) {
 void Player::equip(EquipSlot slot) {
   equipped = nullptr;
   switch (slot) {
+    case EquipSlot::NONE: equipped = nullptr; break;
     case EquipSlot::BAT: equipped = &bat; break;
     case EquipSlot::RIFLE: equipped = &rifle; break;
     case EquipSlot::PISTOL: equipped = &pistol; break;
