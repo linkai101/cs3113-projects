@@ -30,6 +30,7 @@ private:
 
   std::vector<std::unique_ptr<Entity>> terrain;
   std::vector<std::unique_ptr<Entity>> entities;
+  std::vector<std::unique_ptr<Bullet>> bullets;
 
   Player* player = nullptr;
   Dummy* dummy = nullptr;

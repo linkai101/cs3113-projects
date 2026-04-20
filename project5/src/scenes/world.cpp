@@ -50,6 +50,7 @@ void World::unload() {
 
   terrain.clear();
   entities.clear();
+  bullets.clear();
   zombies.clear();
   ammoCrates.clear();
 
@@ -104,6 +105,11 @@ void World::update(float deltaTime) {
     entity->update(deltaTime);
   }
 
+  // Update all bullets
+  for (auto& bullet : bullets) {
+    bullet->update(deltaTime);
+  }
+
   // Resolve player collisions against all physics-enabled non-player entities
   if (player) {
     std::vector<Entity*> collidables;
@@ -116,31 +122,26 @@ void World::update(float deltaTime) {
   }
 
   // Remove expired bullets
-  entities.erase(
-    std::remove_if(entities.begin(), entities.end(),
-      [](const std::unique_ptr<Entity>& e) {
-        auto* b = dynamic_cast<Bullet*>(e.get());
-        return b && b->isExpired();
-      }),
-    entities.end()
+  bullets.erase(
+    std::remove_if(bullets.begin(), bullets.end(),
+      [](const std::unique_ptr<Bullet>& b) { return b->isExpired(); }),
+    bullets.end()
   );
 
   // Bullet-dummy collision
   if (dummy) {
     std::optional<Rectangle> dummyCollider = dummy->getCollider();
     if (dummyCollider) {
-      entities.erase(
-        std::remove_if(entities.begin(), entities.end(),
-          [this, dummyCollider](const std::unique_ptr<Entity>& e) {
-            Bullet* b = dynamic_cast<Bullet*>(e.get());
-            if (!b) return false;
+      bullets.erase(
+        std::remove_if(bullets.begin(), bullets.end(),
+          [this, dummyCollider](const std::unique_ptr<Bullet>& b) {
             if (CheckPointInRect(b->getPosition(), *dummyCollider)) {
               dummy->takeDamage(b->getDamage());
               return true;
             }
             return false;
           }),
-        entities.end()
+        bullets.end()
       );
     }
   }
@@ -164,18 +165,16 @@ void World::update(float deltaTime) {
   for (Zombie* zombie : zombies) {
     std::optional<Rectangle> zombieCollider = zombie->getCollider();
     if (zombieCollider) {
-      entities.erase(
-        std::remove_if(entities.begin(), entities.end(),
-          [zombie, zombieCollider](const std::unique_ptr<Entity>& e) {
-            Bullet* b = dynamic_cast<Bullet*>(e.get());
-            if (!b) return false;
+      bullets.erase(
+        std::remove_if(bullets.begin(), bullets.end(),
+          [zombie, zombieCollider](const std::unique_ptr<Bullet>& b) {
             if (CheckPointInRect(b->getPosition(), *zombieCollider)) {
               zombie->takeDamage(b->getDamage());
               return true;
             }
             return false;
           }),
-        entities.end()
+        bullets.end()
       );
     }
   }
@@ -245,6 +244,9 @@ void World::render() const {
     return a->getPosition().y < b->getPosition().y;
   });
   for (auto* entity : sorted) entity->render();
+
+  // Render bullets above all entities
+  for (auto& bullet : bullets) bullet->render();
 
   EndMode2D();
 
@@ -358,7 +360,7 @@ void World::spawnBullets(Gun::Type type, Gun::Properties properties, [[maybe_unu
   };
 
   auto spawn = [this, origin, type, properties](float angle) {
-    entities.push_back(std::make_unique<Bullet>(origin, angle, type, properties, assets));
+    bullets.push_back(std::make_unique<Bullet>(origin, angle, type, properties, assets));
   };
 
   for (int i = 0; i < bulletCount; ++i) {
