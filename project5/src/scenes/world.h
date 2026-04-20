@@ -1,4 +1,6 @@
 #pragma once
+#include <string>
+#include <vector>
 #include "scenes/scene.h"
 #include "entities/player.h"
 #include "entities/bullet.h"
@@ -9,7 +11,7 @@
 
 class World : public Scene {
 public:
-  World(int screenWidth, int screenHeight, Assets& assets);
+  World(int screenWidth, int screenHeight, Assets& assets, std::string levelPath);
 
   void load() override;
 
@@ -24,6 +26,7 @@ public:
 private:
   FollowCamera camera;
   Hotbar hotbar;
+  std::string levelPath;
 
   std::vector<std::unique_ptr<Entity>> terrain;
   std::vector<std::unique_ptr<Entity>> entities;
@@ -35,6 +38,10 @@ private:
   bool playerMeleeHitRegistered = false;
 
   void spawnBullets(Gun::Type type, Gun::Properties properties, float aimAngle, int bulletCount, float spread);
+
+  void loadLevel(const std::string& path);
+
+  void loadLayerFromGrid(const std::string& layerName, const std::vector<std::vector<int>>& grid);
 
   void loadTileGrid(
     std::vector<std::unique_ptr<Entity>>& vectorToAddTo,
@@ -48,16 +55,7 @@ private:
   static constexpr int TILE_SIZE = 80;
   static constexpr int EMPTY_TILE = -1;
 
-  static constexpr int MAP_ROWS = 5;
-  static constexpr int MAP_COLS = 5;
-  static constexpr int TERRAIN_MAP[MAP_ROWS][MAP_COLS] = {
-    { 5, 5, 5, 5, 5 },
-    { 5, 5, 5, 5, 5 },
-    { 5, 5, 5, 5, 5 },
-    { 5, 5, 5, 5, 5 },
-    { 5, 5, 5, 5, 5 },
-  };
-  static constexpr Vector2 SPAWN_POSITION = {2.5f, 2.5f};
+  static constexpr Vector2 SPAWN_POSITION = {9.5f, 5.5f};
 
   static constexpr float BULLET_SPAWN_DIST = 42.0f;
   static constexpr float BULLET_SPAWN_Y_OFFSET = -42.0f;

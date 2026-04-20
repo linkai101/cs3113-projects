@@ -22,7 +22,7 @@ void Game::init() {
 
   assets.load();
 
-  world = std::make_unique<World>(width, height, assets);
+  world = std::make_unique<World>(width, height, assets, "assets/levels/level1.txt");
   world->load();
   activeScene = world.get();
 }

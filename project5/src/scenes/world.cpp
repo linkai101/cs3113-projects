@@ -1,25 +1,23 @@
 #include <algorithm>
 #include <cmath>
+#include <fstream>
+#include <sstream>
 #include <string>
 #include "scenes/world.h"
 #include "utils/collision.h"
 
-World::World(int screenWidth, int screenHeight, Assets& assets) :
+World::World(int screenWidth, int screenHeight, Assets& assets, std::string levelPath) :
   Scene(screenWidth, screenHeight, assets),
   camera(screenWidth, screenHeight),
-  hotbar(screenWidth, screenHeight, assets)
+  hotbar(screenWidth, screenHeight, assets),
+  levelPath(std::move(levelPath))
 {}
 
 void World::load() {
   if (loaded) return;
 
-  loadTileGrid(
-    terrain,
-    &TERRAIN_MAP[0][0], MAP_ROWS, MAP_COLS,
-    assets.terrainSheet, Vector2{0, 0},
-    false
-  );
-  
+  loadLevel(levelPath);
+
   entities.push_back(std::make_unique<Player>(getTilePosition(SPAWN_POSITION), assets));
   player = dynamic_cast<Player*>(entities.back().get());
 
@@ -50,6 +48,7 @@ void World::load() {
 void World::unload() {
   if (!loaded) return;
 
+  terrain.clear();
   entities.clear();
   zombies.clear();
   ammoCrates.clear();
@@ -258,6 +257,55 @@ void World::render() const {
     player->getAmmoInventory(Gun::Type::PISTOL),
     player->getAmmoInventory(Gun::Type::SHOTGUN)
   );
+}
+
+void World::loadLevel(const std::string& path) {
+  std::ifstream file(path);
+  std::string line;
+  std::string currentLayer;
+  std::vector<std::vector<int>> currentGrid;
+
+  auto loadLayer = [&]() {
+    if (!currentLayer.empty() && !currentGrid.empty()) {
+      loadLayerFromGrid(currentLayer, currentGrid);
+      currentGrid.clear();
+    }
+  };
+
+  while (std::getline(file, line)) {
+    if (line.empty()) continue;
+    std::istringstream iss(line);
+    std::string token;
+    iss >> token;
+
+    if (token == "cols" || token == "rows") {
+      // Ignore, info only
+    } else if (token == "layer") {
+      loadLayer();
+      iss >> currentLayer;
+    } else {
+      std::vector<int> row;
+      row.push_back(std::stoi(token));
+      int val;
+      while (iss >> val) row.push_back(val);
+      currentGrid.push_back(std::move(row));
+    }
+  }
+  loadLayer();
+}
+
+void World::loadLayerFromGrid(const std::string& layerName, const std::vector<std::vector<int>>& grid) {
+  Spritesheet* sheet = assets.getTileSheet(layerName);
+  if (!sheet) return;
+
+  int rows = static_cast<int>(grid.size());
+  int cols = static_cast<int>(grid[0].size());
+
+  std::vector<int> flat;
+  flat.reserve(rows * cols);
+  for (const auto& row : grid) flat.insert(flat.end(), row.begin(), row.end());
+
+  loadTileGrid(terrain, flat.data(), rows, cols, *sheet, {0, 0}, false);
 }
 
 void World::loadTileGrid(

@@ -1,11 +1,17 @@
 #pragma once
+#include <unordered_map>
+#include <string>
 #include "raylib.h"
 #include "components/spritesheet.h"
 
 struct Assets {
-  // ENVIRONMENT
-  Texture2D terrainTexture;
-  Spritesheet terrainSheet;
+  // TILES
+  Texture2D terrainYellowTexture;
+  Spritesheet terrainYellowSheet;
+  Texture2D buildingsBeigeTexture;
+  Spritesheet buildingsBeigeSheet;
+  Texture2D ironFenceTexture;
+  Spritesheet ironFenceSheet;
 
   // ENTITIES
   Texture2D playerTexture;
@@ -50,10 +56,21 @@ struct Assets {
   Texture2D pistolBulletIconTexture;
   Texture2D shotgunBulletIconTexture;
 
+  Spritesheet* getTileSheet(const std::string& name) {
+    if (name == "terrain_yellow") return &terrainYellowSheet;
+    if (name == "buildings_beige") return &buildingsBeigeSheet;
+    if (name == "iron_fence") return &ironFenceSheet;
+    return nullptr;
+  }
+
   void load() {
-    // ENVIRONMENT
-    terrainTexture = LoadTexture("assets/textures/tiles/terrain_yellow.png");
-    terrainSheet = Spritesheet{terrainTexture, Vector2{16, 16}, 24};
+    // TILES
+    terrainYellowTexture = LoadTexture("assets/textures/tiles/terrain_yellow.png");
+    terrainYellowSheet = Spritesheet{terrainYellowTexture, Vector2{16, 16}, 24};
+    buildingsBeigeTexture = LoadTexture("assets/textures/tiles/buildings_beige.png");
+    buildingsBeigeSheet = Spritesheet{buildingsBeigeTexture, Vector2{16, 16}, 13};
+    ironFenceTexture = LoadTexture("assets/textures/tiles/iron_fence.png");
+    ironFenceSheet = Spritesheet{ironFenceTexture, Vector2{16, 16}, 3};
 
     // ENTITIES
     playerTexture = LoadTexture("assets/textures/entities/player.png");
@@ -100,8 +117,10 @@ struct Assets {
   }
 
   void unload() {
-    // ENVIRONMENT
-    UnloadTexture(terrainTexture);
+    // TILES
+    UnloadTexture(terrainYellowTexture);
+    UnloadTexture(buildingsBeigeTexture);
+    UnloadTexture(ironFenceTexture);
 
     // ENTITIES
     UnloadTexture(playerTexture);
