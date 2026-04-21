@@ -20,7 +20,7 @@ private:
   static Animator buildAnimator(Spritesheet* sheet);
 
   static constexpr Vector2 RENDER_SIZE = {56.0f, 56.0f};
-  static constexpr float SPEED = 300.0f;
+  static constexpr float SPEED = 400.0f;
   static constexpr float MAX_RANGE = 600.0f;
   static constexpr float DAMAGE = 33.0f;
 };

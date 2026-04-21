@@ -15,6 +15,8 @@ public:
 
   void setTarget(Player* p) override { target = p; }
 
+  bool isDead() const override { return state == State::DEAD; }
+
   bool hasPendingAxe() const { return pendingAxeThrow; }
   std::pair<Vector2, float> consumePendingAxe() {
     pendingAxeThrow = false;

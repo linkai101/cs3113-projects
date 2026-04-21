@@ -1,6 +1,7 @@
 #include <algorithm>
 #include <cmath>
 #include <fstream>
+#include <random>
 #include <sstream>
 #include <string>
 #include "scenes/world.h"
@@ -35,48 +36,11 @@ void World::load() {
   entities.push_back(std::make_unique<Player>(getTilePosition(SPAWN_POSITION), assets));
   player = dynamic_cast<Player*>(entities.back().get());
 
-  entities.push_back(std::make_unique<Dummy>(getTilePosition({12.5f, 4.5f}), assets));
-  dummy = dynamic_cast<Dummy*>(entities.back().get());
+  currentWave = 0;
+  gameState = GameState::WAITING;
+  stateTimer = WAVE_START_DELAY;
 
-  // Spawn zombies
-  for (Vector2 pos : std::initializer_list<Vector2>{
-    {6.5f, 9.5f},
-    {10.5f, 9.5f},
-    {14.5f, 9.5f},
-    {18.5f, 9.5f},
-  }) {
-    entities.push_back(std::make_unique<Zombie>(getTilePosition(pos), assets));
-    Enemy* e = dynamic_cast<Enemy*>(entities.back().get());
-    e->setTarget(player);
-    enemies.push_back(e);
-  }
-
-  // Spawn giants
-  for (Vector2 pos : std::initializer_list<Vector2>{
-    {22.5f, 9.5f},
-  }) {
-    entities.push_back(std::make_unique<Giant>(getTilePosition(pos), assets));
-    Enemy* e = dynamic_cast<Enemy*>(entities.back().get());
-    e->setTarget(player);
-    enemies.push_back(e);
-  }
-
-  // Spawn ghouls
-  for (Vector2 pos : std::initializer_list<Vector2>{
-    {5.5f, 15.5f},
-  }) {
-    entities.push_back(std::make_unique<Ghoul>(getTilePosition(pos), assets));
-    Ghoul* g = dynamic_cast<Ghoul*>(entities.back().get());
-    g->setTarget(player);
-    enemies.push_back(g);
-    ghouls.push_back(g);
-  }
-
-  ammoCrates.push_back(std::make_unique<AmmoCrate>(getTilePosition({4.5f, 7.0f}), Gun::Type::RIFLE, 30, assets));
-  ammoCrates.push_back(std::make_unique<AmmoCrate>(getTilePosition({6.0f, 7.0f}), Gun::Type::PISTOL, 12, assets));
-  ammoCrates.push_back(std::make_unique<AmmoCrate>(getTilePosition({7.5f, 7.0f}), Gun::Type::SHOTGUN, 6, assets));
-
-  bandages.push_back(std::make_unique<Bandage>(getTilePosition({9.0f, 7.0f}), assets));
+  spawnItems();
 
   camera.init(player->getPosition());
   camera.setBounds(mapCols * TILE_SIZE, mapRows * TILE_SIZE);
@@ -98,12 +62,18 @@ void World::unload() {
   ghouls.clear();
   ammoCrates.clear();
   bandages.clear();
+  spawnQueue.clear();
 
   Scene::unload();
 }
 
 void World::processInput() {
   if (!loaded) return;
+  
+  if (gameState == GameState::WIN || gameState == GameState::GAME_OVER) {
+    player->move(false, false, false, false);
+    return;
+  };
 
   // Player movement
   bool up = IsKeyDown(KEY_W);
@@ -180,11 +150,11 @@ void World::update(float deltaTime) {
     axe->update(deltaTime);
   }
 
-  // Resolve player collisions other entities and static colliders
+  // Resolve player collisions with other entities and static colliders
   if (player) {
     std::vector<Entity*> collidables;
     for (auto& e : entities) {
-      if (e.get() != player && e->getCollider().has_value()) { // non-player physics-enabled entities
+      if (e.get() != player && e->getCollider().has_value()) {
         collidables.push_back(e.get());
       }
     }
@@ -254,39 +224,6 @@ void World::update(float deltaTime) {
       }),
     bullets.end()
   );
-
-  // Bullet-dummy collision
-  if (dummy) {
-    std::optional<Rectangle> dummyCollider = dummy->getCollider();
-    if (dummyCollider) {
-      bullets.erase(
-        std::remove_if(bullets.begin(), bullets.end(),
-          [this, dummyCollider](const std::unique_ptr<Bullet>& b) {
-            if (CheckPointInRect(b->getPosition(), *dummyCollider)) {
-              dummy->takeDamage(b->getDamage());
-              return true;
-            }
-            return false;
-          }),
-        bullets.end()
-      );
-    }
-  }
-
-  // Melee-dummy collision
-  if (player && dummy) {
-    Melee* activeMelee = dynamic_cast<Melee*>(player->getEquipped());
-    std::optional<Rectangle> meleeHit = activeMelee ? activeMelee->getHitRect() : std::nullopt;
-    if (!meleeHit) {
-      playerMeleeHitRegistered = false;
-    } else if (!playerMeleeHitRegistered) {
-      std::optional<Rectangle> dummyCollider = dummy->getCollider();
-      if (dummyCollider && CheckRectCollision(*meleeHit, *dummyCollider)) {
-        dummy->takeDamage(activeMelee->getDamage());
-        playerMeleeHitRegistered = true;
-      }
-    }
-  }
 
   // Bullet-enemy collision
   for (Enemy* enemy : enemies) {
@@ -372,6 +309,57 @@ void World::update(float deltaTime) {
   if (player) {
     camera.update(deltaTime, player->getPosition());
   }
+
+  // Wave state machine
+  if (gameState == GameState::WIN || gameState == GameState::GAME_OVER) return;
+
+  if (player && player->isDead()) {
+    gameState = GameState::GAME_OVER;
+    return;
+  }
+
+  if (gameState == GameState::WAITING) {
+    stateTimer -= deltaTime;
+    if (stateTimer <= 0.0f) {
+      startWave();
+    }
+  } else if (gameState == GameState::IN_WAVE) {
+    // Spawn enemies gradually
+    if (spawnQueuePos < static_cast<int>(spawnQueue.size())) {
+      enemySpawnTimer -= deltaTime;
+      if (enemySpawnTimer <= 0.0f) {
+        spawnEnemy(spawnQueue[spawnQueuePos], findSpawnPosition(MIN_ENEMY_SPAWN_DIST));
+        spawnQueuePos++;
+        enemySpawnTimer = ENEMY_SPAWN_INTERVAL;
+      }
+    }
+
+    // Check if all enemies are dead and none left to spawn
+    if (spawnQueuePos >= static_cast<int>(spawnQueue.size())) {
+      bool allDead = std::all_of(enemies.begin(), enemies.end(), [](Enemy* e) { return e->isDead(); });
+      if (allDead) {
+        // Remove dead enemy bodies from the entity list
+        entities.erase(
+          std::remove_if(entities.begin(), entities.end(),
+            [](const std::unique_ptr<Entity>& e) {
+              auto* enemy = dynamic_cast<Enemy*>(e.get());
+              return enemy && enemy->isDead();
+            }),
+          entities.end()
+        );
+        enemies.clear();
+        ghouls.clear();
+        currentWave++;
+        if (currentWave >= NUM_WAVES) {
+          gameState = GameState::WIN;
+        } else {
+          spawnItems();
+          stateTimer = WAVE_BETWEEN_DELAY;
+          gameState = GameState::WAITING;
+        }
+      }
+    }
+  }
 }
 
 void World::render() const {
@@ -430,6 +418,92 @@ void World::renderHUD() const {
 
 float World::getPlayerDamageFlashIntensity() const {
   return player ? player->getDamageFlashIntensity() : 0.0f;
+}
+
+void World::startWave() {
+  const WaveEnemyCounts& counts = WAVE_ENEMY_COUNTS[currentWave];
+  spawnQueue.clear();
+  spawnQueuePos = 0;
+
+  for (int i = 0; i < counts.zombies; i++) spawnQueue.push_back(EnemyType::ZOMBIE);
+  for (int i = 0; i < counts.giants; i++) spawnQueue.push_back(EnemyType::GIANT);
+  for (int i = 0; i < counts.ghouls; i++) spawnQueue.push_back(EnemyType::GHOUL);
+
+  std::mt19937 rng{static_cast<unsigned>(GetTime() * 1000)};
+  std::shuffle(spawnQueue.begin(), spawnQueue.end(), rng);
+
+  enemySpawnTimer = 0.0f;
+  gameState = GameState::IN_WAVE;
+}
+
+void World::spawnItems() {
+  const WaveItemCounts& counts = WAVE_ITEM_COUNTS[currentWave];
+  for (int i = 0; i < counts.rifleCrates; i++)
+    ammoCrates.push_back(std::make_unique<AmmoCrate>(findSpawnPosition(0.0f), Gun::Type::RIFLE, AMMO_RIFLE_PER_CRATE, assets));
+  for (int i = 0; i < counts.pistolCrates; i++)
+    ammoCrates.push_back(std::make_unique<AmmoCrate>(findSpawnPosition(0.0f), Gun::Type::PISTOL, AMMO_PISTOL_PER_CRATE, assets));
+  for (int i = 0; i < counts.shotgunCrates; i++)
+    ammoCrates.push_back(std::make_unique<AmmoCrate>(findSpawnPosition(0.0f), Gun::Type::SHOTGUN, AMMO_SHOTGUN_PER_CRATE, assets));
+  for (int i = 0; i < counts.bandages; i++)
+    bandages.push_back(std::make_unique<Bandage>(findSpawnPosition(0.0f), assets));
+}
+
+void World::spawnEnemy(EnemyType type, Vector2 position) {
+  switch (type) {
+    case EnemyType::ZOMBIE: {
+      entities.push_back(std::make_unique<Zombie>(position, assets));
+      Enemy* e = dynamic_cast<Enemy*>(entities.back().get());
+      e->setTarget(player);
+      enemies.push_back(e);
+      break;
+    }
+    case EnemyType::GIANT: {
+      entities.push_back(std::make_unique<Giant>(position, assets));
+      Enemy* e = dynamic_cast<Enemy*>(entities.back().get());
+      e->setTarget(player);
+      enemies.push_back(e);
+      break;
+    }
+    case EnemyType::GHOUL: {
+      entities.push_back(std::make_unique<Ghoul>(position, assets));
+      Ghoul* g = dynamic_cast<Ghoul*>(entities.back().get());
+      g->setTarget(player);
+      enemies.push_back(g);
+      ghouls.push_back(g);
+      break;
+    }
+  }
+}
+
+Vector2 World::findSpawnPosition(float minDistFromPlayer) {
+  Vector2 playerPos = player ? player->getPosition() : Vector2{0, 0};
+  Vector2 result = {SPAWN_AREA_X + SPAWN_AREA_W * 0.5f, SPAWN_AREA_Y + SPAWN_AREA_H * 0.5f};
+
+  // Find a spawn position that is not blocked by collision boxes
+  for (int attempt = 0; attempt < MAX_SPAWN_ATTEMPTS; ++attempt) {
+    float x = static_cast<float>(GetRandomValue(
+      static_cast<int>(SPAWN_AREA_X),
+      static_cast<int>(SPAWN_AREA_X + SPAWN_AREA_W)
+    ));
+    float y = static_cast<float>(GetRandomValue(
+      static_cast<int>(SPAWN_AREA_Y),
+      static_cast<int>(SPAWN_AREA_Y + SPAWN_AREA_H)
+    ));
+
+    if (minDistFromPlayer > 0.0f) {
+      float dx = x - playerPos.x;
+      float dy = y - playerPos.y;
+      if (sqrtf(dx * dx + dy * dy) < minDistFromPlayer) continue;
+    }
+
+    bool blocked = false;
+    for (const Rectangle& box : collisionBoxes) {
+      if (CheckPointInRect({x, y}, box)) { blocked = true; break; }
+    }
+    if (!blocked) return {x, y};
+    result = {x, y};
+  }
+  return result;
 }
 
 void World::loadLevel(const std::string& path) {
@@ -520,7 +594,6 @@ void World::loadTileGrid(
         tile.enablePhysics(Vector2{ TILE_SIZE, TILE_SIZE }, Vector2{ 0, 0 }, true);
       }
 
-      // Add to scene
       vectorToAddTo.push_back(std::make_unique<Entity>(tile));
     }
   }

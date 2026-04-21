@@ -14,6 +14,8 @@ public:
 
   void setTarget(Player* p) override { target = p; }
 
+  bool isDead() const override { return state == State::DEAD; }
+
 private:
   enum class State { ALIVE, DYING, DEAD };
 
@@ -36,7 +38,7 @@ private:
   static constexpr float MOVEMENT_SPEED = 75.0f;
   static constexpr float MAX_HEALTH = 50.0f;
   static constexpr float DAMAGE_FLASH_DURATION = 0.12f;
-  static constexpr float FOLLOW_DISTANCE = 700.0f;
+  static constexpr float FOLLOW_DISTANCE = 800.0f;
 
   static constexpr float ATTACK_DISTANCE = 70.0f;
   static constexpr float ATTACK_DAMAGE = 7.0f;

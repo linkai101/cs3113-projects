@@ -7,6 +7,8 @@ public:
   using Entity::Entity;
 
   virtual void takeDamage(float amount) = 0;
-  
+
   virtual void setTarget(Player* p) = 0;
+
+  virtual bool isDead() const = 0;
 };

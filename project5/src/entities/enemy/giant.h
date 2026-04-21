@@ -14,6 +14,8 @@ public:
 
   void setTarget(Player* p) override { target = p; }
 
+  bool isDead() const override { return state == State::DEAD; }
+
 private:
   enum class State { ALIVE, DYING, DEAD };
 
