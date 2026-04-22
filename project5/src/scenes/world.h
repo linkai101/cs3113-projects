@@ -104,7 +104,7 @@ private:
   static constexpr float SPAWN_AREA_X = 0.0f;
   static constexpr float SPAWN_AREA_Y = 3.0f * TILE_SIZE;
   static constexpr float SPAWN_AREA_W = 24.0f * TILE_SIZE;
-  static constexpr float SPAWN_AREA_H = 7.0f * TILE_SIZE;
+  static constexpr float SPAWN_AREA_H = 11.0f * TILE_SIZE;
 
   // Items spawned before each wave
   static constexpr WaveItemCounts WAVE_ITEM_COUNTS[NUM_WAVES] = {
@@ -112,7 +112,7 @@ private:
     {0, 1, 1, 1}, // before wave 2
     {1, 0, 1, 2}, // before wave 3
   };
-  static constexpr int AMMO_RIFLE_PER_CRATE = 15;
+  static constexpr int AMMO_RIFLE_PER_CRATE = 30;
   static constexpr int AMMO_PISTOL_PER_CRATE = 12;
   static constexpr int AMMO_SHOTGUN_PER_CRATE = 6;
 };
