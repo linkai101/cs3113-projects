@@ -1,5 +1,6 @@
 #include "entities/enemy/zombie.h"
 #include "entities/player.h"
+#include "utils/color.h"
 #include "raylib.h"
 #include <cmath>
 
@@ -136,9 +137,7 @@ void Zombie::render() const {
 
   if (state != State::DEAD && damageFlashTimer > 0.0f && hasAnimator && animator.has_value()) {
     float alpha = damageFlashTimer / DAMAGE_FLASH_DURATION;
-    BeginBlendMode(BLEND_ADDITIVE);
-    animator->render(position, Fade(WHITE, alpha));
-    EndBlendMode();
+    animator->render(position, ColorFromHex("#AA4A44", 0.5f * alpha));
   }
 
 }
