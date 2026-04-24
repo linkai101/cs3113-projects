@@ -29,6 +29,8 @@ public:
 
   float getPlayerDamageFlashIntensity() const override;
 
+  SceneTransition getTransition() const override { return transition; }
+
 private:
   enum class GameState { WAITING, IN_WAVE, WIN, GAME_OVER };
   enum class EnemyType { ZOMBIE, GIANT, GHOUL };
@@ -38,6 +40,7 @@ private:
 
   int mapCols = 0;
   int mapRows = 0;
+  SceneTransition transition = SceneTransition::NONE;
 
   FollowCamera camera;
   Hotbar hotbar;
@@ -68,7 +71,7 @@ private:
   void spawnEnemy(EnemyType type, Vector2 position);
   Vector2 findSpawnPosition(float minDistFromPlayer);
 
-  void spawnBullets(Gun::Type type, Gun::Properties properties, float aimAngle, int bulletCount, float spread);
+  void spawnBullets(Gun::Type type, Gun::Properties properties, int bulletCount, float spread);
 
   void loadLevel(const std::string& path);
   void loadLayerFromGrid(const std::string& layerName, const std::vector<std::vector<int>>& grid);

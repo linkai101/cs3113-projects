@@ -1,6 +1,8 @@
 #include "game.h"
 #include "utils/log.h"
 #include "utils/color.h"
+#include "scenes/tutorial.h"
+#include "scenes/main_menu.h"
 #include "scenes/world.h"
 #include "sound_manager.h"
 #include <memory>
@@ -25,9 +27,12 @@ void Game::init() {
   assets.load();
   SoundManager::get().init(&assets);
 
+  tutorial = std::make_unique<Tutorial>(width, height, assets);
+  mainMenu = std::make_unique<MainMenu>(width, height, assets);
   world = std::make_unique<World>(width, height, assets, "assets/levels/level1.txt");
-  world->load();
-  activeScene = world.get();
+
+  tutorial->load();
+  activeScene = tutorial.get();
 
   shader.load("shaders/vertex.glsl", "shaders/fragment.glsl");
 }
@@ -57,6 +62,21 @@ void Game::processInput() {
 void Game::update(float deltaTime) {
   SoundManager::get().update();
   if (activeScene) activeScene->update(deltaTime);
+
+  if (activeScene) {
+    SceneTransition t = activeScene->getTransition();
+    if (t != SceneTransition::NONE) {
+      switchScene(
+        t == SceneTransition::TO_MENU ? mainMenu.get() : world.get()
+      );
+    }
+  }
+}
+
+void Game::switchScene(Scene* next) {
+  if (activeScene) activeScene->unload();
+  activeScene = next;
+  activeScene->load();
 }
 
 void Game::render() {

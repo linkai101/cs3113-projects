@@ -1,29 +1,23 @@
 #include <algorithm>
-#include <cmath>
 #include <fstream>
-#include <random>
 #include <sstream>
 #include <string>
-#include "scenes/world.h"
-#include "entities/enemy/zombie.h"
-#include "entities/enemy/giant.h"
-#include "entities/enemy/ghoul.h"
+#include "scenes/tutorial.h"
+#include "components/sprite.h"
 #include "sound_manager.h"
 #include "utils/collision.h"
 
-World::World(int screenWidth, int screenHeight, Assets& assets, std::string levelPath) :
+Tutorial::Tutorial(int screenWidth, int screenHeight, Assets& assets) :
   Scene(screenWidth, screenHeight, assets),
   camera(screenWidth, screenHeight),
-  hotbar(screenWidth, screenHeight, assets),
-  levelPath(std::move(levelPath))
+  hotbar(screenWidth, screenHeight, assets)
 {}
 
-void World::load() {
+void Tutorial::load() {
   if (loaded) return;
 
-  loadLevel(levelPath);
+  loadLevel("assets/levels/tutorial.txt");
 
-  // Add boundary walls
   float mapW = mapCols * TILE_SIZE;
   float mapH = mapRows * TILE_SIZE;
   float margin = -TILE_SIZE * 0.25f;
@@ -35,47 +29,40 @@ void World::load() {
 
   entities.push_back(std::make_unique<Player>(getTilePosition(SPAWN_POSITION), assets));
   player = dynamic_cast<Player*>(entities.back().get());
+  player->takeDamage(20); // Initial damage for tutorial
 
-  currentWave = 0;
-  gameState = GameState::WAITING;
-  stateTimer = WAVE_START_DELAY;
+  // Spawn dummy
+  entities.push_back(std::make_unique<Dummy>(getTilePosition(DUMMY_POSITION), assets));
+  dummy = dynamic_cast<Dummy*>(entities.back().get());
 
-  spawnItems();
+  // Spawn ammo
+  ammoCrates.push_back(std::make_unique<AmmoCrate>(getTilePosition({1.0f, 2.5f}), Gun::Type::RIFLE, 30, assets));
+  ammoCrates.push_back(std::make_unique<AmmoCrate>(getTilePosition({1.0f, 3.5f}), Gun::Type::PISTOL, 12, assets));
+  ammoCrates.push_back(std::make_unique<AmmoCrate>(getTilePosition({1.0f, 4.5f}), Gun::Type::SHOTGUN, 6, assets));
+
+  // Spawn bandage
+  bandages.push_back(std::make_unique<Bandage>(getTilePosition({1.0f, 1.5f}), assets));
 
   camera.init(player->getPosition());
   camera.setBounds(mapCols * TILE_SIZE, mapRows * TILE_SIZE);
 
   Scene::load();
-
-  SoundManager::get().playMusic(MusicTrack::AMBIENT_WIND);
 }
 
-void World::unload() {
+void Tutorial::unload() {
   if (!loaded) return;
 
   terrain.clear();
   collisionBoxes.clear();
   entities.clear();
   bullets.clear();
-  ghoulAxes.clear();
-  enemies.clear();
-  ghouls.clear();
-  ammoCrates.clear();
-  bandages.clear();
-  spawnQueue.clear();
   transition = SceneTransition::NONE;
 
   Scene::unload();
 }
 
-void World::processInput() {
+void Tutorial::processInput() {
   if (!loaded) return;
-  
-  if (gameState == GameState::WIN || gameState == GameState::GAME_OVER) {
-    if (IsKeyPressed(KEY_ENTER)) transition = SceneTransition::TO_MENU;
-    player->move(false, false, false, false);
-    return;
-  };
 
   // Player movement
   bool up = IsKeyDown(KEY_W);
@@ -121,7 +108,7 @@ void World::processInput() {
   if (IsKeyPressed(KEY_R)) player->reload();
 }
 
-void World::update(float deltaTime) {
+void Tutorial::update(float deltaTime) {
   if (!loaded) return;
 
   // Pass mouse position to player
@@ -139,19 +126,6 @@ void World::update(float deltaTime) {
     bullet->update(deltaTime);
   }
 
-  // Spawn axes from ghouls
-  for (Ghoul* ghoul : ghouls) {
-    if (ghoul->hasPendingAxe()) {
-      auto [origin, angle] = ghoul->consumePendingAxe();
-      ghoulAxes.push_back(std::make_unique<GhoulAxe>(origin, angle, assets));
-    }
-  }
-
-  // Update ghoul axes
-  for (auto& axe : ghoulAxes) {
-    axe->update(deltaTime);
-  }
-
   // Resolve player collisions with other entities and static colliders
   if (player) {
     std::vector<Entity*> collidables;
@@ -164,56 +138,12 @@ void World::update(float deltaTime) {
     player->resolveCollisions(collisionBoxes);
   }
 
-  // Resolve enemy collisions against collision boxes
-  if (!collisionBoxes.empty()) {
-    for (Enemy* enemy : enemies) {
-      enemy->resolveCollisions(collisionBoxes);
-    }
-  }
-
   // Remove expired bullets
   bullets.erase(
     std::remove_if(bullets.begin(), bullets.end(),
       [](const std::unique_ptr<Bullet>& b) { return b->isExpired(); }),
     bullets.end()
   );
-
-  // Remove expired axes
-  ghoulAxes.erase(
-    std::remove_if(ghoulAxes.begin(), ghoulAxes.end(),
-      [](const std::unique_ptr<GhoulAxe>& a) { return a->isExpired(); }),
-    ghoulAxes.end()
-  );
-
-  // Axe-collision box check
-  ghoulAxes.erase(
-    std::remove_if(ghoulAxes.begin(), ghoulAxes.end(),
-      [this](const std::unique_ptr<GhoulAxe>& a) {
-        for (const Rectangle& box : collisionBoxes) {
-          if (CheckPointInRect(a->getPosition(), box)) return true;
-        }
-        return false;
-      }),
-    ghoulAxes.end()
-  );
-
-  // Axe-player collision
-  if (player) {
-    std::optional<Rectangle> playerCollider = player->getCollider();
-    if (playerCollider) {
-      ghoulAxes.erase(
-        std::remove_if(ghoulAxes.begin(), ghoulAxes.end(),
-          [this, &playerCollider](const std::unique_ptr<GhoulAxe>& a) {
-            if (CheckPointInRect(a->getPosition(), *playerCollider)) {
-              player->takeDamage(a->getDamage());
-              return true;
-            }
-            return false;
-          }),
-        ghoulAxes.end()
-      );
-    }
-  }
 
   // Bullet-collision box check
   bullets.erase(
@@ -227,15 +157,15 @@ void World::update(float deltaTime) {
     bullets.end()
   );
 
-  // Bullet-enemy collision
-  for (Enemy* enemy : enemies) {
-    std::optional<Rectangle> enemyCollider = enemy->getCollider();
-    if (enemyCollider) {
+  // Bullet-dummy collision
+  if (dummy) {
+    std::optional<Rectangle> dummyCollider = dummy->getCollider();
+    if (dummyCollider) {
       bullets.erase(
         std::remove_if(bullets.begin(), bullets.end(),
-          [enemy, enemyCollider](const std::unique_ptr<Bullet>& b) {
-            if (CheckPointInRect(b->getPosition(), *enemyCollider)) {
-              enemy->takeDamage(b->getDamage());
+          [this, dummyCollider](const std::unique_ptr<Bullet>& b) {
+            if (CheckPointInRect(b->getPosition(), *dummyCollider)) {
+              dummy->takeDamage(b->getDamage());
               return true;
             }
             return false;
@@ -245,19 +175,17 @@ void World::update(float deltaTime) {
     }
   }
 
-  // Melee-enemy collision
-  if (player) {
+  // Melee-dummy collision
+  if (dummy) {
     Melee* activeMelee = dynamic_cast<Melee*>(player->getEquipped());
     std::optional<Rectangle> meleeHit = activeMelee ? activeMelee->getHitRect() : std::nullopt;
     if (!meleeHit) {
       playerMeleeHitRegistered = false;
     } else if (!playerMeleeHitRegistered) {
-      for (Enemy* enemy : enemies) {
-        std::optional<Rectangle> enemyCollider = enemy->getCollider();
-        if (enemyCollider && CheckRectCollision(*meleeHit, *enemyCollider)) {
-          enemy->takeDamage(activeMelee->getDamage());
-          playerMeleeHitRegistered = true;
-        }
+      std::optional<Rectangle> dummyCollider = dummy->getCollider();
+      if (dummyCollider && CheckRectCollision(*meleeHit, *dummyCollider)) {
+        dummy->takeDamage(activeMelee->getDamage());
+        playerMeleeHitRegistered = true;
       }
     }
   }
@@ -312,59 +240,13 @@ void World::update(float deltaTime) {
     camera.update(deltaTime, player->getPosition());
   }
 
-  // Wave state machine
-  if (gameState == GameState::WIN || gameState == GameState::GAME_OVER) return;
-
-  if (player && player->isDead()) {
-    gameState = GameState::GAME_OVER;
-    return;
-  }
-
-  if (gameState == GameState::WAITING) {
-    stateTimer -= deltaTime;
-    if (stateTimer <= 0.0f) {
-      startWave();
-    }
-  } else if (gameState == GameState::IN_WAVE) {
-    // Spawn enemies gradually
-    if (spawnQueuePos < static_cast<int>(spawnQueue.size())) {
-      enemySpawnTimer -= deltaTime;
-      if (enemySpawnTimer <= 0.0f) {
-        spawnEnemy(spawnQueue[spawnQueuePos], findSpawnPosition(MIN_ENEMY_SPAWN_DIST));
-        spawnQueuePos++;
-        enemySpawnTimer = ENEMY_SPAWN_INTERVAL;
-      }
-    }
-
-    // Check if all enemies are dead and none left to spawn
-    if (spawnQueuePos >= static_cast<int>(spawnQueue.size())) {
-      bool allDead = std::all_of(enemies.begin(), enemies.end(), [](Enemy* e) { return e->isDead(); });
-      if (allDead) {
-        // Remove dead enemy bodies from the entity list
-        entities.erase(
-          std::remove_if(entities.begin(), entities.end(),
-            [](const std::unique_ptr<Entity>& e) {
-              auto* enemy = dynamic_cast<Enemy*>(e.get());
-              return enemy && enemy->isDead();
-            }),
-          entities.end()
-        );
-        enemies.clear();
-        ghouls.clear();
-        currentWave++;
-        if (currentWave >= NUM_WAVES) {
-          gameState = GameState::WIN;
-        } else {
-          spawnItems();
-          stateTimer = WAVE_BETWEEN_DELAY;
-          gameState = GameState::WAITING;
-        }
-      }
-    }
+  // Trigger exit when player walks through the right-wall opening
+  if (player && player->getPosition().x >= mapCols * TILE_SIZE) {
+    transition = SceneTransition::TO_MENU;
   }
 }
 
-void World::render() const {
+void Tutorial::render() const {
   if (!loaded) return;
 
   BeginMode2D(camera.get());
@@ -373,6 +255,42 @@ void World::render() const {
   for (auto& entity : terrain) {
     entity->render();
   }
+
+  // Movement hint
+  DrawText(
+    "WASD to move",
+    (SPAWN_POSITION.x) * TILE_SIZE - MeasureText("WASD to move", 20) / 2.0f, // posX
+    (SPAWN_POSITION.y) * TILE_SIZE, // posY
+    20,
+    WHITE
+  );
+
+  // Bandage hint
+  DrawText(
+    "<- HEAL",
+    (1.0f) * TILE_SIZE + 30, // posX
+    1.5f * TILE_SIZE - 25, // posY
+    20,
+    WHITE
+  );
+
+  // Dummy hint
+  DrawText(
+    "YOUR FRIEND! :)",
+    DUMMY_POSITION.x * TILE_SIZE - MeasureText("YOUR FRIEND! :)", 20) / 2.0f - 120, // posX
+    DUMMY_POSITION.y * TILE_SIZE - 40, // posY
+    20,
+    WHITE
+  );
+
+  // Exit marker at the right-wall opening
+  DrawText(
+    "EXIT ->",
+    (mapCols - 1.5f) * TILE_SIZE, // posX
+    3.0f * TILE_SIZE - 14, // posY
+    24,
+    YELLOW
+  );
 
   // Render entities by y position
   std::vector<Entity*> sorted;
@@ -389,43 +307,70 @@ void World::render() const {
   });
   for (auto* entity : sorted) entity->render();
 
-  // Render bullets and axes above all entities
+  // Render bullets above all entities
   for (auto& bullet : bullets) bullet->render();
-  for (auto& axe : ghoulAxes) axe->render();
 
   EndMode2D();
 }
 
-void World::renderHUD() const {
-  if (gameState == GameState::WIN || gameState == GameState::GAME_OVER) {
-    DrawRectangle(0, 0, screenWidth, screenHeight, { 0, 0, 0, 160 });
+void Tutorial::renderHUD() const {
+  if (!loaded) return;
 
-    const char* headline = (gameState == GameState::WIN) ? "YOU WIN!" : "GAME OVER";
-    Color headlineColor = (gameState == GameState::WIN) ? YELLOW : RED;
-    int headlineSize = 72;
-    DrawText(headline,
-      screenWidth / 2 - MeasureText(headline, headlineSize) / 2,
-      screenHeight / 2 - 80,
-      headlineSize, headlineColor);
+  if (player) {
+    hotbar.render(
+      player->getHealth(),
+      Player::MAX_HEALTH,
+      player->getEquipped(),
+      player->getAmmoInventory(Gun::Type::RIFLE),
+      player->getAmmoInventory(Gun::Type::PISTOL),
+      player->getAmmoInventory(Gun::Type::SHOTGUN)
+    );
 
-    const char* prompt = "Press ENTER to return to menu";
-    int promptSize = 24;
-    DrawText(prompt,
-      screenWidth / 2 - MeasureText(prompt, promptSize) / 2,
-      screenHeight / 2 + 40,
-      promptSize, WHITE);
-    return;
+    // Hotbar hints
+    DrawText(
+      "[Q] - HANDS",
+      screenWidth / 2 - MeasureText("[Q] - HANDS", 20) - 200, // posX
+      screenHeight - 36, // posY
+      20,
+      WHITE
+    );
+    DrawText(
+      "[1]",
+      screenWidth / 2 - MeasureText("[1]", 20) / 2.0f - 123, // posX
+      screenHeight - 124, // posY
+      20,
+      WHITE
+    );
+    DrawText(
+      "[2]",
+      screenWidth / 2 - MeasureText("[2]", 20) / 2.0f - 42, // posX
+      screenHeight - 124, // posY
+      20,
+      WHITE
+    );
+    DrawText(
+      "[3]",
+      screenWidth / 2 - MeasureText("[3]", 20) / 2.0f + 42, // posX
+      screenHeight - 124, // posY
+      20,
+      WHITE
+    );
+    DrawText(
+      "[4]",
+      screenWidth / 2 - MeasureText("[4]", 20) / 2.0f + 123, // posX
+      screenHeight - 124, // posY
+      20,
+      WHITE
+    );
+    DrawText(
+      "[R] - RELOAD",
+      screenWidth / 2 + 200, // posX
+      screenHeight - 36, // posY
+      20,
+      WHITE
+    );
   }
-
-  if (player) hotbar.render(
-    player->getHealth(),
-    Player::MAX_HEALTH,
-    player->getEquipped(),
-    player->getAmmoInventory(Gun::Type::RIFLE),
-    player->getAmmoInventory(Gun::Type::PISTOL),
-    player->getAmmoInventory(Gun::Type::SHOTGUN)
-  );
-
+  
   // Render cursor
   Vector2 mouse = GetMousePosition();
   DrawTexturePro(
@@ -438,98 +383,11 @@ void World::renderHUD() const {
   );
 }
 
-float World::getPlayerDamageFlashIntensity() const {
+float Tutorial::getPlayerDamageFlashIntensity() const {
   return player ? player->getDamageFlashIntensity() : 0.0f;
 }
 
-void World::startWave() {
-  const WaveEnemyCounts& counts = WAVE_ENEMY_COUNTS[currentWave];
-  spawnQueue.clear();
-  spawnQueuePos = 0;
-
-  for (int i = 0; i < counts.zombies; i++) spawnQueue.push_back(EnemyType::ZOMBIE);
-  for (int i = 0; i < counts.giants; i++) spawnQueue.push_back(EnemyType::GIANT);
-  for (int i = 0; i < counts.ghouls; i++) spawnQueue.push_back(EnemyType::GHOUL);
-
-  // Shuffle spawn queue
-  std::mt19937 rng{static_cast<unsigned>(GetTime() * 1000)}; // random number generator, using time as seed
-  std::shuffle(spawnQueue.begin(), spawnQueue.end(), rng);
-
-  enemySpawnTimer = 0.0f;
-  gameState = GameState::IN_WAVE;
-}
-
-void World::spawnItems() {
-  const WaveItemCounts& counts = WAVE_ITEM_COUNTS[currentWave];
-  for (int i = 0; i < counts.rifleCrates; i++)
-    ammoCrates.push_back(std::make_unique<AmmoCrate>(findSpawnPosition(0.0f), Gun::Type::RIFLE, AMMO_RIFLE_PER_CRATE, assets));
-  for (int i = 0; i < counts.pistolCrates; i++)
-    ammoCrates.push_back(std::make_unique<AmmoCrate>(findSpawnPosition(0.0f), Gun::Type::PISTOL, AMMO_PISTOL_PER_CRATE, assets));
-  for (int i = 0; i < counts.shotgunCrates; i++)
-    ammoCrates.push_back(std::make_unique<AmmoCrate>(findSpawnPosition(0.0f), Gun::Type::SHOTGUN, AMMO_SHOTGUN_PER_CRATE, assets));
-  for (int i = 0; i < counts.bandages; i++)
-    bandages.push_back(std::make_unique<Bandage>(findSpawnPosition(0.0f), assets));
-}
-
-void World::spawnEnemy(EnemyType type, Vector2 position) {
-  switch (type) {
-    case EnemyType::ZOMBIE: {
-      entities.push_back(std::make_unique<Zombie>(position, assets));
-      Enemy* e = dynamic_cast<Enemy*>(entities.back().get());
-      e->setTarget(player);
-      enemies.push_back(e);
-      break;
-    }
-    case EnemyType::GIANT: {
-      entities.push_back(std::make_unique<Giant>(position, assets));
-      Enemy* e = dynamic_cast<Enemy*>(entities.back().get());
-      e->setTarget(player);
-      enemies.push_back(e);
-      break;
-    }
-    case EnemyType::GHOUL: {
-      entities.push_back(std::make_unique<Ghoul>(position, assets));
-      Ghoul* g = dynamic_cast<Ghoul*>(entities.back().get());
-      g->setTarget(player);
-      enemies.push_back(g);
-      ghouls.push_back(g);
-      break;
-    }
-  }
-}
-
-Vector2 World::findSpawnPosition(float minDistFromPlayer) {
-  Vector2 playerPos = player ? player->getPosition() : Vector2{0, 0};
-  Vector2 result = {SPAWN_AREA_X + SPAWN_AREA_W * 0.5f, SPAWN_AREA_Y + SPAWN_AREA_H * 0.5f};
-
-  // Find a spawn position that is not blocked by collision boxes
-  for (int attempt = 0; attempt < MAX_SPAWN_ATTEMPTS; ++attempt) {
-    float x = static_cast<float>(GetRandomValue(
-      static_cast<int>(SPAWN_AREA_X),
-      static_cast<int>(SPAWN_AREA_X + SPAWN_AREA_W)
-    ));
-    float y = static_cast<float>(GetRandomValue(
-      static_cast<int>(SPAWN_AREA_Y),
-      static_cast<int>(SPAWN_AREA_Y + SPAWN_AREA_H)
-    ));
-
-    if (minDistFromPlayer > 0.0f) {
-      float dx = x - playerPos.x;
-      float dy = y - playerPos.y;
-      if (sqrtf(dx * dx + dy * dy) < minDistFromPlayer) continue;
-    }
-
-    bool blocked = false;
-    for (const Rectangle& box : collisionBoxes) {
-      if (CheckPointInRect({x, y}, box)) { blocked = true; break; }
-    }
-    if (!blocked) return {x, y};
-    result = {x, y};
-  }
-  return result;
-}
-
-void World::loadLevel(const std::string& path) {
+void Tutorial::loadLevel(const std::string& path) {
   std::ifstream file(path);
   std::string line;
   std::string currentLayer;
@@ -550,7 +408,6 @@ void World::loadLevel(const std::string& path) {
     iss >> token;
 
     if (token == "cols" || token == "rows") {
-      // Ignore, info only
     } else if (token == "layer") {
       loadLayer();
       inColliders = false;
@@ -564,7 +421,6 @@ void World::loadLevel(const std::string& path) {
       iss >> row >> w >> h;
       collisionBoxes.push_back({ col * TILE_SIZE, row * TILE_SIZE, w * TILE_SIZE, h * TILE_SIZE });
     } else {
-      // Layer grid row
       std::vector<int> gridRow;
       gridRow.push_back(std::stoi(token));
       int val;
@@ -575,7 +431,7 @@ void World::loadLevel(const std::string& path) {
   loadLayer();
 }
 
-void World::loadLayerFromGrid(const std::string& layerName, const std::vector<std::vector<int>>& grid) {
+void Tutorial::loadLayerFromGrid(const std::string& layerName, const std::vector<std::vector<int>>& grid) {
   Spritesheet* sheet = assets.getTileSheet(layerName);
   if (!sheet) return;
 
@@ -591,7 +447,7 @@ void World::loadLayerFromGrid(const std::string& layerName, const std::vector<st
   loadTileGrid(terrain, flat.data(), rows, cols, *sheet, {0, 0}, false);
 }
 
-void World::loadTileGrid(
+void Tutorial::loadTileGrid(
   std::vector<std::unique_ptr<Entity>>& vectorToAddTo,
   const int* grid, int rows, int cols,
   Spritesheet& sheet, Vector2 tileOffset,
@@ -602,8 +458,7 @@ void World::loadTileGrid(
       int frameIndex = grid[r * cols + c];
       if (frameIndex == -1) continue;
 
-      Vector2 position = getTilePosition({static_cast<float>(c), static_cast<float>(r)}, tileOffset);
-
+      Vector2 position = getTilePosition({(float)c, (float)r}, tileOffset);
       Entity tile = Entity(
         position,
         Sprite(
@@ -616,20 +471,19 @@ void World::loadTileGrid(
       if (enablePhysics) {
         tile.enablePhysics(Vector2{ TILE_SIZE, TILE_SIZE }, Vector2{ 0, 0 }, true);
       }
-
       vectorToAddTo.push_back(std::make_unique<Entity>(tile));
     }
   }
 }
 
-Vector2 World::getTilePosition(Vector2 tileCoordinates, Vector2 tileOffset) {
+Vector2 Tutorial::getTilePosition(Vector2 tileCoords, Vector2 tileOffset) {
   return {
-    static_cast<float>((tileOffset.x + tileCoordinates.x) * TILE_SIZE),
-    static_cast<float>((tileOffset.y + tileCoordinates.y) * TILE_SIZE)
+    (tileOffset.x + tileCoords.x) * TILE_SIZE,
+    (tileOffset.y + tileCoords.y) * TILE_SIZE
   };
 }
 
-void World::spawnBullets(Gun::Type type, Gun::Properties properties, int bulletCount, float spread) {
+void Tutorial::spawnBullets(Gun::Type type, Gun::Properties properties, int bulletCount, float spread) {
   Vector2 gunPos = { player->getPosition().x, player->getPosition().y + BULLET_SPAWN_Y_OFFSET };
   Vector2 mousePos = player->getMouseWorldPosition();
   float spawnAngle = atan2f(mousePos.y - gunPos.y, mousePos.x - gunPos.x);

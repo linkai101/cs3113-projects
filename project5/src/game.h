@@ -22,8 +22,12 @@ private:
 
   Assets assets;
 
+  std::unique_ptr<Scene> tutorial;
+  std::unique_ptr<Scene> mainMenu;
   std::unique_ptr<Scene> world;
   Scene* activeScene;
+
+  void switchScene(Scene* next);
 
   ShaderProgram shader;
 
